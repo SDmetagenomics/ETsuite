@@ -1,0 +1,2 @@
+JD_ZZ_2ndcycle_1	ET_seq2	JD_ZZ_2ndcycle_1_S1_L001_R1_001.fastq	JD_ZZ_2ndcycle_1_S1_L001_R2_001.fastq
+JD_ZZ_2ndcycle_2	ET_seq2	JD_ZZ_2ndcycle_2_S2_L001_R1_001.fastq	JD_ZZ_2ndcycle_2_S2_L001_R2_001.fastq
