@@ -9,7 +9,7 @@
 ## 3. Have program create output directory structure
 ## 4. Make program update all trimmed read output names to represent experimental sample name in column 1 of batch file
 ## 5. Have program log metadata from each step to a file (also want a tab delim output of trimmed reads ect)
-## 6. Update Options to allow cpu control, check through program where this applies
+## 6. 
 ## 7. Create ReadTheDocs
 
 
@@ -186,10 +186,16 @@ if("-X" %in% args){
 # Map forward reads only (Default: FALSE)
 fwd_only <- FALSE
 if("-F" %in% args){
-  isl <- TRUE
+  fwd_only <- TRUE
 }
 
 
+## Program Control Options
+# number of cores to use where applicable
+cpu <- 1
+if("-cpu" %in% args){
+  cpu <- as.numeric(args[which(args == "-cpu") + 1])
+}
 
 
 
@@ -221,7 +227,7 @@ if (wf == "jm"){
     
     # run cutadapt command
     system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
-                  " -j 6 -O ",am," -q ",qs, # specify trimming params
+                  " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
                   " -o ",batch_file[i,3],".trim", # fwd output
                   " -p ",batch_file[i,4],".trim", # rev output
                   " ",rd,batch_file[i,3], # fwd read
@@ -234,7 +240,7 @@ if (wf == "jm"){
   
   
   
-  ### Identifying and Trimming Models
+  ### Identifying and Trimming Models (ONLY 1 THREAD POSSIBLE w/ --info-file)
   
   # Run model finding for loop on fwd reads only but include reverse 
   for (i in 1:nrow(batch_file)){
@@ -302,8 +308,9 @@ if (wf == "jm"){
       
     }
     
-    # merge barcodes to output file
+    # merge barcodes to output file and remove sequencing barcode line
     bc_out <- merge(bc_out, bc_tmp_store, by.x = "read", by.y = "V1", all.x = T)
+    bc_out$read <- sub(pattern = " .*$", replacement = "", bc_dat$read, perl = T)
     
     # write barcodes out 
     write.table(bc_out, paste0(batch_file[i,1],".bc"), row.names = F)
@@ -323,7 +330,7 @@ if (wf == "jm"){
     
     # run cutadapt command
     system(paste0("cutadapt -A file:",md, # specify model file
-                  " -O 10"," -j 6 -e ",et, # specify trimming params
+                  " -O 10"," -j ",cpu," -e ",et, # specify trimming params
                   " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
                   " --pair-filter=both", # At least 1 read must be >= rl
                   " -o ",batch_file[i,3],".clean2", # fwd output
@@ -350,7 +357,7 @@ if (wf == "jm"){
 
     # run bowtie mapping
     system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", # hard coded database for now
-                  " -p 6"," -X ",isl, # specify bowtie options
+                  " -p ",cpu," -X ",isl, # specify bowtie options
                   " -1 ",batch_file[i,3],".clean2", # specify fwd reads
                   " -2 ",batch_file[i,4],".clean2", # specify rev reads
                   " -S ",batch_file[i,1],".sam", # specify sam file output
@@ -360,9 +367,14 @@ if (wf == "jm"){
     system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
                   
     # Run read hit stats script
-    system(paste0("python ",scripts,"/read_et_old.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+    system(paste0("python ",scripts,"/bam_pe_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
     
-    # 
+    # Integrate hit reads with barcodes into combined output and write
+    hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
+    bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
+    merge_dat <- merge(hit_dat, bc_dat, by.x = "Read", by.y ="read", all.x = T)
+    
+    write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
     
     }
     
@@ -379,7 +391,7 @@ if (wf == "jm"){
       
       # run bowtie mapping
       system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", # hard coded database for now
-                    " -p 6", # specify bowtie options
+                    " -p ",cpu, # specify bowtie options
                     " -U ",batch_file[i,3],".clean2", # specify fwd reads
                     " -S ",batch_file[i,1],".sam", # specify sam file output
                     " 2> ",batch_file[i,1],".bowtie.log")) # specify log file output
@@ -388,7 +400,14 @@ if (wf == "jm"){
       system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
       
       # Run read hit stats script
-      system(paste0("python ",scripts,"/bam_read_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+      system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+      
+      # Integrate hit reads with barcodes into combined output and write
+      hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
+      bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
+      merge_dat <- merge(hit_dat, bc_dat, by.x = "Read", by.y ="read", all.x = T) #### THIS MAY NOT WORK YET NEED TO UPDATE HEADERS ON bam_se_stats.py SCRIPT
+      
+      write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
   
     }
   
