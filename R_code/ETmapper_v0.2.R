@@ -287,7 +287,7 @@ if (wf == "jm"){
       ca_info <- fread(paste0(batch_file[i,1],".info.filt"), header = F)
 
       # create barcode output file
-      bc_out <- data.frame(read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
+      bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
   
       # create tmp barcode storage data frame
       bc_tmp_store <- data.frame()
@@ -314,8 +314,8 @@ if (wf == "jm"){
       }
     
       # merge barcodes to output file and remove sequencing barcode line
-      bc_out <- merge(bc_out, bc_tmp_store, by.x = "read", by.y = "V1", all.x = T)
-      bc_out$read <- sub(pattern = " .*$", replacement = "", bc_dat$read, perl = T)
+      bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
+      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_dat$Read, perl = T)
     
       # write barcodes out 
       write.table(bc_out, paste0(batch_file[i,1],".bc"), row.names = F)
@@ -373,7 +373,7 @@ if (wf == "jm"){
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
       bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
-      merge_dat <- merge(hit_dat, bc_dat, by.x = "Read", by.y ="read", all.x = T)
+      merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
     
       write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
     
@@ -406,7 +406,7 @@ if (wf == "jm"){
         # Integrate hit reads with barcodes into combined output and write
         hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
         bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
-        merge_dat <- merge(hit_dat, bc_dat, by.x = "Read", by.y ="read", all.x = T) #### THIS MAY NOT WORK YET NEED TO UPDATE HEADERS ON bam_se_stats.py SCRIPT
+        merge_dat <- merge(hit_dat, bc_dat, by= "Read", all.x = T)
       
         write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
   
@@ -476,7 +476,7 @@ if (wf == "jm"){
       ca_info <- fread(paste0(batch_file[i,1],".info.filt"), header = F)
       
       # create barcode output file
-      bc_out <- data.frame(read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
+      bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
       
       # create tmp barcode storage data frame
       bc_tmp_store <- data.frame()
@@ -503,8 +503,8 @@ if (wf == "jm"){
       }
       
       # merge barcodes to output file and remove sequencing barcode line
-      bc_out <- merge(bc_out, bc_tmp_store, by.x = "read", by.y = "V1", all.x = T)
-      bc_out$read <- sub(pattern = " .*$", replacement = "", bc_dat$read, perl = T)
+      bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
+      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_dat$Read, perl = T)
       
       # write barcodes out 
       write.table(bc_out, paste0(batch_file[i,1],".bc"), row.names = F)
@@ -533,7 +533,7 @@ if (wf == "jm"){
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
       bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
-      merge_dat <- merge(hit_dat, bc_dat, by.x = "Read", by.y ="read", all.x = T) #### THIS MAY NOT WORK YET NEED TO UPDATE HEADERS ON bam_se_stats.py SCRIPT
+      merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T) #### THIS MAY NOT WORK YET NEED TO UPDATE HEADERS ON bam_se_stats.py SCRIPT
       
       write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
     
