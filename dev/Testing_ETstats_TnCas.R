@@ -4,8 +4,8 @@ library(ggplot2)
 
 ### VcCas
 
-bc_dat <- fread("../Studies/19_10_21_JD_BR_VCas/VcCas/JD_BR_VcSh_4G.bc", header = T, stringsAsFactors = F)
-hit_dat <- fread("../Studies/19_10_21_JD_BR_VCas/test_mapping/4G_bam_parser_test2.txt", header = T, stringsAsFactors = F)
+bc_dat <- fread("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/VcCas/JD_BR_VcSh_4G.bc", header = T, stringsAsFactors = F)
+hit_dat <- fread("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/test_mapping/4G_bam_parser_test2.txt", header = T, stringsAsFactors = F)
 
 bc_dat$read <- sub(" 1:N:0:ATCACG","", bc_dat$read)
 
