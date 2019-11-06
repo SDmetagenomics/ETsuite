@@ -233,7 +233,7 @@ if (wf == "jm"){
     for (i in 1:nrow(batch_file)){
     
       # Indicate what program is doing
-      cat(paste0("\nTrimming Adapters/Flanks for: ",batch_file[i,1],"\n"))
+      cat(paste0("\nTrimming Adapters/Flanks and Qscore Filter for: ",batch_file[i,1],"\n"))
     
       # run cutadapt command
       system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
@@ -427,7 +427,7 @@ if (wf == "jm"){
     for (i in 1:nrow(batch_file)){
       
       # Indicate what program is doing
-      cat(paste0("\nTrimming Adapters/Flanks for: ",batch_file[i,1],"\n"))
+      cat(paste0("\nTrimming Adapters/Flanks and Qscore Filter for: ",batch_file[i,1],"\n"))
       
       # run cutadapt command
       system(paste0("cutadapt -a file:",ad, # specify adapter types and file

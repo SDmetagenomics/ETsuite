@@ -11,7 +11,7 @@ f.close()
 
 samfile = pysam.AlignmentFile(sys.argv[2])
 total_read_count = 0
-
+print("Read\tGENOME\tSCAF\tMAPQ\tNM\tLEN\tSTART\tEND\tSTRAND")
 for scaf in scaf2bin:
 	for read in samfile.fetch(scaf):
 		total_read_count += 1
@@ -20,4 +20,4 @@ for scaf in scaf2bin:
 				strand = "-"
 			else:
 				strand = "+"
-			print(str(read.query_name) + "\t" + scaf2bin[scaf] + "\t" + str(read.mapping_quality) + "\t" + str(read.get_tag('NM')) + "\t" + str(len(read.get_reference_positions())) + "\t" + str(read.get_reference_positions()[0]) + "\t" + str(read.get_reference_positions()[-1]) + "\t" + str(strand))
+			print(str(read.query_name) + "\t" + scaf2bin[scaf] + "\t" + scaf + "\t" + str(read.mapping_quality) + "\t" + str(read.get_tag('NM')) + "\t" + str(len(read.get_reference_positions())) + "\t" + str(read.get_reference_positions()[0]) + "\t" + str(read.get_reference_positions()[-1]) + "\t" + str(strand))
