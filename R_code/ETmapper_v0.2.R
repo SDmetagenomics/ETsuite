@@ -55,7 +55,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     Usage: ETmapper.R -w [workflow] -d [read_dir] -b [batch_file] -g [genome_db] [Additonal_Options]
 
     Mandatory Arguments:
-      
+    
       -w: Workflow type (No Default)
           jm - Junction mapping
           lm - Lite metagenomics coverage
@@ -64,7 +64,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       -g: Directory containing genome database (No Default)
 
     Adapter Filtering Options:
-
+    
       -ad: Adapter sequence file (Default: db/adap_small.fa)
       -am: Min length of adapter match (Default: 5)
       -qs: Min base quality (Default: 20)
@@ -77,8 +77,9 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       -rl: Min final read length (Default: 40)
       
     Read Mapping Options:
+    
       -X: Maximum insert length (Default: 500)
-      -F: Map forward reads only (for pe reads)
+      -F: Map forward reads only (Only for pe data)
       
     Program Control:
     
@@ -198,8 +199,14 @@ if("-cpu" %in% args){
 #### BEGIN WORKFLOWS ####
 
 
-### Junction Mapping Workflow 
+###############
+############### JUNCTION MAPPING WORKFLOW
+###############
+
+
 if (wf == "jm"){
+  
+  
   
   ### Create Log File - WORKING!
   cat(
@@ -227,7 +234,7 @@ if (wf == "jm"){
     
   
   ### Begin Trimming / Mapping Steps of Junction Mapping Workflow (PAIRED END)
-  if(paired_end_data == T){
+  if(paired_end_data == TRUE){
 
     ### Run adapter/flanking sequence trimming AND Quality Score Filtering
     for (i in 1:nrow(batch_file)){
@@ -357,7 +364,7 @@ if (wf == "jm"){
       cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
 
       # run bowtie mapping
-      system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", # hard coded database for now
+      system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", #****REMOVE HARDCODE
                     " -p ",cpu," -X ",isl, # specify bowtie options
                     " -1 ",batch_file[i,3],".clean2", # specify fwd reads
                     " -2 ",batch_file[i,4],".clean2", # specify rev reads
@@ -368,7 +375,7 @@ if (wf == "jm"){
       system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
                   
       # Run read hit stats script
-      system(paste0("python ",scripts,"/bam_pe_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+      system(paste0("python ",scripts,"/bam_pe_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits")) #****REMOVE HARDCODE
     
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
@@ -391,7 +398,7 @@ if (wf == "jm"){
         cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
       
         # run bowtie mapping
-        system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", # hard coded database for now
+        system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", #****REMOVE HARDCODE
                       " -p ",cpu, # specify bowtie options
                       " -U ",batch_file[i,3],".clean2", # specify fwd reads
                       " -S ",batch_file[i,1],".sam", # specify sam file output
@@ -401,7 +408,7 @@ if (wf == "jm"){
         system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
       
         # Run read hit stats script
-        system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+        system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits")) #****REMOVE HARDCODE
       
         # Integrate hit reads with barcodes into combined output and write
         hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
@@ -420,7 +427,7 @@ if (wf == "jm"){
   
   
   ### Begin Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END)
-  if(paired_end_data == T){
+  if(paired_end_data == FALSE){
     
     
     ### Run adapter/flanking sequence trimming AND Quality Score Filtering
@@ -518,7 +525,7 @@ if (wf == "jm"){
       cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
       
       # run bowtie mapping
-      system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", # hard coded database for now
+      system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", #****REMOVE HARDCODE
                     " -p ",cpu, # specify bowtie options
                     " -U ",batch_file[i,3],".clean", # specify fwd reads
                     " -S ",batch_file[i,1],".sam", # specify sam file output
@@ -528,24 +535,32 @@ if (wf == "jm"){
       system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
       
       # Run read hit stats script
-      system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+      system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
       
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
       bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
-      merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T) #### THIS MAY NOT WORK YET NEED TO UPDATE HEADERS ON bam_se_stats.py SCRIPT
+      merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
       
       write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
     
-    
-    
-    
-    
-    
-  }
+    } # End bowtie mapping for loop for SINGLE END mapping
 
-} else {
+  } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
+  
+} ### End Junction Mapping Workflow
+
+
+
+
+###############
+############### LITE META-G WORKFLOW
+###############
+
+
+if (wf == "lm") {
   print("MetaG workflow not ready yet!")
+  q(save="no")
 }
 
 
