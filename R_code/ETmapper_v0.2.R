@@ -34,8 +34,8 @@ scripts <- normalizePath(paste0(script.basename,"/../scripts")) #accesory script
 #print(normalizePath(script.basename))
 #print(ad)
 
-
-
+# NOT IN Operator for Arg Parseing
+'%notin%' <- Negate('%in%')
 
 ### Collect and Parse arguments
 args <- commandArgs(trailingOnly = T)
@@ -92,35 +92,35 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
 }
 
 
-### Arg Testing
-
 ## Mandatory Arguments
+
 # Work Flow Type
 wf <- args[which(args == "-w") + 1]
-#print(paste0("workflow type is: ", wf))
+if(wf %notin% c("jm","lm")){
+  cat(paste0("\n",wf, " is not a kown workflow...exiting"))
+  #q(save="no")
+}
 
 # Read Directory
 rd <- args[which(args == "-d") + 1]
-#print(paste0("read directory is: ", rd))
 
 # Batch File
 bf <- args[which(args == "-b") + 1]
 batch_file <- read.table(bf, sep = "\t", header = F)
-#print(paste0("batch file is: ", bf))
 
 # Genome Database Directory
 gd <- args[which(args == "-g") + 1]
-#print(paste0("genome database is: ", gd))
+print(paste0("genome database is: ", gd))
 
 
 ## Adapter Filtering Arguments
+
 # Adapter Database File
 ad <- ad
 if("-ad" %in% args){
   ad <- args[which(args == "-ad") + 1]
   ad <- normalizePath(ad)
 }
-#print(paste0("Adapter Database is: ", ad))
 
 # MMin Length of Adapter Match (Default: 5)
 am <- 5
@@ -136,13 +136,13 @@ if("-q" %in% args){
 
 
 ## Model Identification Options
+
 # Model Database File
 md <- md
 if("-md" %in% args){
   md <- args[which(args == "-md") + 1]
   md <- normalizePath(md)
 }
-#print(paste0("Model Database is: ", md))
 
 # Min length of model match  (Default: 25)
 mm <- 25
@@ -164,6 +164,7 @@ if("-rl" %in% args){
 
 
 ## Read Mapping Options
+
 # Max insert length (Default: 500 bp)
 isl <- 500
 if("-X" %in% args){
@@ -178,11 +179,22 @@ if("-F" %in% args){
 
 
 ## Program Control Options
+
 # number of cores to use where applicable
 cpu <- 1
 if("-cpu" %in% args){
   cpu <- as.numeric(args[which(args == "-cpu") + 1])
 }
+
+
+
+###### HOW TO FIX NON-ARGUMENT ENTRY BUG i.e. ETmapper.R -w [workflow] -d -b [batch_file]
+# for important arguments check that: 
+# 
+# which(argument) + 1 != c(all_other_arguments)
+# 
+# If somebody forgets to enter something then the thing +1 from the argument in the vector will
+# be another argument 
 
 
 
