@@ -110,7 +110,6 @@ batch_file <- read.table(bf, sep = "\t", header = F)
 
 # Genome Database Directory
 gd <- args[which(args == "-g") + 1]
-print(paste0("genome database is: ", gd))
 
 
 ## Adapter Filtering Arguments
@@ -334,7 +333,7 @@ if (wf == "jm"){
     
       # merge barcodes to output file and remove sequencing barcode line
       bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
-      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_dat$Read, perl = T)
+      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T)
     
       # write barcodes out 
       write.table(bc_out, paste0(batch_file[i,1],".bc"), row.names = F)
@@ -394,7 +393,7 @@ if (wf == "jm"){
       bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
       merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
     
-      write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
+      write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
     
       }
     
@@ -427,7 +426,7 @@ if (wf == "jm"){
         bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
         merge_dat <- merge(hit_dat, bc_dat, by= "Read", all.x = T)
       
-        write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
+        write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
   
       }
   
@@ -468,7 +467,7 @@ if (wf == "jm"){
       system(paste0("cutadapt -g file:",md, # specify model file
                     " -O ",mm," -e ",et, # specify trimming params
                     " --discard-untrimmed", # discard read pairs without model
-                    " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
+                    " --minimum-length ",rl, # discard read if length < rl bp
                     " --info-file ",batch_file[i,1],".info", # print 
                     " -o ",batch_file[i,3],".clean", # fwd output
                     " ",batch_file[i,3],".trim", # fwd read
@@ -523,7 +522,7 @@ if (wf == "jm"){
       
       # merge barcodes to output file and remove sequencing barcode line
       bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
-      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_dat$Read, perl = T)
+      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T)
       
       # write barcodes out 
       write.table(bc_out, paste0(batch_file[i,1],".bc"), row.names = F)
@@ -554,7 +553,7 @@ if (wf == "jm"){
       bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
       merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
       
-      write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F)
+      write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
     
     } # End bowtie mapping for loop for SINGLE END mapping
 
