@@ -41,7 +41,7 @@ scripts <- normalizePath(paste0(script.basename,"/../scripts")) #accesory script
 args <- commandArgs(trailingOnly = T)
 
 # Display help if no args or -h
-if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | length(args) == 0) {
+if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | !("-g" %in% args) | length(args) == 0) {
   cat("
   
     ####### #######                                           
@@ -376,7 +376,7 @@ if (wf == "jm"){
       cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
 
       # run bowtie mapping
-      system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", #****REMOVE HARDCODE
+      system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                     " -p ",cpu," -X ",isl, # specify bowtie options
                     " -1 ",batch_file[i,3],".clean2", # specify fwd reads
                     " -2 ",batch_file[i,4],".clean2", # specify rev reads
@@ -387,7 +387,7 @@ if (wf == "jm"){
       system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
                   
       # Run read hit stats script
-      system(paste0("python ",scripts,"/bam_pe_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits")) #****REMOVE HARDCODE
+      system(paste0("python ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
     
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
@@ -410,7 +410,7 @@ if (wf == "jm"){
         cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
       
         # run bowtie mapping
-        system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", #****REMOVE HARDCODE
+        system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                       " -p ",cpu, # specify bowtie options
                       " -U ",batch_file[i,3],".clean2", # specify fwd reads
                       " -S ",batch_file[i,1],".sam", # specify sam file output
@@ -420,7 +420,7 @@ if (wf == "jm"){
         system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
       
         # Run read hit stats script
-        system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits")) #****REMOVE HARDCODE
+        system(paste0("python ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
       
         # Integrate hit reads with barcodes into combined output and write
         hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
@@ -537,7 +537,7 @@ if (wf == "jm"){
       cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
       
       # run bowtie mapping
-      system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", #****REMOVE HARDCODE
+      system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                     " -p ",cpu, # specify bowtie options
                     " -U ",batch_file[i,3],".clean", # specify fwd reads
                     " -S ",batch_file[i,1],".sam", # specify sam file output
@@ -547,7 +547,7 @@ if (wf == "jm"){
       system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
       
       # Run read hit stats script
-      system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
+      system(paste0("python ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
       
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
