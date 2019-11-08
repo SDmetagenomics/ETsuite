@@ -33,7 +33,7 @@ for scaf in scaf2bin:
                                                 str(read_info[read.query_name]['NM']) + "\t" + str(read_info[read.query_name]['len1']) + 
                                                 "\t" + str(read_info[read.query_name]['start']) + "\t" + str(read_info[read.query_name]['end']) + "\t" + read_info[read.query_name]['strand'])
                                 elif read.is_read2:
-                                        print(str(read.query_name) + "\t" + scaf2bin[scaf] + "\t" + scaf + "\t" + scaf2bin[read_info[read.query_name]['scaf']] + "\t" + read_info[read.query_name]['scaf'] + "\t" + str(read_info[read.query_name]['mapq']) + "\t" + str(read_info[read.query_name]['NM']) + "\t" + 
+                                        print(str(read.query_name) + "\t" + scaf2bin[read_info[read.query_name]['scaf']] + "\t" + read_info[read.query_name]['scaf'] + "\t" + scaf2bin[scaf] + "\t" + scaf + "\t" + str(read_info[read.query_name]['mapq']) + "\t" + str(read_info[read.query_name]['NM']) + "\t" + 
                                                 str(read_info[read.query_name]['len1']) + "\t" + str(read_info[read.query_name]['start']) + "\t" + str(read_info[read.query_name]['end']) + "\t" + read_info[read.query_name]['strand'] +
                                                  "\t" + str(read.mapping_quality) + "\t" + str(read.get_tag('NM')) + 
                                                 "\t" + str(len(read.get_reference_positions())) + "\t" + str(read.get_reference_positions()[0]) + "\t" +  str(read.get_reference_positions()[-1]) + "\t" + strand)
@@ -47,7 +47,7 @@ for read in read_info:
                     "NA" + "\t" + "NA" + 
                     "\t" + "NA" + "\t" + "NA" + "\t" + "NA")
         else:
-            print(str(read) + "\t" + scaf2bin[r['scaf']] + "\t" + r['scaf'] + "\t" + "NA" + "\t" + "NA" + "\t" + "NA" + "\t" + "NA" + "\t" + 
+            print(str(read) + "\t" + "NA" + "\t" + "NA" + "\t" + scaf2bin[r['scaf']] + "\t" + r['scaf'] + "\t" + "NA" + "\t" + "NA" + "\t" + 
                     "NA" + "\t" + "NA" + "\t" + "NA" + "\t" + "NA" +
                      "\t" + str(r['mapq']) + "\t" + str(r['mapq']) + 
                     "\t" + str(r['len1']) + "\t" + str(r['start']) + "\t" +  str(r['end']) + "\t" + r['strand'])
