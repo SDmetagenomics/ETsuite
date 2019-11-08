@@ -240,7 +240,8 @@ if (wf == "jm"){
     paired_end_data <- TRUE
     cat("Input Data Identifed as Paired End...Begining Analysis\n\n")
     cat("Paired End = TRUE", file = "ETmapper.log", append = T)
-  }
+  } else{cat("ERROR: Batch file not formatted correctly")
+    q(save="no")}
   
     
   
