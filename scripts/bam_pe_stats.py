@@ -125,10 +125,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Read Paired End BAM data",
              formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+    print("Starting reading BAM")
     # Required positional arguments
     parser.add_argument("scaf2bin", help="scaffold to bin file, tab separated.")
     
     parser.add_argument("bam", help="Sorted, indexed .bam file.")
     
     args = parser.parse_args()
-    read_bam(args.scaf2bin, args.bam)
+    run = read_bam(args.scaf2bin, args.bam)
+    print("Done reading BAM")
