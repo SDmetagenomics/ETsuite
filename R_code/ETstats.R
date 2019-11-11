@@ -207,13 +207,12 @@ kleb_barcode <- length(unique(kleb_counts_filt$barcodes)) - 1
 
 
 
-unique_barcodes <- data.frame(sample_size = seq(100000, 1100000, by = 100000),
-                              unique = 1:11)
-
+unique_barcodes <- data.frame(sample_size = seq(100000, 1100000, by = 50000),
+                              unique = 1:21)
 sample_vec <- c(1:nrow(hit_table_filt))
 
-for (i in 1:11){
-  tmp_select <- sample(sample_vec, size = sample_size[i], replace = F)
+for (i in 1:21){
+  tmp_select <- sample(sample_vec, size = unique_barcodes[i,1], replace = F)
   
   tmp_hits <- hit_table_filt[tmp_select,]
   
@@ -224,6 +223,8 @@ for (i in 1:11){
 
 
 ggplot(unique_barcodes, aes(x = sample_size, y = unique)) +
-  
+  geom_point() +
+  geom_smooth() +
+  geom_abline(slope = 1, linetype = 2)
 
 
