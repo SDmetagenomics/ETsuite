@@ -245,6 +245,7 @@ if (wf == "jm"){
     cat("Input Data Identifed as Paired End...Begining Analysis\n\n")
     cat("Paired End = TRUE", file = "ETmapper.log", append = T)
   } 
+  
   # If tests fail exit with error
   if (exists("paired_end_data") == FALSE){
     cat("ERROR: Batch file not formatted correctly")
@@ -253,7 +254,7 @@ if (wf == "jm"){
   
     
   
-  
+
   #### PAIRED END BRANCH ####
   
   
