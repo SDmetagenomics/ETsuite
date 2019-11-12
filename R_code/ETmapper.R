@@ -226,10 +226,11 @@ if (wf == "jm"){
   ### Create Log File - WORKING!
   cat(
   paste0("ETmapper Log    Created: ", date()),"\n\n",
-  "Program Parameters:\n\n",
+  "Program Parameters:\n",
   paste0("Workflow type is: ", wf),"\n",
   paste0("Total Samples: ",nrow(batch_file)),"\n",
   paste0("Adapter Trim DB: ", ad,"\n"),
+  paste0("Model DB: ", md,"\n"),
   file = "ETmapper.log")
   
   
@@ -237,13 +238,13 @@ if (wf == "jm"){
   if(ncol(batch_file) == 3){
     paired_end_data <- FALSE
     cat("Input Reads Identifed as Single End...Begining Analysis\n\n")
-    cat("Paired End = FALSE", file = "ETmapper.log", append = T)
+    cat(" Paired End = FALSE", file = "ETmapper.log", append = T)
   }
   
   if(ncol(batch_file) == 4){
     paired_end_data <- TRUE
     cat("Input Data Identifed as Paired End...Begining Analysis\n\n")
-    cat("Paired End = TRUE", file = "ETmapper.log", append = T)
+    cat(" Paired End = TRUE", file = "ETmapper.log", append = T)
   } 
   
   # If tests fail exit with error
@@ -547,7 +548,7 @@ if (wf == "jm"){
 
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
-cat("Junction mapping workflow finished successfully.")
+cat("Junction mapping workflow finished successfully.\n\n")
 } ### End Junction Mapping Workflow
 
 
