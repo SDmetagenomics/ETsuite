@@ -207,7 +207,7 @@ clean.up <- function(){
   cat("Cleaning Up...\n")
   
   # remove un-needed files
-  system(paste0("rm ",out_dir,"/*.bam ",out_dir,"/*.info ",out_dir,"/*.sam"))
+  system(paste0("rm ",out_dir,"/*.bam ",out_dir,"/*.info ",out_dir,"/*.sam ",out_dir,"/*tmphits"))
 
   # create subdirectories
   dir.create(paste0(out_dir,"/logs"), recursive = T)
@@ -216,10 +216,10 @@ clean.up <- function(){
   dir.create(paste0(out_dir,"/raw"), recursive = T)
 
   # move files to right places
-  system(paste0("mv *.log ",out_dir,"/logs/"))
-  system(paste0("mv *.hits ",out_dir,"/hits/"))
-  system(paste0("mv *.bam.sorted *.bam.sorted.bai ",out_dir,"/map/"))
-  system(paste0("mv *.trim *.clean *.clean2 *.bc",out_dir,"/raw/"), ignore.stderr = T) 
+  system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
+  system(paste0("mv ",out_dir,"/*.hits ",out_dir,"/hits/"))
+  system(paste0("mv ",out_dir,"/*.bam.sorted ",out_dir,"/*.bam.sorted.bai ",out_dir,"/map/"))
+  system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.clean2 ",out_dir,"/*.bc ",out_dir,"/raw/"), ignore.stderr = T) 
 
 }
 
