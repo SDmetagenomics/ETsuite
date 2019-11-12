@@ -219,7 +219,7 @@ clean.up <- function(){
   system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
   system(paste0("mv ",out_dir,"/*.hits ",out_dir,"/hits/"))
   system(paste0("mv ",out_dir,"/*.bam.sorted ",out_dir,"/*.bam.sorted.bai ",out_dir,"/map/"))
-  system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.clean2 ",out_dir,"/*.bc ",out_dir,"/raw/"), ignore.stderr = T) 
+  system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.clean2 ",out_dir,"/*.bc ",out_dir,"/*info.filt ",out_dir,"/raw/"), ignore.stderr = T) 
 
 }
 
