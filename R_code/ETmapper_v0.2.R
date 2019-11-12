@@ -439,7 +439,7 @@ if (wf == "jm"){
   
         cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
         cat("\nSneak peak of unfiltered results:\n")
-        cat(print(table(merge_dat$GENOME1)))
+        cat(print(table(merge_dat$GENOME)))
       }
   
     }
@@ -569,7 +569,7 @@ if (wf == "jm"){
     
       cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
       cat("\nSneak peak of unfiltered results:\n")
-      print(table(merge_dat$GENOME1))
+      print(table(merge_dat$GENOME))
 
     } # End bowtie mapping for loop for SINGLE END mapping
 
