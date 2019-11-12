@@ -200,25 +200,30 @@ dir.create(out_dir, recursive = T)
 #### BEGIN FUNCTION DEFINE ####
 
 
-# # Function 1: Clean up files and make output structure
-# clean.up <- function(){
-#   
-#   # remove un-needed files
-#   system("rm *.bam *.info *.sam *.bc",)
-#   
-#   # create subdirectories
-#   dir.create(paste0(out_dir,"/logs", recursive = T))
-#   dir.create(paste0(out_dir,"/hits", recursive = T))
-#   dir.create(paste0(out_dir,"/raw", recursive = T))
-#   dir.create(paste0(out_dir,"/map", recursive = T))
-#   
-#   # move files to right places
-#   system(paste0("mv *.log ",out_dir,"/logs"))
-#   system(paste0("mv *.log ",out_dir,"/hits"))
-#   system(paste0("mv *.bam.sorted *.bam.sorted.bai")
-#   
-#   
-# }
+## Function 1: Clean up files and make output structure
+clean.up <- function(){
+
+  # say waht is happening
+  cat("Cleaning Up...\n")
+  
+  # remove un-needed files
+  system("rm ",paste0(out_dir,"/*.bam ",
+                      out_dir,"/*.info ",
+                      out_dir,"/*.sam"))
+
+  # create subdirectories
+  dir.create(paste0(out_dir,"/logs", recursive = T))
+  dir.create(paste0(out_dir,"/hits", recursive = T))
+  dir.create(paste0(out_dir,"/map", recursive = T))
+  dir.create(paste0(out_dir,"/raw", recursive = T))
+
+  # move files to right places
+  system(paste0("mv *.log ",out_dir,"/logs/"))
+  system(paste0("mv *.hits ",out_dir,"/hits/"))
+  system(paste0("mv *.bam.sorted *.bam.sorted.bai ",out_dir,"/map/"))
+  system(paste0("mv *.trim *.clean *.clean2 *.bc",out_dir,"/raw/"), ignore.stderr = T) 
+
+}
 
 
 
@@ -421,22 +426,24 @@ if (wf == "jm"){
                     samtools index ",out_dir,"/",batch_file[i,1],".bam.sorted"))
                   
       # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".hits"))
+      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".tmphits"))
     
       # Integrate hit reads with barcodes into combined output and write
-      hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
+      hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".tmphits"), header = T, stringsAsFactors = F)
       bc_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
       merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
     
-      write.table(merge_dat, paste0(out_dir,"/",batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
+      write.table(merge_dat, paste0(out_dir,"/",batch_file[i,1],".hits"), row.names = F, quote = F, sep = "\t")
     
-
-      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
+      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits")))
       cat("\nSneak peak of unfiltered results:\n")
-      print(table(merge_dat[which(merge_dat$GENOME1 == merge_dat$GENOME2),]$GENOME1))      
+      print(paste0(table(merge_dat[which(merge_dat$GENOME1 == merge_dat$GENOME2),]$GENOME1),"\n"))      
       
     }
 
+    ### Clean up files and create out_dir structure
+    clean.up()
+    
   } ### END Trimming / Mapping Steps of Junction Mapping Workflow (PAIRED END)
   
   
@@ -557,24 +564,28 @@ if (wf == "jm"){
                     samtools index ",out_dir,"/",batch_file[i,1],".bam.sorted"))
       
       # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
+      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".tmphits"))  #****REMOVE HARDCODE
       
       # Integrate hit reads with barcodes into combined output and write
-      hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
+      hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".tmphits"), header = T, stringsAsFactors = F)
       bc_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
       merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
       
-      write.table(merge_dat, paste0(out_dir,"/",batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
+      write.table(merge_dat, paste0(out_dir,"/",batch_file[i,1],".hits"), row.names = F, quote = F, sep = "\t")
     
-      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
+      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits")))
       cat("\nSneak peak of unfiltered results:\n")
-      print(table(merge_dat$GENOME))
+      print(paste0(table(merge_dat$GENOME),"\n"))
 
     } # End bowtie mapping for loop for SINGLE END mapping
+    
+    ### Clean up files and create out_dir structure
+    clean.up()
 
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
-cat("Junction mapping workflow finished successfully.\n\n")
+cat("Junction mapping workflow finished successfully :-)\n\n")
+
 } ### End Junction Mapping Workflow
 
 
