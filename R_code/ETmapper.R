@@ -207,9 +207,7 @@ clean.up <- function(){
   cat("Cleaning Up...\n")
   
   # remove un-needed files
-  system("rm ",paste0(out_dir,"/*.bam ",
-                      out_dir,"/*.info ",
-                      out_dir,"/*.sam"))
+  system(paste0("rm ",out_dir,"/*.bam ",out_dir,"/*.info ",out_dir,"/*.sam"))
 
   # create subdirectories
   dir.create(paste0(out_dir,"/logs", recursive = T))
@@ -437,7 +435,8 @@ if (wf == "jm"){
     
       cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits")))
       cat("\nSneak peak of unfiltered results:\n")
-      print(paste0(table(merge_dat[which(merge_dat$GENOME1 == merge_dat$GENOME2),]$GENOME1),"\n"))      
+      print(table(merge_dat[which(merge_dat$GENOME1 == merge_dat$GENOME2),]$GENOME1))
+      cat("\n")
       
     }
 
@@ -575,7 +574,8 @@ if (wf == "jm"){
     
       cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits")))
       cat("\nSneak peak of unfiltered results:\n")
-      print(paste0(table(merge_dat$GENOME),"\n"))
+      print(table(merge_dat$GENOME))
+      cat("\n")
 
     } # End bowtie mapping for loop for SINGLE END mapping
     
