@@ -210,10 +210,10 @@ clean.up <- function(){
   system(paste0("rm ",out_dir,"/*.bam ",out_dir,"/*.info ",out_dir,"/*.sam"))
 
   # create subdirectories
-  dir.create(paste0(out_dir,"/logs", recursive = T))
-  dir.create(paste0(out_dir,"/hits", recursive = T))
-  dir.create(paste0(out_dir,"/map", recursive = T))
-  dir.create(paste0(out_dir,"/raw", recursive = T))
+  dir.create(paste0(out_dir,"/logs"), recursive = T)
+  dir.create(paste0(out_dir,"/hits"), recursive = T)
+  dir.create(paste0(out_dir,"/map"), recursive = T)
+  dir.create(paste0(out_dir,"/raw"), recursive = T)
 
   # move files to right places
   system(paste0("mv *.log ",out_dir,"/logs/"))
