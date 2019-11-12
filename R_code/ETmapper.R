@@ -180,12 +180,11 @@ if("-cpu" %in% args){
 }
 
 # Output directory (Will be created if not specified)
-# output_dir <- "ET_mapper_out"
-# if("-o" %in% args){
-#   output_dir <- args[which(args == "-cpu") + 1]
-# }
-
-
+out_dir <- "ET_mapper"
+if("-o" %in% args){
+  out_dir <- args[which(args == "-o") + 1]
+}
+dir.create(out_dir, recursive = T)
 
 
 ###### HOW TO FIX NON-ARGUMENT ENTRY BUG i.e. ETmapper.R -w [workflow] -d -b [batch_file]
@@ -199,6 +198,28 @@ if("-cpu" %in% args){
 
 
 #### BEGIN FUNCTION DEFINE ####
+
+
+# # Function 1: Clean up files and make output structure
+# clean.up <- function(){
+#   
+#   # remove un-needed files
+#   system("rm *.bam *.info *.sam *.bc",)
+#   
+#   # create subdirectories
+#   dir.create(paste0(out_dir,"/logs", recursive = T))
+#   dir.create(paste0(out_dir,"/hits", recursive = T))
+#   dir.create(paste0(out_dir,"/raw", recursive = T))
+#   dir.create(paste0(out_dir,"/map", recursive = T))
+#   
+#   # move files to right places
+#   system(paste0("mv *.log ",out_dir,"/logs"))
+#   system(paste0("mv *.log ",out_dir,"/hits"))
+#   system(paste0("mv *.bam.sorted *.bam.sorted.bai")
+#   
+#   
+# }
+
 
 
 
@@ -225,26 +246,26 @@ if (wf == "jm"){
   
   ### Create Log File - WORKING!
   cat(
-  paste0("ETmapper Log    Created: ", date()),"\n\n",
+  paste0("ETmapper Summary    Created: ", date()),"\n\n",
   "Program Parameters:\n",
   paste0("Workflow type is: ", wf),"\n",
   paste0("Total Samples: ",nrow(batch_file)),"\n",
   paste0("Adapter Trim DB: ", ad,"\n"),
   paste0("Model DB: ", md,"\n"),
-  file = "ETmapper.log")
+  file = paste0(out_dir,"/summary.txt"))
   
   
   ### Determine if reads provided are se or pr end and initalize program
   if(ncol(batch_file) == 3){
     paired_end_data <- FALSE
     cat("Input Reads Identifed as Single End...Begining Analysis\n\n")
-    cat(" Paired End = FALSE", file = "ETmapper.log", append = T)
+    cat(" Paired End = FALSE", file = paste0(out_dir,"/summary.txt"), append = T)
   }
   
   if(ncol(batch_file) == 4){
     paired_end_data <- TRUE
     cat("Input Data Identifed as Paired End...Begining Analysis\n\n")
-    cat(" Paired End = TRUE", file = "ETmapper.log", append = T)
+    cat(" Paired End = TRUE", file = paste0(out_dir,"/summary.txt"), append = T)
   } 
   
   # If tests fail exit with error
@@ -271,11 +292,11 @@ if (wf == "jm"){
       # run cutadapt command
       system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
                     " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
-                    " -o ",batch_file[i,3],".trim", # fwd output
-                    " -p ",batch_file[i,4],".trim", # rev output
+                    " -o ",out_dir,"/",batch_file[i,3],".trim", # fwd output
+                    " -p ",out_dir,"/",batch_file[i,4],".trim", # rev output
                     " ",rd,batch_file[i,3], # fwd read
                     " ",rd,batch_file[i,4], # rev read
-                    " > ",batch_file[i,1],".trim.log")) # log files
+                    " > ",out_dir,"/",batch_file[i,1],".trim.log")) # log files
 
     }
   
@@ -292,12 +313,12 @@ if (wf == "jm"){
       system(paste0("cutadapt -g file:",md, # specify model file
                     " -O ",mm," -e ",et, # specify trimming params
                     " --discard-untrimmed", # discard read pairs without model
-                    " --info-file ",batch_file[i,1],".info", # print 
-                    " -o ",batch_file[i,3],".clean", # fwd output
-                    " -p ",batch_file[i,4],".clean", # rev output
-                    " ",batch_file[i,3],".trim", # fwd read
-                    " ",batch_file[i,4],".trim", # rev read
-                    " > ",batch_file[i,1],".clean.log")) # log files
+                    " --info-file ",out_dir,"/",batch_file[i,1],".info", # print 
+                    " -o ",out_dir,"/",batch_file[i,3],".clean", # fwd output
+                    " -p ",out_dir,"/",batch_file[i,4],".clean", # rev output
+                    " ",out_dir,"/",batch_file[i,3],".trim", # fwd read
+                    " ",out_dir,"/",batch_file[i,4],".trim", # rev read
+                    " > ",out_dir,"/",batch_file[i,1],".clean.log")) # log files
     
     }
   
@@ -314,10 +335,10 @@ if (wf == "jm"){
       cat(paste0("\nFinding Barcodes for: ",batch_file[i,1],"\n"))
     
       # Filter cutadapt info file for reads with model
-      system(paste0("awk '{if ($3!=-1) print}' ",batch_file[i,1],".info > ",batch_file[i,1],".info.filt"))
+      system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file[i,1],".info > ",out_dir,"/",batch_file[i,1],".info.filt"))
   
       # pull filtered model hit file
-      ca_info <- fread(paste0(batch_file[i,1],".info.filt"), header = F)
+      ca_info <- fread(paste0(out_dir,"/",batch_file[i,1],".info.filt"), header = F)
 
       # create barcode output file
       bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
@@ -351,7 +372,7 @@ if (wf == "jm"){
       bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T)
     
       # write barcodes out 
-      write.table(bc_out, paste0(batch_file[i,1],".bc"), row.names = F)
+      write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
   
     }
   
@@ -369,11 +390,11 @@ if (wf == "jm"){
                     " -O 10"," -j ",cpu," -e ",et, # specify trimming params
                     " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
                     " --pair-filter=both", # At least 1 read must be >= rl
-                    " -o ",batch_file[i,3],".clean2", # fwd output
-                    " -p ",batch_file[i,4],".clean2", # rev output
-                    " ",batch_file[i,3],".clean", # fwd read
-                    " ",batch_file[i,4],".clean", # rev read
-                    " > ",batch_file[i,1],".clean2.log")) # log files
+                    " -o ",out_dir,"/",batch_file[i,3],".clean2", # fwd output
+                    " -p ",out_dir,"/",batch_file[i,4],".clean2", # rev output
+                    " ",out_dir,"/",batch_file[i,3],".clean", # fwd read
+                    " ",out_dir,"/",batch_file[i,4],".clean", # rev read
+                    " > ",out_dir,"/",batch_file[i,1],".clean2.log")) # log files
     
     }
   
@@ -389,23 +410,25 @@ if (wf == "jm"){
       # run bowtie mapping
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                     " -p ",cpu," -X ",isl, # specify bowtie options
-                    " -1 ",batch_file[i,3],".clean2", # specify fwd reads
-                    " -2 ",batch_file[i,4],".clean2", # specify rev reads
-                    " -S ",batch_file[i,1],".sam", # specify sam file output
-                    " 2> ",batch_file[i,1],".bowtie.log")) # specify log file output
+                    " -1 ",out_dir,"/",batch_file[i,3],".clean2", # specify fwd reads
+                    " -2 ",out_dir,"/",batch_file[i,4],".clean2", # specify rev reads
+                    " -S ",out_dir,"/",batch_file[i,1],".sam", # specify sam file output
+                    " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
     
       # Convert SAM to BAM format with sorting and indexing
-      system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
+      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".bam; 
+                    samtools sort ",out_dir,"/",batch_file[i,1],".bam -o ",out_dir,"/",batch_file[i,1],".bam.sorted; 
+                    samtools index ",out_dir,"/",batch_file[i,1],".bam.sorted"))
                   
       # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".hits"))
     
       # Integrate hit reads with barcodes into combined output and write
-      hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
-      bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
+      hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
+      bc_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
       merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
     
-      write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
+      write.table(merge_dat, paste0(out_dir,"/",batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
     
 
       cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
@@ -435,9 +458,9 @@ if (wf == "jm"){
       # run cutadapt command
       system(paste0("cutadapt -a file:",ad, # specify adapter types and file
                     " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
-                    " -o ",batch_file[i,3],".trim", # fwd output
+                    " -o ",out_dir,"/",batch_file[i,3],".trim", # fwd output
                     " ",rd,batch_file[i,3], # fwd read
-                    " > ",batch_file[i,1],".trim.log")) # log files
+                    " > ",out_dir,"/",batch_file[i,1],".trim.log")) # log files
       
     }
   
@@ -453,10 +476,10 @@ if (wf == "jm"){
                     " -O ",mm," -e ",et, # specify trimming params
                     " --discard-untrimmed", # discard read pairs without model
                     " --minimum-length ",rl, # discard read if length < rl bp
-                    " --info-file ",batch_file[i,1],".info", # print 
-                    " -o ",batch_file[i,3],".clean", # fwd output
-                    " ",batch_file[i,3],".trim", # fwd read
-                    " > ",batch_file[i,1],".clean.log")) # log files
+                    " --info-file ",out_dir,"/",batch_file[i,1],".info", # print 
+                    " -o ",out_dir,"/",batch_file[i,3],".clean", # fwd output
+                    " ",out_dir,"/",batch_file[i,3],".trim", # fwd read
+                    " > ",out_dir,"/",batch_file[i,1],".clean.log")) # log files
       
     }
   
@@ -473,10 +496,10 @@ if (wf == "jm"){
       cat(paste0("\nFinding Barcodes for: ",batch_file[i,1],"\n"))
       
       # Filter cutadapt info file for reads with model
-      system(paste0("awk '{if ($3!=-1) print}' ",batch_file[i,1],".info > ",batch_file[i,1],".info.filt"))
+      system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file[i,1],".info > ",out_dir,"/",batch_file[i,1],".info.filt"))
       
       # pull filtered model hit file
-      ca_info <- fread(paste0(batch_file[i,1],".info.filt"), header = F)
+      ca_info <- fread(paste0(out_dir,"/",batch_file[i,1],".info.filt"), header = F)
       
       # create barcode output file
       bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
@@ -510,10 +533,11 @@ if (wf == "jm"){
       bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T)
       
       # write barcodes out 
-      write.table(bc_out, paste0(batch_file[i,1],".bc"), row.names = F)
+      write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
       
     }  
   
+    
     # Run bowtie mapping for loop for SINGLE END mapping
     for (i in 1:nrow(batch_file)){
       
@@ -523,22 +547,24 @@ if (wf == "jm"){
       # run bowtie mapping
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                     " -p ",cpu, # specify bowtie options
-                    " -U ",batch_file[i,3],".clean", # specify fwd reads
-                    " -S ",batch_file[i,1],".sam", # specify sam file output
-                    " 2> ",batch_file[i,1],".bowtie.log")) # specify log file output
+                    " -U ",out_dir,"/",batch_file[i,3],".clean", # specify fwd reads
+                    " -S ",out_dir,"/",batch_file[i,1],".sam", # specify sam file output
+                    " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
       
       # Convert SAM to BAM format with sorting and indexing
-      system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
+      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".bam; 
+                    samtools sort ",out_dir,"/",batch_file[i,1],".bam -o ",out_dir,"/",batch_file[i,1],".bam.sorted; 
+                    samtools index ",out_dir,"/",batch_file[i,1],".bam.sorted"))
       
       # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
+      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
       
       # Integrate hit reads with barcodes into combined output and write
-      hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
-      bc_dat <- fread(paste0(batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
+      hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
+      bc_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
       merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
       
-      write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
+      write.table(merge_dat, paste0(out_dir,"/",batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
     
       cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
       cat("\nSneak peak of unfiltered results:\n")
