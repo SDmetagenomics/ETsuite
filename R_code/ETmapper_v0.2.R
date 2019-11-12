@@ -1,4 +1,4 @@
-#! /usr/local/bin/Rscript
+#!/usr/bin/env Rscript
 
 ### Load Test Data
 #foo <- read.table("test_data/ETmapper_test_data/test_batch.txt")
@@ -6,7 +6,7 @@
 
 
 ### Check and Load Libraries
-if("data.table" %in% installed.packages() == F){
+if ("data.table" %in% installed.packages() == F){
   print("Please install R package data.table. Program quitting...")
   q(save="no")
 }
@@ -391,7 +391,7 @@ if (wf == "jm"){
       system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
                   
       # Run read hit stats script
-      system(paste0("python ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
     
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
@@ -400,6 +400,10 @@ if (wf == "jm"){
     
       write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
     
+
+      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
+      cat("\nSneak peak of unfiltered results:\n")
+      print(table(merge_dat[which(merge_dat$GENOME1 == merge_dat$GENOME2),]$GENOME1))      
       }
     
     }
@@ -424,7 +428,7 @@ if (wf == "jm"){
         system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
       
         # Run read hit stats script
-        system(paste0("python ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+        system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
       
         # Integrate hit reads with barcodes into combined output and write
         hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
@@ -433,6 +437,9 @@ if (wf == "jm"){
       
         write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
   
+        cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
+        cat("\nSneak peak of unfiltered results:\n")
+        cat(print(table(merge_dat$GENOME1)))
       }
   
     }
@@ -551,7 +558,7 @@ if (wf == "jm"){
       system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
       
       # Run read hit stats script
-      system(paste0("python ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
+      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))  #****REMOVE HARDCODE
       
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(batch_file[i,1],".hits"), header = T, stringsAsFactors = F)
@@ -560,10 +567,15 @@ if (wf == "jm"){
       
       write.table(merge_dat, paste0(batch_file[i,1],".hits2"), row.names = F, quote = F, sep = "\t")
     
+      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits2")))
+      cat("\nSneak peak of unfiltered results:\n")
+      print(table(merge_dat$GENOME1))
+
     } # End bowtie mapping for loop for SINGLE END mapping
 
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
+cat("Junction mapping finished successfully.")
 } ### End Junction Mapping Workflow
 
 

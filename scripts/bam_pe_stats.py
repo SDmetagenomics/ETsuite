@@ -119,13 +119,13 @@ def read_bam(scaf2bin, bam):
                 reads['END1'].append('NA')
                 reads['STRAND1'].append('NA')
 
-    print(pd.DataFrame(reads).to_csv(sys.stdout, index=False, sep="\t"))
+    pd.DataFrame(reads).to_csv(sys.stdout, index=False, sep="\t")
+    return True
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Read Paired End BAM data",
              formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    print("Starting reading BAM")
     # Required positional arguments
     parser.add_argument("scaf2bin", help="scaffold to bin file, tab separated.")
     
@@ -133,4 +133,3 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     run = read_bam(args.scaf2bin, args.bam)
-    print("Done reading BAM")
