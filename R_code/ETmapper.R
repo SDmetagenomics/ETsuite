@@ -204,7 +204,7 @@ clean.up <- function(){
   cat("Cleaning Up...\n")
   
   # remove un-needed files
-  system(paste0("rm ",out_dir,"/*.bam ",out_dir,"/*.info ",out_dir,"/*.sam ",out_dir,"/*tmphits"))
+  system(paste0("rm ",out_dir,"/*.tmpbam ",out_dir,"/*.info ",out_dir,"/*.sam ",out_dir,"/*.tmphits"))
 
   # create subdirectories
   dir.create(paste0(out_dir,"/logs"), recursive = T)
@@ -215,7 +215,7 @@ clean.up <- function(){
   # move files to right places
   system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
   system(paste0("mv ",out_dir,"/*.hits ",out_dir,"/hits/"))
-  system(paste0("mv ",out_dir,"/*.bam.sorted ",out_dir,"/*.bam.sorted.bai ",out_dir,"/map/"))
+  system(paste0("mv ",out_dir,"/*.sorted.bam ",out_dir,"/*.sorted.bam.bai ",out_dir,"/map/"))
   system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.clean2 ",out_dir,"/*.bc ",out_dir,"/*info.filt ",out_dir,"/raw/"), ignore.stderr = T) 
 
 }
@@ -416,12 +416,12 @@ if (wf == "jm"){
                     " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
     
       # Convert SAM to BAM format with sorting and indexing
-      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".bam; 
-                    samtools sort ",out_dir,"/",batch_file[i,1],".bam -o ",out_dir,"/",batch_file[i,1],".bam.sorted; 
-                    samtools index ",out_dir,"/",batch_file[i,1],".bam.sorted"))
+      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
+                    samtools sort ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
+                    samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
                   
       # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".tmphits"))
+      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))
     
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".tmphits"), header = T, stringsAsFactors = F)
@@ -555,12 +555,12 @@ if (wf == "jm"){
                     " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
       
       # Convert SAM to BAM format with sorting and indexing
-      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".bam; 
-                    samtools sort ",out_dir,"/",batch_file[i,1],".bam -o ",out_dir,"/",batch_file[i,1],".bam.sorted; 
-                    samtools index ",out_dir,"/",batch_file[i,1],".bam.sorted"))
+      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
+                    samtools sort ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
+                    samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
       
       # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".bam.sorted > ",out_dir,"/",batch_file[i,1],".tmphits"))  #****REMOVE HARDCODE
+      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))  #****REMOVE HARDCODE
       
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".tmphits"), header = T, stringsAsFactors = F)
