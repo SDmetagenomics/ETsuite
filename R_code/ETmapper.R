@@ -30,15 +30,12 @@ md <- normalizePath(paste0(script.basename,"/../db/models.fa")) #model sequences
 scripts <- normalizePath(paste0(script.basename,"/../scripts")) #accesory scripts directory
 
 
-# Testing directory stuff above
-#print(normalizePath(script.basename))
-#print(ad)
-
-# NOT IN Operator for Arg Parseing
-'%notin%' <- Negate('%in%')
 
 ### Collect and Parse arguments
 args <- commandArgs(trailingOnly = T)
+
+# NOT IN Operator for Arg Parseing
+'%notin%' <- Negate('%in%')
 
 # Display help if no args or -h
 if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | !("-g" %in% args) | length(args) == 0) {
@@ -52,7 +49,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     #          #    #    # #    # #      #      #      #   #  
     #######    #    #    # #    # #      #      ###### #    #  v0.03
       
-    Usage: ETmapper.R -w [workflow] -d [read_dir] -b [batch_file] -g [genome_db] [Additonal_Options]
+    Usage: ETmapper.R -w [workflow] -d [read_dir] -b [batch_file] -g [genome_db] [options]
 
     Mandatory Arguments:
     
@@ -97,7 +94,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
 wf <- args[which(args == "-w") + 1]
 if(wf %notin% c("jm","lm")){
   cat(paste0("\n",wf, " is not a kown workflow...exiting"))
-  #q(save="no")
+  q(save="no")
 }
 
 # Read Directory
