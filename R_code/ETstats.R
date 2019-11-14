@@ -9,8 +9,8 @@ if ("data.table" %in% installed.packages() == FALSE){
 }
 
 # Check plyr
-if ("plyr" %in% installed.packages() == FALSE){
-  print("Please install R package plyr. Program quitting...")
+if ("dplyr" %in% installed.packages() == FALSE){
+  print("Please install R package dplyr. Program quitting...")
   q(save="no")
 }
 
@@ -39,6 +39,9 @@ scripts <- normalizePath(paste0(script.basename,"/../scripts")) #accesory script
 ### Collect and parse arguments
 args <- commandArgs(trailingOnly = T)
 
+print(args)
+cat(paste0("\nTotal Arguments: ",length(args),"\n"))
+
 ## NOT IN Operator for Arg Parseing
 '%notin%' <- Negate('%in%')
 
@@ -53,6 +56,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       
       -w: Workflow type (No Default)
           ss - stats summary
+          rs - read statistics
           ip - insertion plot
       -d: ETmapper output directory (No Default)
       -b: Batch file (No Default)
@@ -60,30 +64,30 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       Optional Arguments:
       
       -g: Directory containing genome database (No Default)
-      -o: output file (Default: ETstats_out.txt)
+      -o: Output file (Default: ETstats_out.txt)
+      -p: Make plots (Default: FALSE)
+      -r: Remove specific genome from analysis
       
       Stats Summary Options:
       
       -q: MapQ cutoff score (Default: 20)
       -m: Maximum read mismatches allowed (Default: 5; SE only)
-      -C: Custom filter function (Overrides PE filters)
+      -C: Custom filter function (Overrides PE filters; must be quoted)
       -h: Bring up this help menu
   
   
       Example Usage:
       
-      # Basic stats summary
+      ## Stats summary
       ETstats.R -w ss -d ./ETmapper_out -b batch_file.txt
-      
-      # Comparative analysis
-      ETstats.R -w ss -d ./ETmapper_out -b batch_file.txt
-      
-      # Plot specific genomic locus
+      ## Stats summary custom filter
+      ETstats.R -w ss -d ./ETmapper_out -b batch_file.txt -c 'GENOME1 == GENOME2 & MAPQ1 > 5'
       
     ")
   
   q(save="no")
 }
+
 
 ## Mandatory Arguments
 
@@ -101,8 +105,31 @@ em_out <- args[which(args == "-d") + 1]
 bf <- args[which(args == "-b") + 1]
 batch_file <- read.table(bf, sep = "\t", header = F)
 
-# # Genome Database Directory
-# gd <- args[which(args == "-g") + 1]
+
+
+## Optional Arguments
+
+# Genome Database Directory
+gd <- args[which(args == "-g") + 1]
+
+# Output file / direcctory (eventually)
+out_dir <- "ETstats_out.txt"
+if("-o" %in% args){
+  out_dir <- args[which(args == "-o") + 1]
+}
+#dir.create(out_dir, recursive = T)
+
+# Make plots (Default: FALSE)
+plot_res <- FALSE
+if("-p" %in% args){
+  plot_res <- TRUE
+}
+
+# Remove specific genome from analysis
+if("-r" %in% args){
+  rm_gen <- args[which(args == "-r") + 1]
+  ### STRING SPLIT
+}
 
 
 
@@ -122,18 +149,12 @@ if("-m" %in% args){
 
 # MCustom filter function (Overrides PE filters)
 if("-C" %in% args){
-  cutsom_filt <- args[which(args == "-C") + 1]
+  custom_filt <- args[which(args == "-C") + 1]
+  
 }
 
 
-## Program control options
 
-# Output file
-out_dir <- "ETstats_out.txt"
-if("-o" %in% args){
-  out_dir <- args[which(args == "-o") + 1]
-}
-#dir.create(out_dir, recursive = T)
 
 
 ## Load Testing Data 
@@ -200,13 +221,13 @@ hit.summary.pe <- function(){
     # Create table to be filtered on
     tmp_filt_table <- tmp_hit_table
     
-    # custom filters if wated
+    # Custom filters if wated
     if(exists("custom_filt") == TRUE){
       
       # Hits to same genome
       tmp_filt_table <- subset(tmp_filt_table, eval(parse(text=custom_filt)))
       
-      # basic filters if no custom specified
+    # Basic filters if no custom specified
     } else {
       
       # Hits to same genome
@@ -337,6 +358,16 @@ hit.summary.se <- function(){
 ## Function 5: Comparative Statistics between groups   
   
 
+## Function 6: Read Stats!!!
+
+
+
+# raw ANI = NM / LEN
+# high qual ANI = QUALNM / QUAL
+# percent_read_quality = QUAL / LEN
+# raw ANI = number of differences including errors
+# high qual ANI = number of differences mostly not including errors
+# percent quality = the percentage of high quality bases on the read
 
 
 
@@ -367,7 +398,11 @@ if (wf == "ss"){
 }
 
 
-
+if (wf == "rs"){
+  
+ 
+   
+}
 
 if (wf == "ip"){
   
