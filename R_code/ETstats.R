@@ -353,7 +353,7 @@ if (wf == "ss"){
   }
   
   # Write Output
-  write.table(ETstats_out)
+  write.table(ETstats_out, "ETstats_out.txt", quote = F, row.names = F)
 
 }
 
