@@ -17,9 +17,9 @@ if ("plyr" %in% installed.packages() == FALSE){
 
 
 ### Load packages
-library(data.table)
-library(dplyr)
-library(ggplot2)
+library(data.table, quietly = T)
+library(dplyr, quietly = T)
+library(ggplot2, quietly = T)
 
 
 
