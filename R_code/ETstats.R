@@ -17,9 +17,9 @@ if ("plyr" %in% installed.packages() == FALSE){
 
 
 ### Load packages
-library(data.table, quietly = T)
-library(dplyr, quietly = T)
-library(ggplot2, quietly = T)
+suppressMessages(library(data.table, quietly = T))
+suppressMessages(library(dplyr, quietly = T))
+suppressMessages(library(ggplot2, quietly = T))
 
 
 
@@ -66,7 +66,7 @@ if("-h" %in% args | !("-i" %in% args) | !("-b" %in% args) | length(args) == 0) {
       -q: MapQ cutoff score (Default: 20)
       -m: Maximum read mismatches allowed (Default: 5; SE only)
       -C: Custom filter function (Overrides PE filters)
-      -h: Bring up this help menu\n\n
+      -h: Bring up this help menu
   
   
       Example Usage:
