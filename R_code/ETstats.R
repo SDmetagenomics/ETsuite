@@ -43,7 +43,7 @@ args <- commandArgs(trailingOnly = T)
 '%notin%' <- Negate('%in%')
 
 ## Display help if no args or -h
-if("-h" %in% args | !("-i" %in% args) | !("-b" %in% args) | length(args) == 0) {
+if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | length(args) == 0) {
   cat("
       ETstats v0.01
       
