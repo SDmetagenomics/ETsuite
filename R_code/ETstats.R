@@ -60,6 +60,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       Optional Arguments:
       
       -g: Directory containing genome database (No Default)
+      -o: output file (Default: ETstats_out.txt)
       
       Stats Summary Options:
       
@@ -125,6 +126,14 @@ if("-C" %in% args){
 }
 
 
+## Program control options
+
+# Output file
+out_dir <- "ETstats_out.txt"
+if("-o" %in% args){
+  out_dir <- args[which(args == "-o") + 1]
+}
+#dir.create(out_dir, recursive = T)
 
 
 ## Load Testing Data 
@@ -353,7 +362,7 @@ if (wf == "ss"){
   }
   
   # Write Output
-  write.table(ETstats_out, "ETstats_out.txt", quote = F, row.names = F)
+  write.table(ETstats_out, file = out_dir, quote = F, row.names = F, sep = "\t")
 
 }
 
