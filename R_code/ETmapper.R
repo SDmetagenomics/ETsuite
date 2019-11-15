@@ -222,7 +222,6 @@ clean.up <- function(){
 
 
 
-
 #### END FUNCTION DEFINE ####
 
 
@@ -246,7 +245,7 @@ if (wf == "jm"){
   
   ### Create Log File - WORKING!
   cat(
-  paste0("ETmapper Summary    Created: ", date()),"\n\n",
+  paste0("ETmapper v0.03 Summary    Created: ", date()),"\n\n",
   "Program Parameters:\n",
   paste0("Workflow type is: ", wf),"\n",
   paste0("Total Samples: ",nrow(batch_file)),"\n",
