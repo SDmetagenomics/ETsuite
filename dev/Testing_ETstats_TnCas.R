@@ -7,7 +7,7 @@ library(ggplot2)
 bc_dat <- fread("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/VcCas/JD_BR_VcSh_4G.bc", header = T, stringsAsFactors = F)
 hit_dat <- fread("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/test_mapping/4G_bam_parser_test2.txt", header = T, stringsAsFactors = F)
 
-bc_dat$read <- sub(" 1:N:0:ATCACG","", bc_dat$read)
+bc_dat$read <- sub(" 1:N:0:.*$","", bc_dat$read, perl = T)
 
 merge_dat <- merge(hit_dat, bc_dat, by.x = "Read", by.y ="read", all.x = T)
 
@@ -34,28 +34,43 @@ loci <- data.frame(coord = loci$x, reads = loci$freq, strand = loci$dir, uniq_bc
 
 
 
-### Identify On Target Locations 
-loci$on_targ <- ifelse(between(loci$coord,335441,336008) | between(loci$coord,749728,750361), TRUE, FALSE)
+### Identify On Target Locations - within 100bp
+loci$on_targ_100 <- ifelse(between(loci$coord,335608,335707) | between(loci$coord,750062,750162), TRUE, FALSE)
+loci$on_targ_200 <- ifelse(between(loci$coord,335608,335807) | between(loci$coord,750062,750262), TRUE, FALSE)
 
 
+### Count unique barcodes at correct start site for strand & save hits to df 
 
-### 
+# Create container to store all correct hits 
+correct_hits <- data.table()
+
+# Loop over loci and store good hits with correct start site and count unique barcodes for summary data
 for (i in 1:nrow(loci)){
   
   if(loci$strand[i] == "+"){
     tmp_loci <- subset(hits_pos_strand, START1 == loci[i,1])
+    tmp_loci$START <- tmp_loci$START1
+    correct_hits <- rbind(correct_hits, tmp_loci)
     tmp_bc_count <- length(unique(tmp_loci$barcodes))
     loci[i,4] <- tmp_bc_count
   }
   
   if(loci$strand[i] =="-"){
     tmp_loci <- subset(hits_neg_strand, END1 == loci[i,1])
+    tmp_loci$START <- tmp_loci$END1
+    correct_hits <- rbind(correct_hits, tmp_loci)
     tmp_bc_count <- length(unique(tmp_loci$barcodes))
     loci[i,4] <- tmp_bc_count
   }
   
   cat(paste0("Processed ",i," Loci\r"))
 }
+
+
+
+### Calculate Summary Statistics
+summary_100 <- aggregate(uniq_bc ~ on_targ_100, loci, sum)
+summary_200 <- aggregate(uniq_bc ~ on_targ_200, loci, sum)
 
 # reads vs unique_bc per position
 # ggplot(loci, aes(x = log(reads + 1), y = log(uniq_bc + 1))) +
@@ -64,30 +79,73 @@ for (i in 1:nrow(loci)){
 
 
 # Full plot
-ggplot(loci, aes(x = coord, y = log(uniq_bc+1))) +
+ggplot(loci, aes(x = coord, y = uniq_bc)) +
   geom_bar(stat = "identity", color = "steelblue") +
   xlab("Genome Position (bp)") +
+  scale_y_sqrt() +
   ylab("Unique Barcodes") 
-  
+
+ggsave("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/Output_Figs/4G_hit_loci_global.pdf")
 
 
 # Target Locus 1 (335741-335708 +- 200bp)
-ggplot(loci, aes(x = coord, y = uniq_bc, fill = strand)) +
-  geom_bar(stat = "identity", position = "stack") +
-  geom_rect(aes(xmin=335708, xmax=335741, ymin=-10, ymax=10), fill="black", inherit.aes = FALSE) +
+ggplot(loci, aes(x = coord, y = uniq_bc)) +
+  geom_bar(stat = "identity", position = "stack" , fill = "steelblue") +
+  geom_vline(aes(xintercept=335608), color = "black", linetype = 2) +
+  geom_vline(aes(xintercept=335707), color = "black", linetype = 2) +
+  geom_rect(aes(xmin=335708, xmax=335741, ymin=1, ymax=5), fill="firebrick", color = "black", inherit.aes = FALSE) +
   xlim(c(335500, 335850)) +
+  scale_y_sqrt() +
   xlab("Genome Position (bp)") +
   ylab("Unique Barcodes")
-  
 
+ggsave("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/Output_Figs/4G_hit_loci_site1.pdf")
+
+
+# Target Locus 1 Density Plot
+
+foo <- correct_hits[between(correct_hits$START1,335508, 335707),]
+bar <- foo[!duplicated(foo$barcodes),]
+
+ggplot(bar, aes(x = START)) +
+  xlim(c(335500, 335850)) +
+  geom_histogram(aes(y = ..density..),fill="grey60", binwidth = 1) +
+  stat_density(color = "blue", fill = NA, bw = 4, linetype = 2) +
+  geom_hline(yintercept=0, colour="white", size=1) +
+  geom_rect(aes(xmin=335708, xmax=335741, ymin=0, ymax=0.001), fill="firebrick", color = "black", inherit.aes = FALSE) +
+  scale_y_sqrt()
+
+ggsave("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/Output_Figs/4G_hit_loci_site1_density.pdf")
 
 # Target Locus 2 (750028-750061 +- 200bp)
-ggplot(loci, aes(x = coord, y = uniq_bc, fill = strand)) +
-  geom_bar(stat = "identity", position = "stack") +
-  geom_rect(aes(xmin=750028, xmax=750061, ymin=-10, ymax=10), fill="black", inherit.aes = FALSE) +
+ggplot(loci, aes(x = coord, y = uniq_bc)) +
+  geom_bar(stat = "identity", position = "stack", fill = "steelblue") +
+  geom_vline(aes(xintercept=750062), color = "black", linetype = 2) +
+  geom_vline(aes(xintercept=750162), color = "black", linetype = 2) +
+  geom_rect(aes(xmin=750028, xmax=750061, ymin=1, ymax=5), fill = "firebrick", color="black", inherit.aes = FALSE) +
   xlim(c(749928, 750261)) +
+  scale_y_sqrt() +
   xlab("Genome Position (bp)") +
   ylab("Unique Barcodes")
+
+ggsave("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/Output_Figs/4G_hit_loci_site2.pdf")
+
+
+# Target Locus 2 Density Plot
+
+# foo <- correct_hits[between(correct_hits$START1,335508, 335707),]
+# bar <- foo[!duplicated(foo$barcodes),]
+# 
+# ggplot(bar, aes(x = START)) +
+#   xlim(c(749928, 750261)) +
+#   geom_histogram(aes(y = ..density..),fill="grey60", binwidth = 1) +
+#   stat_density(color = "blue", fill = NA, bw = 4, linetype = 2) +
+#   geom_hline(yintercept=0, colour="white", size=1) +
+#   geom_rect(aes(xmin=335708, xmax=335741, ymin=0, ymax=0.001), fill="firebrick", color = "black", inherit.aes = FALSE) +
+#   scale_y_sqrt()
+
+
+
 
 
 
@@ -117,91 +175,6 @@ ggplot(summary_dat, aes(x = on_targ, y = uniq_bc)) +
   xlab(NULL) +
   ylab("Unique Insertion Barcodes")
   
-
-
-
-
-### VcCas Fwd Read Only
-bc_dat <- fread("../Studies/19_10_21_JD_BR_VCas/VcCas/JD_BR_VcSh_4G.bc", header = T, stringsAsFactors = F)
-hit_dat <- fread("../Studies/19_10_21_JD_BR_VCas/test_mapping/4G_fwdonly_maptest.hits", header = F, stringsAsFactors = F)
-colnames(hit_dat) <- c("genome", "read", "MAPQ1", "NM1", "length", "START1")
-
-bc_dat$read <- sub(" 1:N:0:ATCACG","", bc_dat$read)
-
-merge_dat <- merge(hit_dat, bc_dat, by.x = "read", by.y ="read", all.x = T)
-
-
-e_coli_hits <- subset(merge_dat, genome == "Escherichia_coli_BL21_CP001509.3")
-
-e_coli_hits_filt <- subset(e_coli_hits, MAPQ1 > 0 & NM1 < 5)
-
-loci <- count(e_coli_hits_filt$START1)
-
-loci <- data.frame(pos = loci$x, reads = loci$freq, uniq_bc = NA)
-
-loci$on_targ <- ifelse(between(loci$pos,335441,336008) | between(loci$pos,749728,750361), TRUE, FALSE)
-
-
-for (i in 1:nrow(loci)){
-  
-  tmp_loci <- subset(e_coli_hits_filt, START1 == loci[i,1])
-  tmp_bc_count <- length(unique(tmp_loci$barcodes))
-  
-  loci[i,3] <- tmp_bc_count
-  
-}
-
-# reads vs unique_bc per position
-ggplot(loci, aes(x = log(reads + 1), y = log(uniq_bc + 1))) +
-  geom_point(alpha = 0.5) +
-  stat_smooth()
-
-
-# Full plot
-ggplot(loci, aes(x = pos, y = uniq_bc)) +
-  geom_bar(stat = "identity", color = "blue") +
-  xlab("Genome Position (bp)") +
-  ylab("Unique Barcodes")
-
-
-# Target Locus 1 (335741-335708 +- 300bp)
-ggplot(loci, aes(x = pos, y = uniq_bc)) +
-  geom_bar(stat = "identity", color = "blue") +
-  xlim(c(335441, 336008))
-
-
-# Target Locus 2 (750028-750061 +- 300bp)
-ggplot(loci, aes(x = pos, y = uniq_bc)) +
-  geom_bar(stat = "identity", color = "blue") +
-  xlim(c(749728, 750361))
-
-
-
-
-### Analysis of on (within 300bp of target) vs off target hits
-#all_samples <- list()
-#all_samples[[3]] <- loci
-
-summary_dat <- data.frame()
-sample_names <- c("4G", "5G", "6G")
-
-for (i in 1:length(all_samples)){
-  tmp <- all_samples[[i]]
-  tmp_ag <- aggregate(uniq_bc ~ on_targ, tmp, sum)
-  
-  tmp_ag$sample <- sample_names[i]
-  
-  summary_dat <- rbind(tmp_ag, summary_dat)
-  
-}
-
-ggplot(summary_dat, aes(x = on_targ, y = uniq_bc)) +
-  geom_boxplot(fill = "steelblue") +
-  scale_y_log10() +
-  xlab(NULL) +
-  ylab("Unique Insertion Barcodes")
-
-
 
 
 
@@ -210,8 +183,8 @@ ggplot(summary_dat, aes(x = on_targ, y = uniq_bc)) +
 
 ### ShCas
 
-bc_dat <- fread("../Studies/19_10_21_JD_BR_VCas/ShCas/JD_BR_VcSh_14G.bc", header = T, stringsAsFactors = F)
-hit_dat <- fread("../Studies/19_10_21_JD_BR_VCas/ShCas/JD_BR_VcSh_14G.hits", header = F, stringsAsFactors = F)
+bc_dat <- fread("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/ShCas/JD_BR_VcSh_13G.bc", header = T, stringsAsFactors = F)
+hit_dat <- fread("../Studies/19_10_21_JD_BR_VCas/TnCas_Inserts/ShCas/JD_BR_VcSh_13G.hits", header = F, stringsAsFactors = F)
 colnames(hit_dat) <- c("genome", "read", "MAPQ2", "NM2", "length", "START2")
 
 bc_dat$read <- sub(" 1:N:0:ACAGTG","", bc_dat$read)
@@ -281,3 +254,89 @@ ggplot(summary_dat, aes(x = on_targ, y = uniq_bc)) +
   scale_y_log10() +
   xlab(NULL) +
   ylab("Unique Insertion Barcodes")
+
+
+
+
+
+
+
+### VcCas Fwd Read Only
+# bc_dat <- fread("../Studies/19_10_21_JD_BR_VCas/VcCas/JD_BR_VcSh_4G.bc", header = T, stringsAsFactors = F)
+# hit_dat <- fread("../Studies/19_10_21_JD_BR_VCas/test_mapping/4G_fwdonly_maptest.hits", header = F, stringsAsFactors = F)
+# colnames(hit_dat) <- c("genome", "read", "MAPQ1", "NM1", "length", "START1")
+# 
+# bc_dat$read <- sub(" 1:N:0:ATCACG","", bc_dat$read)
+# 
+# merge_dat <- merge(hit_dat, bc_dat, by.x = "read", by.y ="read", all.x = T)
+# 
+# 
+# e_coli_hits <- subset(merge_dat, genome == "Escherichia_coli_BL21_CP001509.3")
+# 
+# e_coli_hits_filt <- subset(e_coli_hits, MAPQ1 > 0 & NM1 < 5)
+# 
+# loci <- count(e_coli_hits_filt$START1)
+# 
+# loci <- data.frame(pos = loci$x, reads = loci$freq, uniq_bc = NA)
+# 
+# loci$on_targ <- ifelse(between(loci$pos,335441,336008) | between(loci$pos,749728,750361), TRUE, FALSE)
+# 
+# 
+# for (i in 1:nrow(loci)){
+#   
+#   tmp_loci <- subset(e_coli_hits_filt, START1 == loci[i,1])
+#   tmp_bc_count <- length(unique(tmp_loci$barcodes))
+#   
+#   loci[i,3] <- tmp_bc_count
+#   
+# }
+# 
+# # reads vs unique_bc per position
+# ggplot(loci, aes(x = log(reads + 1), y = log(uniq_bc + 1))) +
+#   geom_point(alpha = 0.5) +
+#   stat_smooth()
+# 
+# 
+# # Full plot
+# ggplot(loci, aes(x = pos, y = uniq_bc)) +
+#   geom_bar(stat = "identity", color = "blue") +
+#   xlab("Genome Position (bp)") +
+#   ylab("Unique Barcodes")
+# 
+# 
+# # Target Locus 1 (335741-335708 +- 300bp)
+# ggplot(loci, aes(x = pos, y = uniq_bc)) +
+#   geom_bar(stat = "identity", color = "blue") +
+#   xlim(c(335441, 336008))
+# 
+# 
+# # Target Locus 2 (750028-750061 +- 300bp)
+# ggplot(loci, aes(x = pos, y = uniq_bc)) +
+#   geom_bar(stat = "identity", color = "blue") +
+#   xlim(c(749728, 750361))
+# 
+# 
+# 
+# 
+# ### Analysis of on (within 300bp of target) vs off target hits
+# #all_samples <- list()
+# #all_samples[[3]] <- loci
+# 
+# summary_dat <- data.frame()
+# sample_names <- c("4G", "5G", "6G")
+# 
+# for (i in 1:length(all_samples)){
+#   tmp <- all_samples[[i]]
+#   tmp_ag <- aggregate(uniq_bc ~ on_targ, tmp, sum)
+#   
+#   tmp_ag$sample <- sample_names[i]
+#   
+#   summary_dat <- rbind(tmp_ag, summary_dat)
+#   
+# }
+# 
+# ggplot(summary_dat, aes(x = on_targ, y = uniq_bc)) +
+#   geom_boxplot(fill = "steelblue") +
+#   scale_y_log10() +
+#   xlab(NULL) +
+#   ylab("Unique Insertion Barcodes")

@@ -386,7 +386,7 @@ if (wf == "jm"){
     system(paste0("samtools view -S -b ",batch_file[i,1],".sam > ",batch_file[i,1],".bam; samtools sort ",batch_file[i,1],".bam -o ",batch_file[i,1],".bam.sorted; samtools index ",batch_file[i,1],".bam.sorted"))
 
     # Run read hit stats script
-    system(paste0("python ",scripts,"/bam_read_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
+    system(paste0("python ",scripts,"/bam_se_stats.py /home/sdiamond/mCAFE/Synth_Com/TnCas_db/scaff2bin.txt ", batch_file[i,1],".bam.sorted > ",batch_file[i,1],".hits"))
 
     }
   # 
