@@ -376,7 +376,7 @@ if (wf == "jm"){
     cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
 
     # run bowtie mapping
-    system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_genomes", # hard coded database for now
+    system(paste0("bowtie2 -x /home/sdiamond/mCAFE/Synth_Com/TnCas_db/bt2/All_Genomes", # hard coded database for now
                   " -p 24", # specify bowtie options
                   " -U ",batch_file[i,4],".clean2", # specify fwd reads
                   " -S ",batch_file[i,1],".sam", # specify sam file output

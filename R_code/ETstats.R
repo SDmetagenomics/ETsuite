@@ -20,11 +20,11 @@ if ("ggplot2" %in% installed.packages() == FALSE){
   q(save="no")
 }
 
-# Check ggforce
-if ("ggforce" %in% installed.packages() == FALSE){
-  print("Please install R package ggforce. Program quitting...")
-  q(save="no")
-}
+# # Check ggforce
+# if ("ggforce" %in% installed.packages() == FALSE){
+#   print("Please install R package ggforce. Program quitting...")
+#   q(save="no")
+# }
 
 
 ### Load packages
@@ -168,8 +168,8 @@ if("-C" %in% args){
 
 
 # Load Testing Data
-#batch_file <- read.table("test_data/ETmapper/test_batch.txt", header = F, sep = "\t", stringsAsFactors = F)
-#em_out <- "test_data/ETmapper/full_paired_end_test/"
+# batch_file <- read.table("test_data/ETmapper/test_batch.txt", header = F, sep = "\t", stringsAsFactors = F)
+# em_out <- "test_data/ETmapper/full_paired_end_test/"
 # pe_example <- fread("test_data/ETmapper/paired_end_test/hits/JD_ZZ_2ndcycle_1.hits")
 # se_example <- fread("test_data/ETmapper/single_end_test/hits/JD_ZZ_2ndcycle_1.hits")
 # 
