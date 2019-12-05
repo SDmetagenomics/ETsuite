@@ -87,6 +87,8 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
   q(save="no")
 }
 
+# NOTE: Banner is generated with http://www.bagill.com/ascii-sig.php ; Banner Font
+
 
 ## Mandatory Arguments
 
@@ -257,13 +259,13 @@ if (wf == "jm"){
   ### Determine if reads provided are se or pr end and initalize program
   if(ncol(batch_file) == 3){
     paired_end_data <- FALSE
-    cat("Input Reads Identifed as Single End...Begining Analysis\n\n")
+    cat("\nInput Reads Identifed as Single End...Begining Analysis\n\n")
     cat(" Paired End = FALSE", file = paste0(out_dir,"/summary.txt"), append = T)
   }
   
   if(ncol(batch_file) == 4){
     paired_end_data <- TRUE
-    cat("Input Data Identifed as Paired End...Begining Analysis\n\n")
+    cat("\nInput Data Identifed as Paired End...Begining Analysis\n\n")
     cat(" Paired End = TRUE", file = paste0(out_dir,"/summary.txt"), append = T)
   } 
   
@@ -310,7 +312,7 @@ if (wf == "jm"){
     
       # Run cutadapt command 
       system(paste0("cutadapt -g file:",md, # specify model file
-                    " -O ",mm," -e ",et, # specify trimming params
+                    " -j ",cpu," -O ",mm," -e ",et, # specify trimming params
                     " --discard-untrimmed", # discard read pairs without model
                     " --info-file ",out_dir,"/",batch_file[i,1],".info", # print 
                     " -o ",out_dir,"/",batch_file[i,3],".clean", # fwd output
@@ -368,7 +370,7 @@ if (wf == "jm"){
     
       # merge barcodes to output file and remove sequencing barcode line
       bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
-      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T)
+      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T) # kills anything after space in read name (i.e. 1:0:AGAAC, ect)
     
       # write barcodes out 
       write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
@@ -475,7 +477,7 @@ if (wf == "jm"){
       
       # Run cutadapt command 
       system(paste0("cutadapt -g file:",md, # specify model file
-                    " -O ",mm," -e ",et, # specify trimming params
+                    " -j ",cpu," -O ",mm," -e ",et, # specify trimming params
                     " --discard-untrimmed", # discard read pairs without model
                     " --minimum-length ",rl, # discard read if length < rl bp
                     " --info-file ",out_dir,"/",batch_file[i,1],".info", # print 

@@ -31,7 +31,7 @@ if ("ggplot2" %in% installed.packages() == FALSE){
 suppressMessages(library(data.table, quietly = T))
 suppressMessages(library(dplyr, quietly = T))
 suppressMessages(library(ggplot2, quietly = T))
-suppressMessages(library(ggforce, quietly = T))
+#suppressMessages(library(ggforce, quietly = T))
 
 
 ### Set up path variables for associated scripts and databases
