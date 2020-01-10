@@ -62,7 +62,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
 
     Adapter Filtering Options:
     
-      -ad: Adapter sequence file (Default: db/adap_small.fa)
+      -ad: Adapter sequence file (Default: db/ETseq_2_4_adap.fa)
       -am: Min length of adapter match (Default: 5)
       -qs: Min base quality (Default: 20)
 
@@ -561,7 +561,7 @@ if (wf == "jm"){
                     samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
       
       # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))  #****REMOVE HARDCODE
+      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))
       
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".tmphits"), header = T, stringsAsFactors = F)
@@ -589,14 +589,100 @@ cat("Junction mapping workflow finished successfully :-)\n\n")
 
 
 
+
 ###############
 ############### LITE META-G WORKFLOW
 ###############
 
 
 if (wf == "lm") {
-  print("MetaG workflow not ready yet!")
-  q(save="no")
+
+  ### Create Log File - WORKING!
+  cat(
+    paste0("ETmapper v0.03 Summary    Created: ", date()),"\n\n",
+    "Program Parameters:\n",
+    paste0("Workflow type is: ", wf),"\n",
+    paste0("Total Samples: ",nrow(batch_file)),"\n",
+    file = paste0(out_dir,"/summary.txt"))
+  
+  
+  ### Determine if reads provided are se or pr end and initalize program
+  if(ncol(batch_file) == 3){
+    paired_end_data <- FALSE
+    cat("\nInput Reads Identifed as Single End...Begining Analysis\n\n")
+    cat(" Paired End = FALSE", file = paste0(out_dir,"/summary.txt"), append = T)
+  }
+  
+  if(ncol(batch_file) == 4){
+    paired_end_data <- TRUE
+    cat("\nInput Data Identifed as Paired End...Begining Analysis\n\n")
+    cat(" Paired End = TRUE", file = paste0(out_dir,"/summary.txt"), append = T)
+  } 
+  
+  # If tests fail exit with error
+  if (exists("paired_end_data") == FALSE){
+    cat("ERROR: Batch file not formatted correctly")
+    q(save="no")
+  }
+  
+  
+  
+  
+  #### PAIRED END BRANCH ####
+  
+  
+  ### Begin Mapping for Lite Metagenomics Workflow (PAIRED END)
+  if(paired_end_data == TRUE){
+    
+    ### Run adapter/flanking sequence trimming AND Quality Score Filtering
+    for (i in 1:nrow(batch_file)){
+      
+      # Indicate what program is doing
+      cat(paste0("\nTrimming Adapters, Qscore Filter, Size Filter for: ",batch_file[i,1],"\n"))
+      
+      # run cutadapt command
+      system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
+                    " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
+                    " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
+                    " --pair-filter=both", # At least 1 read must be >= rl
+                    " -o ",out_dir,"/",batch_file[i,3],".trim", # fwd output
+                    " -p ",out_dir,"/",batch_file[i,4],".trim", # rev output
+                    " ",rd,batch_file[i,3], # fwd read
+                    " ",rd,batch_file[i,4], # rev read
+                    " > ",out_dir,"/",batch_file[i,1],".trim.log")) # log files
+    
+    }
+    
+    
+    # Run bowtie mapping for loop for PAIRED END mapping
+    for (i in 1:nrow(batch_file)){
+      
+      # Indicate what program is doing
+      cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
+      
+      # run bowtie mapping
+      system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
+                    " -p ",cpu," -X ",isl, # specify bowtie options
+                    " -1 ",out_dir,"/",batch_file[i,3],".trim", # specify fwd reads
+                    " -2 ",out_dir,"/",batch_file[i,4],".trim", # specify rev reads
+                    " -S ",out_dir,"/",batch_file[i,1],".sam", # specify sam file output
+                    " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
+      
+      # Convert SAM to BAM format with sorting and indexing
+      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
+                    samtools sort ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
+                    samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
+      
+      # Run read hit stats script
+      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".mghits"))
+      
+      # Write completed task
+      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".mghits")))
+      
+    }
+    
+  }
+  
 }
 
 
