@@ -47,8 +47,12 @@ def read_bam(scaf2bin, bam):
 
                                     read_info[read.query_name] = {"scaf": scaf, 'is_read1': read.is_read1, 'strand': strand, "mapq": read.mapping_quality, "NM": read.get_tag("NM"), 
                                     "len": len(read.get_reference_positions()), "end": read.get_reference_positions()[-1], "start": read.get_reference_positions()[0],
-                                    'good_pos':good_pos, 'true_nm': true_nm, 'clipped': clipped}
+                                    'good_pos':good_pos, 'true_nm': true_nm, 'clipped': clipped, 'ref_positions': read.get_reference_positions()}
                             else:
+                                    if scaf == read_info[read.query_name]['scaf']:
+                                        read_total_cov = len(set(read.get_reference_positions() + read_info[read.query_name]['ref_positions']))
+                                    else:
+                                        read_total_cov = len(read.get_reference_positions()) + len(read_info[read.query_name]['ref_positions'])
                                     found_both.add(read.query_name)
                                     if read.is_read1:
                                             qseq = read.query_sequence
@@ -89,6 +93,7 @@ def read_bam(scaf2bin, bam):
                                             reads['QUAL2'].append(read_info[read.query_name]['good_pos'])
                                             reads['QUALNM2'].append(read_info[read.query_name]['true_nm'])
                                             reads['CLIPPED2'].append(read_info[read.query_name]['clipped'])
+                                            reads['TOTAL_BP'].append(read_total_cov)
 
                                     elif read.is_read2:
                                             qseq = read.query_sequence
@@ -130,7 +135,7 @@ def read_bam(scaf2bin, bam):
                                             reads['QUAL1'].append(read_info[read.query_name]['good_pos'])
                                             reads['QUALNM1'].append(read_info[read.query_name]['true_nm'])
                                             reads['CLIPPED1'].append(read_info[read.query_name]['clipped'])
-
+                                            reads['TOTAL_BP'].append(read_total_cov)
 
 
     for read in read_info:
@@ -161,6 +166,7 @@ def read_bam(scaf2bin, bam):
                 reads['QUAL2'].append('NA')
                 reads['QUALNM2'].append('NA')
                 reads['CLIPPED2'].append('NA')
+                reads['TOTAL_BP'].append(len(read_info[read]['ref_positions']))
 
             else:
                 reads['Read'].append(read)
@@ -187,6 +193,7 @@ def read_bam(scaf2bin, bam):
                 reads['QUAL1'].append('NA')
                 reads['QUALNM1'].append('NA')
                 reads['CLIPPED1'].append('NA')
+                reads['TOTAL_BP'].append(len(read_info[read]['ref_positions']))
 
     pd.DataFrame(reads).to_csv(sys.stdout, index=False, sep="\t")
     return True
