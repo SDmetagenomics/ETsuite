@@ -279,7 +279,7 @@ pull.run.stats <- function(){
       
       # Say what is happening
       cat(paste0("\nAggregating ETmapper stats for: ",batch_file[i,1],"\n"))
-      cat(nrow(batch_file))
+      cat(i)
       
       # Pull stats from logs
       if(paired_end_data == TRUE){
@@ -288,6 +288,10 @@ pull.run.stats <- function(){
         R2_adap <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
         Good_Keep <- as.numeric(system(paste0("grep 'Pairs written:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
         Raw_Map <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T))
+        
+        cat(Total_Reads)
+        cat(Good_Keep)
+        cat(Raw_Map)
           
         lm_workflow_stats[i,5] <- Total_Reads
         lm_workflow_stats[i,6] <- R1_adap
