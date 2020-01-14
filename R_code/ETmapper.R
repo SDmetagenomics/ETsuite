@@ -202,26 +202,53 @@ dir.create(out_dir, recursive = T)
 ## Function 1: Clean up files and make output structure
 clean.up <- function(){
 
-  # say waht is happening
-  cat("Cleaning Up...\n")
+  # Clean jm Workflow
+  if (wf == "jm"){
   
-  # remove un-needed files
-  system(paste0("rm ",out_dir,"/*.tmpbam ",out_dir,"/*.info ",out_dir,"/*.sam ",out_dir,"/*.tmphits"))
+    # say waht is happening
+    cat("Cleaning Up...\n")
+  
+    # remove un-needed files
+    system(paste0("rm ",out_dir,"/*.tmpbam ",out_dir,"/*.info ",out_dir,"/*.sam ",out_dir,"/*.tmphits"))
 
-  # create subdirectories
-  dir.create(paste0(out_dir,"/logs"), recursive = T)
-  dir.create(paste0(out_dir,"/hits"), recursive = T)
-  dir.create(paste0(out_dir,"/map"), recursive = T)
-  dir.create(paste0(out_dir,"/raw"), recursive = T)
+    # create subdirectories
+    dir.create(paste0(out_dir,"/logs"), recursive = T)
+    dir.create(paste0(out_dir,"/hits"), recursive = T)
+    dir.create(paste0(out_dir,"/map"), recursive = T)
+    dir.create(paste0(out_dir,"/raw"), recursive = T)
 
-  # move files to right places
-  system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
-  system(paste0("mv ",out_dir,"/*.hits ",out_dir,"/hits/"))
-  system(paste0("mv ",out_dir,"/*.sorted.bam ",out_dir,"/*.sorted.bam.bai ",out_dir,"/map/"))
-  system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.clean2 ",out_dir,"/*.bc ",out_dir,"/*info.filt ",out_dir,"/raw/"), ignore.stderr = T) 
+    # move files to right places
+    system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
+    system(paste0("mv ",out_dir,"/*.hits ",out_dir,"/hits/"))
+    system(paste0("mv ",out_dir,"/*.sorted.bam ",out_dir,"/*.sorted.bam.bai ",out_dir,"/map/"))
+    system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.clean2 ",out_dir,"/*.bc ",out_dir,"/*info.filt ",out_dir,"/raw/"), ignore.stderr = T) 
 
+  }
+  
+  # Clean lm Workflow
+  if (wf == "lm"){
+    
+    # say waht is happening
+    cat("Cleaning Up...\n")
+    
+    # remove un-needed files
+    system(paste0("rm ",out_dir,"/*.tmpbam ",out_dir,"/*.sam "))
+    
+    # create subdirectories
+    dir.create(paste0(out_dir,"/logs"), recursive = T)
+    dir.create(paste0(out_dir,"/hits"), recursive = T)
+    dir.create(paste0(out_dir,"/map"), recursive = T)
+    dir.create(paste0(out_dir,"/raw"), recursive = T)
+    
+    # move files to right places
+    system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
+    system(paste0("mv ",out_dir,"/*.mghits ",out_dir,"/hits/"))
+    system(paste0("mv ",out_dir,"/*.sorted.bam ",out_dir,"/*.sorted.bam.bai ",out_dir,"/map/"))
+    system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/raw/"), ignore.stderr = T) 
+    
+  }
+  
 }
-
 
 
 #### END FUNCTION DEFINE ####
@@ -243,6 +270,10 @@ clean.up <- function(){
 
 if (wf == "jm"){
   
+  ### Create Correct Dir Structure
+  
+  out_dir <- paste0(out_dir,"/jm")
+  dir.create(out_dir, recursive = T)
   
   
   ### Create Log File - WORKING!
@@ -582,7 +613,7 @@ if (wf == "jm"){
 
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
-cat("Junction mapping workflow finished successfully :-)\n\n")
+  cat("Junction mapping workflow finished successfully :-)\n\n")
 
 } ### End Junction Mapping Workflow
 
@@ -597,6 +628,12 @@ cat("Junction mapping workflow finished successfully :-)\n\n")
 
 if (wf == "lm") {
 
+  ### Create Correct Dir Structure
+  
+  out_dir <- paste0(out_dir,"/lm")
+  dir.create(out_dir, recursive = T)
+  
+  
   ### Create Log File - WORKING!
   cat(
     paste0("ETmapper v0.03 Summary    Created: ", date()),"\n\n",
@@ -681,7 +718,12 @@ if (wf == "lm") {
       
     }
     
+    ### Clean up files and create out_dir structure
+    clean.up()
+      
   }
+  
+  cat("Lite metagenomics workflow finished successfully :-)\n\n")
   
 }
 
