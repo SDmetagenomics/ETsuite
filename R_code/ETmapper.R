@@ -206,7 +206,7 @@ clean.up <- function(){
   if (wf == "jm"){
   
     # say waht is happening
-    cat("Cleaning Up...\n")
+    cat("\nCleaning Up...\n")
   
     # remove un-needed files
     system(paste0("rm ",out_dir,"/*.tmpbam ",out_dir,"/*.info ",out_dir,"/*.sam ",out_dir,"/*.tmphits"))
@@ -229,7 +229,7 @@ clean.up <- function(){
   if (wf == "lm"){
     
     # say waht is happening
-    cat("Cleaning Up...\n")
+    cat("\nCleaning Up...\n")
     
     # remove un-needed files
     system(paste0("rm ",out_dir,"/*.tmpbam ",out_dir,"/*.sam "))
@@ -250,6 +250,70 @@ clean.up <- function(){
   
 }
 
+
+## Function 2: Pull run statistics from log files
+pull.run.stats <- function(){
+  
+  # Pull stats jm workflow
+  if (wf == "jm"){
+  
+  } # END JM BRANCH
+  
+  # Pull stats lm workflow
+  if (wf == "lm"){
+    
+    # Create dataframe to hold output
+    lm_workflow_stats <- data.frame(batch_file,
+                                    Total_Reads = 0,
+                                    R1_adap = 0,
+                                    R1_adap_frac = 0,
+                                    R2_adap = 0,
+                                    R2_adap_frac = 0,
+                                    Good_Keep = 0,
+                                    Good_Keep_Frac = 0,
+                                    Raw_Map = 0,
+                                    Raw_Map_Frac = 0)
+    
+    # Pull stats from trimming logs
+    for (i in 1:nrow(batch_file)){
+      
+      # Say what is happening
+      cat(paste0("\nAggregating ETmapper stats for: ",batch_file[i,1],"\n"))
+      
+      # Pull stats from logs
+      if(paired_end_data == TRUE){
+        lm_workflow_stats[i,5] <- system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,6] <- system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,8] <- system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,10] <- system(paste0("grep 'Pairs written:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,12] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T)
+      }
+      
+      if(paired_end_data == FALSE){
+        lm_workflow_stats[i,5] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,6] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,8] <- NA
+        lm_workflow_stats[i,10] <- system(paste0("grep 'Reads written:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,12] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T)
+      }
+    
+    }
+    
+    # Calculate fraction columns
+    lm_workflow_stats$R1_adap_frac <- lm_workflow_stats$R1_adap / lm_workflow_stats$Total_Reads
+    lm_workflow_stats$R2_adap_frac <- lm_workflow_stats$R2_adap / lm_workflow_stats$Total_Reads
+    lm_workflow_stats$Good_Keep_Frac <- lm_workflow_stats$Good_Keep / lm_workflow_stats$Total_Reads
+    lm_workflow_stats$Raw_Map_Frac <- lm_workflow_stats$Raw_Map / lm_workflow_stats$Total_Reads
+    
+    # Output data.frame
+    lm_workflow_stats
+    
+  } # END LM BRANCH
+    
+}
+
+
+## Function X
 
 #### END FUNCTION DEFINE ####
 
@@ -720,7 +784,12 @@ if (wf == "lm") {
     
     ### Clean up files and create out_dir structure
     clean.up()
-      
+    
+    
+    ### Build Metadata File
+    lm_workflow_stats <- pull.run.stats()
+    write.table(lm_workflow_stats, paste0(out_dir,"/lm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
+    
   }
   
   cat("Lite metagenomics workflow finished successfully :-)\n\n")
