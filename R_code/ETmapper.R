@@ -287,17 +287,17 @@ pull.run.stats <- function(){
         R1_adap <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
         R2_adap <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
         Good_Keep <- as.numeric(system(paste0("grep 'Pairs written:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
-        Raw_Map <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T))
+        #Raw_Map <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T))
         
         cat(Total_Reads)
         cat(Good_Keep)
-        cat(Raw_Map)
+        #cat(Raw_Map)
           
         lm_workflow_stats[i,5] <- Total_Reads
         lm_workflow_stats[i,6] <- R1_adap
         lm_workflow_stats[i,8] <- R2_adap
         lm_workflow_stats[i,10] <- Good_Keep
-        lm_workflow_stats[i,12] <- Raw_Map
+        #lm_workflow_stats[i,12] <- Raw_Map
         print(lm_workflow_stats)
       }
       
@@ -315,7 +315,7 @@ pull.run.stats <- function(){
     lm_workflow_stats$R1_adap_frac <- lm_workflow_stats$R1_adap / lm_workflow_stats$Total_Reads
     lm_workflow_stats$R2_adap_frac <- lm_workflow_stats$R2_adap / lm_workflow_stats$Total_Reads
     lm_workflow_stats$Good_Keep_Frac <- lm_workflow_stats$Good_Keep / lm_workflow_stats$Total_Reads
-    lm_workflow_stats$Raw_Map_Frac <- lm_workflow_stats$Raw_Map / lm_workflow_stats$Total_Reads
+    #lm_workflow_stats$Raw_Map_Frac <- lm_workflow_stats$Raw_Map / lm_workflow_stats$Total_Reads
     
     # Output data.frame
     lm_workflow_stats
