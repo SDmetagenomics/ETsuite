@@ -282,18 +282,18 @@ pull.run.stats <- function(){
       
       # Pull stats from logs
       if(paired_end_data == TRUE){
-        lm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
-        lm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
-        lm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
-        lm_workflow_stats[i,10] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
+        lm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        lm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        lm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        lm_workflow_stats[i,10] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         lm_workflow_stats[i,12] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T))
       }
       
       if(paired_end_data == FALSE){
-        lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//'"), intern = T)
-        lm_workflow_stats[i,5] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
+        lm_workflow_stats[i,5] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
         lm_workflow_stats[i,7] <- NA
-        lm_workflow_stats[i,9] <- system(paste0("grep 'Reads written' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
+        lm_workflow_stats[i,9] <- system(paste0("grep 'Reads written' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T)
         lm_workflow_stats[i,11] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T)
       }
     
