@@ -282,13 +282,14 @@ pull.run.stats <- function(){
       
       # Pull stats from logs
       if(paired_end_data == TRUE){
-        #lm_workflow_stats[i,5] <- system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
+        #lm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
         cat(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'\n"))
-        cat(is.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)))
-        lm_workflow_stats[i,6] <- system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
-        lm_workflow_stats[i,8] <- system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
-        lm_workflow_stats[i,10] <- system(paste0("grep 'Pairs written:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T)
-        lm_workflow_stats[i,12] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T)
+        foo <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
+        cat(foo)
+        lm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
+        lm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
+        lm_workflow_stats[i,10] <- as.numeric(system(paste0("grep 'Pairs written:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//'"), intern = T))
+        lm_workflow_stats[i,12] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T))
       }
       
       if(paired_end_data == FALSE){
