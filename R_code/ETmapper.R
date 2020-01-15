@@ -766,7 +766,7 @@ if (wf == "jm"){
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
   cat("Junction mapping workflow finished successfully :-)\n\n")
-  warnings() 
+  cat(warnings()) 
 } ### End Junction Mapping Workflow
 
 
