@@ -79,7 +79,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       
     Program Control:
     
-      -o: Output directory (Will be created if not specified)
+      -o: Output directory (Default: ET_mapper)
       -cpu: Number of cores (Default: 1)
       -h: Bring up this help menu\n\n")
   
@@ -428,22 +428,23 @@ if (wf == "jm"){
   "Program Parameters:\n",
   paste0("Workflow type is: ", wf),"\n",
   paste0("Total Samples: ",nrow(batch_file)),"\n",
-  paste0("Adapter Trim DB: ", ad,"\n"),
-  paste0("Model DB: ", md,"\n"),
-  file = paste0(out_dir,"/summary.txt"))
+  paste0("Adapter Trim File: ", ad,"\n"),
+  paste0("Model File: ", md,"\n"),
+  paste0("Genome Database: ", gd,"\n"),
+  file = paste0(out_dir,"/run_log.txt"))
   
   
   ### Determine if reads provided are se or pr end and initalize program
   if(ncol(batch_file) == 3){
     paired_end_data <- FALSE
     cat("\nInput Reads Identifed as Single End...Begining Analysis\n\n")
-    cat(" Paired End = FALSE", file = paste0(out_dir,"/summary.txt"), append = T)
+    cat(" Paired End = FALSE", file = paste0(out_dir,"/run_log.txt"), append = T)
   }
   
   if(ncol(batch_file) == 4){
     paired_end_data <- TRUE
     cat("\nInput Data Identifed as Paired End...Begining Analysis\n\n")
-    cat(" Paired End = TRUE", file = paste0(out_dir,"/summary.txt"), append = T)
+    cat(" Paired End = TRUE", file = paste0(out_dir,"/run_log.txt"), append = T)
   } 
   
   # If tests fail exit with error
@@ -792,20 +793,20 @@ if (wf == "lm") {
     "Program Parameters:\n",
     paste0("Workflow type is: ", wf),"\n",
     paste0("Total Samples: ",nrow(batch_file)),"\n",
-    file = paste0(out_dir,"/summary.txt"))
+    file = paste0(out_dir,"/run_log.txt"))
   
   
   ### Determine if reads provided are se or pr end and initalize program
   if(ncol(batch_file) == 3){
     paired_end_data <- FALSE
     cat("\nInput Reads Identifed as Single End...Begining Analysis\n\n")
-    cat(" Paired End = FALSE", file = paste0(out_dir,"/summary.txt"), append = T)
+    cat(" Paired End = FALSE", file = paste0(out_dir,"/run_log.txt"), append = T)
   }
   
   if(ncol(batch_file) == 4){
     paired_end_data <- TRUE
     cat("\nInput Data Identifed as Paired End...Begining Analysis\n\n")
-    cat(" Paired End = TRUE", file = paste0(out_dir,"/summary.txt"), append = T)
+    cat(" Paired End = TRUE", file = paste0(out_dir,"/run_log.txt"), append = T)
   } 
   
   # If tests fail exit with error
