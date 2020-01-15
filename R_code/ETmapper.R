@@ -335,7 +335,7 @@ pull.run.stats <- function(){
     print(jm_workflow_stats)
     
     # Output data.frame
-    jm_workflow_stats
+    return(jm_workflow_stats)
     
   } # END JM BRANCH
   
@@ -388,7 +388,7 @@ pull.run.stats <- function(){
     lm_workflow_stats$Raw_Map_Frac <- lm_workflow_stats$Raw_Map / lm_workflow_stats$Total_Reads
     
     # Output data.frame
-    lm_workflow_stats
+    return(lm_workflow_stats)
     
   } # END LM BRANCH
     
