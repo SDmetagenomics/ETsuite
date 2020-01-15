@@ -332,6 +332,8 @@ pull.run.stats <- function(){
     jm_workflow_stats$Good_Keep_Frac <- jm_workflow_stats$Good_Keep / jm_workflow_stats$Total_Reads
     jm_workflow_stats$Raw_Map_Frac <- jm_workflow_stats$Raw_Map / jm_workflow_stats$Total_Reads
     
+    print(jm_workflow_stats)
+    
     # Output data.frame
     jm_workflow_stats
     
