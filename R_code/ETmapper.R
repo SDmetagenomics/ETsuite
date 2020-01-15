@@ -258,21 +258,21 @@ pull.run.stats <- function(){
   if (wf == "jm"){
     
     
-    # make function to count Tn-primers
-    count.primer <- function(){
-      
-      # make vector to hold total Tn-primer matches
-      primer_counts <- c(0)
-      
-      # loop through possible Tn-primers in raw Fwd reads, return counts for each, and add to primer_coutns vector
-      for (j in 1:length(bc_flank)){
-        tmp_counts <- as.numeric(system(paste0("grep -c '",bc_flank[j],"' ",rd,batch_file[i,3]), intern = T))
-        primer_counts <- primer_counts + tmp_counts
-      }
-      
-      # return primer counts
-      primer_counts
-    }
+    # # make function to count Tn-primers
+    # count.primer <- function(){
+    #   
+    #   # make vector to hold total Tn-primer matches
+    #   primer_counts <- c(0)
+    #   
+    #   # loop through possible Tn-primers in raw Fwd reads, return counts for each, and add to primer_coutns vector
+    #   for (j in 1:length(bc_flank)){
+    #     tmp_counts <- as.numeric(system(paste0("grep -c '",bc_flank[j],"' ",rd,batch_file[i,3]), intern = T))
+    #     primer_counts <- primer_counts + tmp_counts
+    #   }
+    #   
+    #   # return primer counts
+    #   primer_counts
+    # }
     
     
     # Create dataframe to hold output
@@ -293,6 +293,7 @@ pull.run.stats <- function(){
                                     Raw_Map = 0, #18,17
                                     Raw_Map_Frac = 0)
     
+    print(jm_workflow_stats)
     # Pull stats from jm trimming logs
     for (i in 1:nrow(batch_file)){
       
@@ -310,7 +311,7 @@ pull.run.stats <- function(){
         jm_workflow_stats[i,16] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,18] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".hits | wc -l"), intern = T))
       }
-      
+      print(jm_workflow_stats)
       ### NOT FUNCTIONAL YET
       # if(paired_end_data == FALSE){
       #   lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
@@ -618,6 +619,7 @@ if (wf == "jm"){
     
     ### Build Metadata File
     jm_workflow_stats <- pull.run.stats()
+    print(jm_workflow_stats)
     write.table(jm_workflow_stats, paste0(out_dir,"/jm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
     
   } ### END Trimming / Mapping Steps of Junction Mapping Workflow (PAIRED END)
