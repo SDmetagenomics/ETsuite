@@ -304,7 +304,7 @@ pull.run.stats <- function(){
         jm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        jm_workflow_stats[i,10] <- count.primer()
+        #jm_workflow_stats[i,10] <- count.primer()
         jm_workflow_stats[i,12] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,14] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,16] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
@@ -762,7 +762,7 @@ if (wf == "jm"){
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
   cat("Junction mapping workflow finished successfully :-)\n\n")
-
+  warnings() 
 } ### End Junction Mapping Workflow
 
 
