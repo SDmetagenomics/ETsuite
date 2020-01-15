@@ -256,8 +256,86 @@ pull.run.stats <- function(){
   
   # Pull stats jm workflow
   if (wf == "jm"){
-  
+    
+    
+    # make function to count Tn-primers
+    count.primer <- function(){
+      
+      # make vector to hold total Tn-primer matches
+      primer_counts <- c(0)
+      
+      # loop through possible Tn-primers in raw Fwd reads, return counts for each, and add to primer_coutns vector
+      for (j in 1:length(bc_flank)){
+        tmp_counts <- as.numeric(system(paste0("grep -c '",bc_flank[j],"' ",rd,batch_file[i,3]), intern = T))
+        primer_counts <- primer_counts + tmp_counts
+      }
+      
+      # return primer counts
+      primer_counts
+    }
+    
+    
+    # Create dataframe to hold output
+    jm_workflow_stats <- data.frame(batch_file,
+                                    Total_Reads = 0, #5,4
+                                    R1_adap = 0, #6,5
+                                    R1_adap_frac = 0,
+                                    R2_adap = 0, #8,7
+                                    R2_adap_frac = 0,
+                                    Tn_Primer = 0, #10,9
+                                    Tn_Primer_Frac = 0,
+                                    Model_Keep = 0, #12,11
+                                    Model_Keep_Frac = 0,
+                                    R2_Model = 0, #14,13
+                                    R2_Model_Frac = 0,
+                                    Good_Keep = 0, #16,15
+                                    Good_Keep_Frac = 0,
+                                    Raw_Map = 0, #18,17
+                                    Raw_Map_Frac = 0)
+    
+    # Pull stats from jm trimming logs
+    for (i in 1:nrow(batch_file)){
+      
+      # Say what is happening
+      cat(paste0("\nAggregating ETmapper stats for: ",batch_file[i,1],"\n"))
+      
+      # Pull stats from logs
+      if(paired_end_data == TRUE){
+        jm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,10] <- count.primer()
+        jm_workflow_stats[i,12] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,14] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,16] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,18] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".hits | wc -l"), intern = T))
+      }
+      
+      ### NOT FUNCTIONAL YET
+      # if(paired_end_data == FALSE){
+      #   lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
+      #   lm_workflow_stats[i,5] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
+      #   lm_workflow_stats[i,7] <- NA
+      #   lm_workflow_stats[i,9] <- system(paste0("grep 'Reads written' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T)
+      #   lm_workflow_stats[i,11] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T)
+      # }
+      
+    }
+    
+    # Calculate fraction columns
+    jm_workflow_stats$R1_adap_frac <- jm_workflow_stats$R1_adap / jm_workflow_stats$Total_Reads
+    jm_workflow_stats$R2_adap_frac <- jm_workflow_stats$R2_adap / jm_workflow_stats$Total_Reads
+    jm_workflow_stats$Tn_Primer_Frac <- jm_workflow_stats$Tn_Primer / jm_workflow_stats$Total_Reads
+    jm_workflow_stats$Model_Keep_Frac <- jm_workflow_stats$Model_Keep / jm_workflow_stats$Total_Reads
+    jm_workflow_stats$R2_Model_Frac <- jm_workflow_stats$R2_Model / jm_workflow_stats$Model_Keep
+    jm_workflow_stats$Good_Keep_Frac <- jm_workflow_stats$Good_Keep / jm_workflow_stats$Total_Reads
+    jm_workflow_stats$Raw_Map_Frac <- jm_workflow_stats$Raw_Map / jm_workflow_stats$Total_Reads
+    
+    # Output data.frame
+    jm_workflow_stats
+    
   } # END JM BRANCH
+  
   
   # Pull stats lm workflow
   if (wf == "lm"){
@@ -289,6 +367,7 @@ pull.run.stats <- function(){
         lm_workflow_stats[i,12] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T))
       }
       
+      ### STILL UNTESTED
       if(paired_end_data == FALSE){
         lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
         lm_workflow_stats[i,5] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
@@ -535,6 +614,11 @@ if (wf == "jm"){
 
     ### Clean up files and create out_dir structure
     clean.up()
+    
+    
+    ### Build Metadata File
+    jm_workflow_stats <- pull.run.stats()
+    write.table(jm_workflow_stats, paste0(out_dir,"/jm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
     
   } ### END Trimming / Mapping Steps of Junction Mapping Workflow (PAIRED END)
   
