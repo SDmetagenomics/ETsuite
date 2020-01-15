@@ -258,21 +258,21 @@ pull.run.stats <- function(){
   if (wf == "jm"){
     
     
-    # # make function to count Tn-primers
-    # count.primer <- function(){
-    #   
-    #   # make vector to hold total Tn-primer matches
-    #   primer_counts <- c(0)
-    #   
-    #   # loop through possible Tn-primers in raw Fwd reads, return counts for each, and add to primer_coutns vector
-    #   for (j in 1:length(bc_flank)){
-    #     tmp_counts <- as.numeric(system(paste0("grep -c '",bc_flank[j],"' ",rd,batch_file[i,3]), intern = T))
-    #     primer_counts <- primer_counts + tmp_counts
-    #   }
-    #   
-    #   # return primer counts
-    #   primer_counts
-    # }
+    # make function to count Tn-primers
+    count.primer <- function(){
+
+      # make vector to hold total Tn-primer matches
+      primer_counts <- c(0)
+
+      # loop through possible Tn-primers in raw Fwd reads, return counts for each, and add to primer_coutns vector
+      for (j in 1:length(bc_flank)){
+        tmp_counts <- as.numeric(system(paste0("grep -c '",bc_flank[j],"' ",rd,batch_file[i,3]), intern = T))
+        primer_counts <- primer_counts + tmp_counts
+      }
+
+      # return primer counts
+      primer_counts
+    }
     
     
     # Create dataframe to hold output
@@ -305,7 +305,7 @@ pull.run.stats <- function(){
         jm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        #jm_workflow_stats[i,10] <- count.primer()
+        jm_workflow_stats[i,10] <- count.primer()
         jm_workflow_stats[i,12] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,14] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,16] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
