@@ -293,7 +293,6 @@ pull.run.stats <- function(){
                                     Raw_Map = 0, #18,17
                                     Raw_Map_Frac = 0)
     
-    print(jm_workflow_stats)
     # Pull stats from jm trimming logs
     for (i in 1:nrow(batch_file)){
       
@@ -311,15 +310,17 @@ pull.run.stats <- function(){
         jm_workflow_stats[i,16] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file[i,1],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,18] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".hits | wc -l"), intern = T))
       }
-      print(jm_workflow_stats)
-      ### NOT FUNCTIONAL YET
-      # if(paired_end_data == FALSE){
-      #   lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
-      #   lm_workflow_stats[i,5] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
-      #   lm_workflow_stats[i,7] <- NA
-      #   lm_workflow_stats[i,9] <- system(paste0("grep 'Reads written' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T)
-      #   lm_workflow_stats[i,11] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".mghits | wc -l"), intern = T)
-      # }
+
+       if(paired_end_data == FALSE){
+         lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T) # Total Reads
+         lm_workflow_stats[i,5] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T) # R1_adap
+         lm_workflow_stats[i,7] <- NA # R2_adap
+         jm_workflow_stats[i,9] <- count.primer() #Tn_Primer
+         lm_workflow_stats[i,11] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file[i,1],".clean.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T) #Model_Keep
+         lm_workflow_stats[i,13] <- NA # R2_model
+         lm_workflow_stats[i,15] <- system(paste0("grep 'Reads written' ",out_dir,"/logs/",batch_file[i,1],".clean.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T) #Good_Keep
+         lm_workflow_stats[i,17] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".hits | wc -l"), intern = T) #Raw_map 
+       }
       
     }
     
@@ -331,8 +332,6 @@ pull.run.stats <- function(){
     jm_workflow_stats$R2_Model_Frac <- jm_workflow_stats$R2_Model / jm_workflow_stats$Model_Keep
     jm_workflow_stats$Good_Keep_Frac <- jm_workflow_stats$Good_Keep / jm_workflow_stats$Total_Reads
     jm_workflow_stats$Raw_Map_Frac <- jm_workflow_stats$Raw_Map / jm_workflow_stats$Total_Reads
-    
-    print(jm_workflow_stats)
     
     # Output data.frame
     return(jm_workflow_stats)
@@ -622,7 +621,6 @@ if (wf == "jm"){
     
     ### Build Metadata File
     jm_workflow_stats <- pull.run.stats()
-    print(jm_workflow_stats)
     write.table(jm_workflow_stats, paste0(out_dir,"/jm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
     
   } ### END Trimming / Mapping Steps of Junction Mapping Workflow (PAIRED END)
@@ -763,7 +761,13 @@ if (wf == "jm"){
     
     ### Clean up files and create out_dir structure
     clean.up()
-
+    
+    
+    ### Build Metadata File
+    jm_workflow_stats <- pull.run.stats()
+    write.table(jm_workflow_stats, paste0(out_dir,"/jm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
+    
+    
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
   cat("Junction mapping workflow finished successfully :-)\n\n")
