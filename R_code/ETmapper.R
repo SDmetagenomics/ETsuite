@@ -321,7 +321,7 @@ pull.run.stats <- function(){
          jm_workflow_stats[i,15] <- system(paste0("grep 'Reads written' ",out_dir,"/logs/",batch_file[i,1],".clean.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T) #Good_Keep
          jm_workflow_stats[i,17] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file[i,1],".hits | wc -l"), intern = T) #Raw_map 
        }
-      cat(jm_workflow_stats)
+      print(jm_workflow_stats)
       
     }
     
