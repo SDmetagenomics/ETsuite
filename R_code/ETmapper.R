@@ -446,9 +446,10 @@ find.bc <- function(){
     # write barcodes out 
     write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
     
-    # return bc_flank
-    return(bc_flank)
   }
+  
+  # return bc_flank
+  return(bc_flank)
 }
 
 ## Function X
