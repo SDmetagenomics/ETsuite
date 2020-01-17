@@ -394,6 +394,63 @@ pull.run.stats <- function(){
 }
 
 
+## Function 3: Identify Barcodes
+find.bc <- function(){
+  
+  # Identify flanking region to use as barcode query
+  bc_flank <- system(paste0("grep -o \"^NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
+  bc_flank <- unique(bc_flank)
+  
+  for (i in 1:nrow(batch_file)){
+    
+    # Indicate what program is doing
+    cat(paste0("\nFinding Barcodes for: ",batch_file[i,1],"\n"))
+    
+    # Filter cutadapt info file for reads with model
+    system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file[i,1],".info > ",out_dir,"/",batch_file[i,1],".info.filt"))
+    
+    # pull filtered model hit file
+    ca_info <- fread(paste0(out_dir,"/",batch_file[i,1],".info.filt"), header = F)
+    
+    # create barcode output file
+    bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
+    
+    # create tmp barcode storage data frame
+    bc_tmp_store <- data.frame()
+    
+    # loop over possible barcode flanking sequences 
+    for (j in 1:length(bc_flank)){
+      
+      # parse ca_info for those with exact primer match
+      bc_flank_i_matches <- ca_info[grep(bc_flank[j], ca_info$V6),c(1,6)]
+      
+      # skip iteration if no flank sequence match
+      if(nrow(bc_flank_i_matches) == 0){
+        next
+      }
+      
+      # Find upstream 20bp of target sequence and sub out target for nothing
+      matches <- regexpr(paste0(bc_flank[j],".{0,20}"), bc_flank_i_matches$V6, perl = T)
+      bc_flank_i_matches$barcodes <- sub(bc_flank[j], "", regmatches(bc_flank_i_matches$V6, matches))
+      
+      # Create final data frame w/ column for flank and match and cbind to outupt
+      bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2], flank_seq = bc_flank[j])
+      bc_tmp_store <- rbind(bc_tmp_store, bc_flank_i_matches)
+      
+    }
+    
+    # merge barcodes to output file and remove sequencing barcode line
+    bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
+    bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T) # kills anything after space in read name (i.e. 1:0:AGAAC, ect)
+    
+    # write barcodes out 
+    write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
+    
+    # return bc_flank
+    return(bc_flank)
+  }
+}
+
 ## Function X
 
 #### END FUNCTION DEFINE ####
@@ -502,57 +559,7 @@ if (wf == "jm"){
   
   
     ### Identifying barcodes and creating barcode db file
-  
-    # Identify flanking region to use as barcode query
-    bc_flank <- system(paste0("grep -o \"NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
-    bc_flank <- unique(bc_flank)
-  
-    for (i in 1:nrow(batch_file)){
-  
-      # Indicate what program is doing
-      cat(paste0("\nFinding Barcodes for: ",batch_file[i,1],"\n"))
-    
-      # Filter cutadapt info file for reads with model
-      system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file[i,1],".info > ",out_dir,"/",batch_file[i,1],".info.filt"))
-  
-      # pull filtered model hit file
-      ca_info <- fread(paste0(out_dir,"/",batch_file[i,1],".info.filt"), header = F)
-
-      # create barcode output file
-      bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
-  
-      # create tmp barcode storage data frame
-      bc_tmp_store <- data.frame()
-    
-      # loop over possible barcode flanking sequences 
-      for (j in 1:length(bc_flank)){
-      
-        # parse ca_info for those with exact primer match
-        bc_flank_i_matches <- ca_info[grep(bc_flank[j], ca_info$V6),c(1,6)]
-      
-        # skip iteration if no flank sequence match
-        if(nrow(bc_flank_i_matches) == 0){
-          next
-        }
-      
-        # Find upstream 20bp of target sequence and sub out target for nothing
-        matches <- regexpr(paste0(bc_flank[j],".{0,20}"), bc_flank_i_matches$V6, perl = T)
-        bc_flank_i_matches$barcodes <- sub(bc_flank[j], "", regmatches(bc_flank_i_matches$V6, matches))
-      
-        # Create final data frame w/ column for flank and match and cbind to outupt
-        bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2], flank_seq = bc_flank[j])
-        bc_tmp_store <- rbind(bc_tmp_store, bc_flank_i_matches)
-      
-      }
-    
-      # merge barcodes to output file and remove sequencing barcode line
-      bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
-      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T) # kills anything after space in read name (i.e. 1:0:AGAAC, ect)
-    
-      # write barcodes out 
-      write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
-  
-    }
+    bc_flank <- find.bc()
   
     
     ### Trimming Rev reads and filtering for length
@@ -671,59 +678,9 @@ if (wf == "jm"){
   
   
     ### Identifying barcodes and creating barcode db file
-    
-    # Identify flanking region to use as barcode query
-    bc_flank <- system(paste0("grep -o \"NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
-    bc_flank <- unique(bc_flank)
-    
-    for (i in 1:nrow(batch_file)){
+    bc_flank <- find.bc()
       
-      # Indicate what program is doing
-      cat(paste0("\nFinding Barcodes for: ",batch_file[i,1],"\n"))
-      
-      # Filter cutadapt info file for reads with model
-      system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file[i,1],".info > ",out_dir,"/",batch_file[i,1],".info.filt"))
-      
-      # pull filtered model hit file
-      ca_info <- fread(paste0(out_dir,"/",batch_file[i,1],".info.filt"), header = F)
-      
-      # create barcode output file
-      bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
-      
-      # create tmp barcode storage data frame
-      bc_tmp_store <- data.frame()
-      
-      # loop over possible barcode flanking sequences 
-      for (j in 1:length(bc_flank)){
-        
-        # parse ca_info for those with exact primer match
-        bc_flank_i_matches <- ca_info[grep(bc_flank[j], ca_info$V6),c(1,6)]
-        
-        # skip iteration if no flank sequence match
-        if(nrow(bc_flank_i_matches) == 0){
-          next
-        }
-        
-        # Find upstream 20bp of target sequence and sub out target for nothing
-        matches <- regexpr(paste0(bc_flank[j],".{0,20}"), bc_flank_i_matches$V6, perl = T)
-        bc_flank_i_matches$barcodes <- sub(bc_flank[j], "", regmatches(bc_flank_i_matches$V6, matches))
-        
-        # Create final data frame w/ column for flank and match and cbind to outupt
-        bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2], flank_seq = bc_flank[j])
-        bc_tmp_store <- rbind(bc_tmp_store, bc_flank_i_matches)
-        
-      }
-      
-      # merge barcodes to output file and remove sequencing barcode line
-      bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
-      bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T)
-      
-      # write barcodes out 
-      write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
-      
-    }  
   
-    
     # Run bowtie mapping for loop for SINGLE END mapping
     for (i in 1:nrow(batch_file)){
       
