@@ -185,14 +185,14 @@ if("-E" %in% args){
 
 
 # Load Testing Data
-etstats_version <- c("v0.03")
-wf <- "ss"
-dat_in <- "test_data/ETstats/tests/ET_mapper_test2/"
-out_dir <- "test_data/ETstats/tests/ET_stats_jm_PE"
-mq_cut <- 20
-mm_cut <- 5
-plot_res <- FALSE
-calc_eff <- FALSE
+# etstats_version <- c("v0.03")
+# wf <- "ss"
+# dat_in <- "test_data/ETstats/tests/ET_mapper_test2/"
+# out_dir <- "test_data/ETstats/tests/ET_stats_jm_PE"
+# mq_cut <- 20
+# mm_cut <- 5
+# plot_res <- FALSE
+# calc_eff <- FALSE
 
 
 # sample_info <- read.table(si, sep = "\t", header = F)
