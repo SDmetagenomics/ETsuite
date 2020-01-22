@@ -232,7 +232,7 @@ check.env <- function(){
                               lm_gd = "B2")
   
     # 1 check ETmapper out for jm folder, store location, and output to log
-    jm_exist <- dir.exists(paste0(dat_in),"/jm")
+    jm_exist <- dir.exists(paste0(dat_in,"/jm"))
     
     if (jm_exist == TRUE){
       cat("Junction Mapping Directory Found...\n")
@@ -257,7 +257,7 @@ check.env <- function(){
     }
     
     # 2 check ETmaper out for lm folder, store location, and output to log 
-    lm_exist <- dir.exists(paste0(dat_in),"/lm")
+    lm_exist <- dir.exists(paste0(dat_in,"/lm"))
     
     if (lm_exist == TRUE){
       cat("Lite Metagenomics Directory Found...\n")
