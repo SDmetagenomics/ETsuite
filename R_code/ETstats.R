@@ -80,7 +80,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | length(args) == 0) {
       
       Optional Arguments:
       
-      -b: Sample info (No Default; This file format will depend on the workflow. See documentation)
+      -s: Sample info (No Default; This file format will depend on the workflow. See documentation)
       -g: Directory containing genome database (No Default) ## Remove this and get from ETmapper out
       -o: Output dir (Default: ET_stats)
       -p: Make plots (Default: FALSE)
@@ -124,12 +124,15 @@ dat_in <- args[which(args == "-d") + 1]
 
 ## Optional Arguments
 
-# Sample File
-sd <- args[which(args == "-b") + 1]
-sample_info <- read.table(sd, sep = "\t", header = F)
+# Sample Info
+if("-s" %in% args){
+si <- args[which(args == "-s") + 1]
+sample_info <- read.table(si, sep = "\t", header = F)
+}
 
 # Genome Database Directory
 #gd <- args[which(args == "-g") + 1]
+
 
 # Output directory (Will be created if not specified)
 out_dir <- "ET_stats"
