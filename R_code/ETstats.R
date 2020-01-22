@@ -229,22 +229,24 @@ check.env <- function(){
                               jm_gd = "A2",
                               lm = FALSE,
                               lm_dir = "B1",
-                              lm_gd = "B2")
+                              lm_gd = "B2",
+                              stringsAsFactors = F)
   
     # 1 check ETmapper out for jm folder, store location, and output to log
-    jm_exist <- dir.exists(paste0(dat_in,"/jm"))
+    jm_exist <- dir.exists(paste0(dat_in,"jm"))
     
     if (jm_exist == TRUE){
       cat("Junction Mapping Directory Found...\n")
       env_summary[1,1] <- TRUE
-      env_summary[1,2] <- paste0(dat_in,"/jm")
-      env_summary[1,3] <- system(paste0("grep 'Genome Database' ",dat_in,"/jm/run_log.txt | awk '{print $3}'"), intern = T)
+      env_summary[1,2] <- paste0(dat_in,"jm")
+      env_summary[1,3] <- system(paste0("grep 'Genome Database' ",dat_in,"jm/run_log.txt | awk '{print $3}'"), intern = T)
       cat(
         paste0("Found ETmapper jm Output: TRUE\n"),
-        paste0("ETmapper jm Output Dir: ",dat_in,"/jm\n"),
+        paste0("ETmapper jm Output Dir: ",dat_in,"jm\n"),
         paste0("ETmapper jm Genome Dir: ",env_summary[1,3],"\n"),
         file = paste0(out_dir,"/run_log.txt"), append = T)
-    }else{
+    }
+    if (jm_exist == FALSE){
       cat("Junction Mapping Directory Not Found...\n")
       env_summary[1,1] <- FALSE
       env_summary[1,2] <- NA
@@ -257,19 +259,20 @@ check.env <- function(){
     }
     
     # 2 check ETmaper out for lm folder, store location, and output to log 
-    lm_exist <- dir.exists(paste0(dat_in,"/lm"))
+    lm_exist <- dir.exists(paste0(dat_in,"lm"))
     
     if (lm_exist == TRUE){
       cat("Lite Metagenomics Directory Found...\n")
       env_summary[1,4] <- TRUE
-      env_summary[1,5] <- paste0(dat_in,"/lm")
-      env_summary[1,6] <- system(paste0("grep 'Genome Database' ",dat_in,"/lm/run_log.txt | awk '{print $3}'"), intern = T)
+      env_summary[1,5] <- paste0(dat_in,"lm")
+      env_summary[1,6] <- system(paste0("grep 'Genome Database' ",dat_in,"lm/run_log.txt | awk '{print $3}'"), intern = T)
       cat(
         paste0("Found ETmapper lm Output: TRUE\n"),
-        paste0("ETmapper lm Output Dir: ",dat_in,"/lm\n"),
+        paste0("ETmapper lm Output Dir: ",dat_in,"lm\n"),
         paste0("ETmapper lm Genome Dir: ",env_summary[1,6],"\n"),
         file = paste0(out_dir,"/run_log.txt"), append = T)
-    }else{
+    }
+    if (lm_exist == FALSE){
       cat("Lite Metagenomics Directory Not Found...\n")
       env_summary[1,4] <- FALSE
       env_summary[1,5] <- NA
