@@ -697,13 +697,13 @@ if (wf == "ss"){
   
   ## Determine environment and important directories
   env_summary <- check.env()
-  
+  print(env_summary)
   ## Create data.frame of input data file names 
   input_data_names <- get.files()
-  
+  print(input_data_names)
   ## Check if data is pe or se for all workflows run
   pe_test_out <- pe.test()
-  
+  print(pe_test_out)
   
   ### Perform and Output Statistical Summaries for jm Workflow if present
   if(env_summary$jm == TRUE){
