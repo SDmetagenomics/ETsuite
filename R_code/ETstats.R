@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+### Set Version
+etstats_version <- c("v0.03")
+
 ### Check and Load Libraries
 
 # Check data.table
@@ -50,49 +53,54 @@ scripts <- normalizePath(paste0(script.basename,"/../scripts")) #accesory script
 ### Collect and parse arguments
 args <- commandArgs(trailingOnly = T)
 
+
+### TESTING STUFF REMOVE LATER ###
 print(args)
 cat(paste0("\nTotal Arguments: ",length(args),"\n"))
+
 
 ## NOT IN Operator for Arg Parseing
 '%notin%' <- Negate('%in%')
 
 ## Display help if no args or -h
-if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | length(args) == 0) {
+if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | length(args) == 0) {
   cat("
-      ETstats v0.02
+      ETstats v0.03
       
-      Usage: ETstats.R -w [workflow] -d [ETmapper_out_dir] -b [batch_file] [options]
+      Usage: ETstats.R -w [workflow] -d [Data_dir] [options]
 
       Mandatory Arguments:
       
       -w: Workflow type (No Default)
-          ss - stats summary
+          ss - basic stats summary
+          cs - comparative stats summary
           rs - read statistics
           ip - insertion plot
-      -d: ETmapper output directory (No Default)
-      -b: Batch file (No Default)
+      -d: Directory with data for analysis (No Default; can be ETmapper or ETstats)
       
       Optional Arguments:
       
-      -g: Directory containing genome database (No Default)
-      -o: Output file (Default: ETstats_out.txt)
+      -b: Sample info (No Default; This file format will depend on the workflow. See documentation)
+      -g: Directory containing genome database (No Default) ## Remove this and get from ETmapper out
+      -o: Output dir (Default: ET_stats)
       -p: Make plots (Default: FALSE)
       -r: Remove specific genome from analysis (must be quoted)
       
-      Stats Summary Options:
+      Basic Stats Summary Options:
       
       -q: MapQ cutoff score (Default: 20)
       -m: Maximum read mismatches allowed (Default: 5; SE only)
       -C: Custom filter function (Overrides PE filters; must be quoted)
+      -E: Turn off basic transformation efficency calculation (Default: TRUE)
       -h: Bring up this help menu
   
   
       Example Usage:
       
       ## Stats summary
-      ETstats.R -w ss -d ./ETmapper_out -b batch_file.txt
+      ETstats.R -w ss -d ./ETmapper_out -b sample_info.txt
       ## Stats summary custom filter
-      ETstats.R -w ss -d ./ETmapper_out -b batch_file.txt -c 'GENOME1 == GENOME2 & MAPQ1 > 5'
+      ETstats.R -w ss -d ./ETmapper_out -b sample_info.txt -c 'GENOME1 == GENOME2 & MAPQ1 > 5'
       
     ")
   
@@ -104,31 +112,32 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
 
 # Work Flow Type
 wf <- args[which(args == "-w") + 1]
-if(wf %notin% c("ss","rs","ip")){
-  cat(paste0("\n",wf," is not a kown workflow...exiting"))
+if(wf %notin% c("ss","rs","ip","cs")){
+  cat(paste0("\n",wf," is not a known workflow...exiting"))
   q(save="no")
 }
 
-# ETmapper output directory
-em_out <- args[which(args == "-d") + 1]
-
-# Batch File
-bf <- args[which(args == "-b") + 1]
-batch_file <- read.table(bf, sep = "\t", header = F)
+# ETmapper or ETstats output directory
+dat_in <- args[which(args == "-d") + 1]
 
 
 
 ## Optional Arguments
 
-# Genome Database Directory
-gd <- args[which(args == "-g") + 1]
+# Sample File
+sd <- args[which(args == "-b") + 1]
+sample_info <- read.table(sd, sep = "\t", header = F)
 
-# Output file / direcctory (eventually)
-out_dir <- "ETstats_out.txt"
+# Genome Database Directory
+#gd <- args[which(args == "-g") + 1]
+
+# Output directory (Will be created if not specified)
+out_dir <- "ET_stats"
 if("-o" %in% args){
   out_dir <- args[which(args == "-o") + 1]
 }
-#dir.create(out_dir, recursive = T)
+dir.create(out_dir, recursive = T)
+
 
 # Make plots (Default: FALSE)
 plot_res <- FALSE
@@ -144,7 +153,7 @@ if("-r" %in% args){
 
 
 
-## Stats summary options
+## Basic stats summary options
 
 # Mapq Cutoff (Default: 20)
 mq_cut <- 20
@@ -163,13 +172,18 @@ if("-C" %in% args){
   custom_filt <- args[which(args == "-C") + 1]
 }
 
+# Make plots (Default: FALSE)
+calc_eff <- TRUE
+if("-E" %in% args){
+  calc_eff <- FALSE
+}
 
 
 
 
 # Load Testing Data
-# batch_file <- read.table("test_data/ETmapper/test_batch.txt", header = F, sep = "\t", stringsAsFactors = F)
-# em_out <- "test_data/ETmapper/full_paired_end_test/"
+# sample_info <- read.table("test_data/ETmapper/test_batch.txt", header = F, sep = "\t", stringsAsFactors = F)
+# dat_in <- "test_data/ETmapper/full_paired_end_test/"
 # pe_example <- fread("test_data/ETmapper/paired_end_test/hits/JD_ZZ_2ndcycle_1.hits")
 # se_example <- fread("test_data/ETmapper/single_end_test/hits/JD_ZZ_2ndcycle_1.hits")
 # 
@@ -185,46 +199,204 @@ if("-C" %in% args){
 #### BEGIN FUNCTION DEFINE ####
 
 
-## Function 1: Check if data processed as paired end or single end 
-pe.test <- function(){
+### Setup Functions
 
-  if(ncol(batch_file) == 3){
-    paired_end_data <- FALSE
-    cat("Input Data Identifed as Single End...Begining Analysis\n\n")
-    #cat(" Paired End = FALSE", file = paste0(out_dir,"/summary.txt"), append = T)
+## Function 1: Make a basic log file that will be appended based on analysis
+make.log.file <- function(){
+  
+  cat(paste0("ETstats ",etstats_version,"   Beginning Analysis...\n\n"))
+
+  cat(
+    paste0("ETstats ",etstats_version," Summary    Created: ", date()),"\n\n",
+    "Program Parameters:\n",
+    paste0("Workflow type is: ", wf),"\n",
+    file = paste0(out_dir,"/run_log.txt"))
+}
+
+## Function 2: Identify what analysis has been run by ETmapper or ETstats already, store, and log
+## Return: env_summary
+check.env <- function(){
+  
+  # Env check for ss workflow
+  if (wf == "ss"){
+  
+    # Make data.frame to hold environment variables
+    env_summary <- data.frame(jm = FALSE,
+                              jm_dir = "A1",
+                              jm_gd = "A2",
+                              lm = FALSE,
+                              lm_dir = "B1",
+                              lm_gd = "B2")
+  
+    # 1 check ETmapper out for jm folder, store location, and output to log
+    jm_exist <- dir.exists(paste0(dat_in),"/jm")
+    
+    if (jm_exist == TRUE){
+      cat("Junction Mapping Directory Found...\n")
+      env_summary[1,1] <- TRUE
+      env_summary[1,2] <- paste0(dat_in,"/jm")
+      env_summary[1,3] <- system(paste0("grep 'Genome Database' ",dat_in,"/jm/run_log.txt | awk '{print $3}'"), intern = T)
+      cat(
+        paste0("Found ETmapper jm Output: TRUE\n"),
+        paste0("ETmapper jm Output Dir: ",dat_in,"/jm\n"),
+        paste0("ETmapper jm Genome Dir: ",env_summary[1,3],"\n"),
+        file = paste0(out_dir,"/run_log.txt"), append = T)
+    }else{
+      cat("Junction Mapping Directory Not Found...\n")
+      env_summary[1,1] <- FALSE
+      env_summary[1,2] <- NA
+      env_summary[1,3] <- NA
+      cat(
+        paste0("Found ETmapper jm Output: FALSE\n"),
+        paste0("ETmapper jm Output Dir: NA\n"),
+        paste0("ETmapper jm Genome Dir: NA\n"),
+        file = paste0(out_dir,"/run_log.txt"), append = T)
+    }
+    
+    # 2 check ETmaper out for lm folder, store location, and output to log 
+    lm_exist <- dir.exists(paste0(dat_in),"/lm")
+    
+    if (lm_exist == TRUE){
+      cat("Lite Metagenomics Directory Found...\n")
+      env_summary[1,4] <- TRUE
+      env_summary[1,5] <- paste0(dat_in,"/lm")
+      env_summary[1,6] <- system(paste0("grep 'Genome Database' ",dat_in,"/lm/run_log.txt | awk '{print $3}'"), intern = T)
+      cat(
+        paste0("Found ETmapper lm Output: TRUE\n"),
+        paste0("ETmapper lm Output Dir: ",dat_in,"/lm\n"),
+        paste0("ETmapper lm Genome Dir: ",env_summary[1,6],"\n"),
+        file = paste0(out_dir,"/run_log.txt"), append = T)
+    }else{
+      cat("Lite Metagenomics Directory Not Found...\n")
+      env_summary[1,4] <- FALSE
+      env_summary[1,5] <- NA
+      env_summary[1,6] <- NA
+      cat(
+        paste0("Found ETmapper lm Output: FALSE\n"),
+        paste0("ETmapper lm Output Dir: NA\n"),
+        paste0("ETmapper lm Genome Dir: NA\n"),
+        file = paste0(out_dir,"/run_log.txt"), append = T)
+    }
+    
+    # If neither jm or lm are found throw error and quit
+    if ((env_summary[1,1] == FALSE & env_summary[1,4] == FALSE) == TRUE){
+      cat("Could not find output directories for jm or lm workflows in ETmapper output.\n
+          Program Quitting...")
+      q(save = "no")
+    }
+    
+    # Output the env_summary data.frame
+    return(env_summary)
   }
   
-  if(ncol(batch_file) == 4){
-    paired_end_data <- TRUE
-    cat("Input Data Identifed as Paired End...Begining Analysis\n\n")
-    #cat(" Paired End = TRUE", file = paste0(out_dir,"/summary.txt"), append = T)
-  } 
   
-  # If tests fail exit with error
-  if (exists("paired_end_data") == FALSE){
-    cat("ERROR: Batch file not formatted correctly")
-    q(save="no")
+  # Env check for cs workflow
+  if (wf == "cs"){
+    
   }
-  
-  paired_end_data
   
 }
 
+## Function 3: Get list of files for analysis
+## Return: input_data_names
+get.files <- function(){
+  
+  # Get hit files for ss workflow
+  if (wf =="ss"){
+    
+    # Get jm workflow hit file names
+    if(env_summary$jm == TRUE){
+      jm_file_list <- list.files(paste0(env_summary$jm_dir,"/hits/"))
+    }else{jm_file_list <- NA}
+    
+    # Get lm workflow hit file names
+    if(env_summary$lm == TRUE){
+      lm_file_list <- list.files(paste0(env_summary$lm_dir,"/hits/"))
+    }else{lm_file_list <- NA} 
+    
+    # Create list of file names
+    input_data_names <- list()
+    input_data_names$jm_file_list <- jm_file_list
+    input_data_names$lm_file_list <- lm_file_list
+    return(input_data_names)
+  }
+  
+  if (wf == "cs"){
+    
+  }
+  
+}
 
-## Function 2: Summarize hits per genomes across samples for paired end data
-hit.summary.pe <- function(){
+## Function 4: Check if data processed as paired end or single end
+## Return: pe_test_out
+pe.test <- function(){
+  
+  if (wf == "ss"){
+    
+    # Generate df to hold pe.test output; logical jm =T/F,lm=T/F
+    pe_test_out <- data.frame(jm = NA, lm = NA)
+  
+    # Check if jm data is present, identify if PE, update pe_test_out and log file
+    if (env_summary[1,1] == TRUE){
+      test_hits_file <- fread(paste0(env_summary[1,2],"/hits/",input_data_names[1,1]), nrows = 5)
+      
+      if (sum(c("GENOME1", "GENOME2") %in% colnames(test_hits_file)) == 2){
+        pe_test_out[1,1] <- TRUE
+        cat("Workflow jm Data Paired End = TRUE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
+      }
+      
+      if (sum(c("GENOME1", "GENOME2") %in% colnames(test_hits_file)) == 1){
+        pe_test_out[1,1] <- FALSE
+        cat("Workflow jm Data Paired End = FALSE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
+      }
+    }
+    
+    # Check if lm data is present, identify if PE, update pe_test_out and log file
+    if (env_summary[1,4] == TRUE){
+      test_hits_file <- fread(paste0(env_summary[1,5],"/hits/",input_data_names[1,2]), nrows = 5)
+      
+      if (sum(c("GENOME1", "GENOME2") %in% colnames(test_hits_file)) == 2){
+        pe_test_out[1,2] <- TRUE
+        cat("Workflow lm Data Paired End = TRUE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
+      }
+      
+      if (sum(c("GENOME1", "GENOME2") %in% colnames(test_hits_file)) == 1){
+        pe_test_out[1,2] <- FALSE
+        cat("Workflow lm Data Paired End = FALSE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
+      }
+    }
+    
+    # Return pe_test_out data.frame
+    return(pe_test_out)
+  }
+  
+  
+  ## PE TEST FOR FUTURE WORKFLOW
+  if (wf == "ss"){
+  }
+  
+}  
+
+
+### Analysis Functions
+
+## Function 4: Summarize hits per genomes across samples for paired end data
+jm.summary.pe <- function(){
   
   # Make df to hold final hit table
   all_hits <- data.table()
   filt_hits <- data.table()
+  sample_info <- input_data_names[[1]]
   
   # Build master df of all hits
-  for (i in 1:nrow(batch_file)){
+  for (i in 1:length(sample_info)){
     
     # Read in hit table
-    tmp_hit_table <- fread(paste0(em_out,"hits/",batch_file[i,1],".hits"), sep = "\t")
+    tmp_hit_table <- fread(paste0(env_summary$jm_dir,"hits/",sample_info[i]), sep = "\t")
     
+    # Filter out all NA in GENOME1 column so that no reads mapping to GENOME 1 and 2 == NA get through
     tmp_hit_table <- tmp_hit_table[!(is.na(GENOME1))] ### THIS IS A SHITTY FIX 
+    
     
     ### APPLY FILTERING (each filtering step is implemented individually for now so we can add options)
     
@@ -250,8 +422,7 @@ hit.summary.pe <- function(){
 
     
     # Sumarize raw data
-    tmp_raw_summary <- data.table(SAMPLE = batch_file[i,1],
-                                  GROUP = batch_file[i,2],
+    tmp_raw_summary <- data.table(SAMPLE = sample_info[i],
                                   tmp_hit_table %>% 
                                     group_by(GENOME1) %>% ## This may need to be fixed for pe if genomes are not equal (decide which read better for GENOME call)
                                     summarise(READ_RAW = n(),
@@ -270,8 +441,7 @@ hit.summary.pe <- function(){
 
     
     # Sumarize filtered data
-    tmp_filt_summary <- data.table(SAMPLE = batch_file[i,1],
-                                   GROUP = batch_file[i,2],
+    tmp_filt_summary <- data.table(SAMPLE = sample_info[i],
                                    tmp_filt_table %>% 
                                      group_by(GENOME1) %>% ## This may need to be fixed for pe if genomes are not equal (decide which read better for GENOME call)
                                      summarise(READ_FLT = n(),
@@ -297,25 +467,24 @@ hit.summary.pe <- function(){
   }
   
   # Merge all and filtered hits and create output
-  pe_hits_out <- merge(all_hits, filt_hits, by = c("SAMPLE", "GROUP", "GENOME1"), all.x = T)
+  pe_hits_out <- merge(all_hits, filt_hits, by = c("SAMPLE", "GENOME1"), all.x = T)
   pe_hits_out <- pe_hits_out[order(SAMPLE, -UNIQ_FLT)]
   pe_hits_out
   
 }
 
-
-## Function 3: Summarize hits per genomes across samples for single end data
-hit.summary.se <- function(){
+## Function 5: Summarize hits per genomes across samples for single end data
+jm.summary.se <- function(){
   
   # Make df to hold final hit table
   all_hits <- data.table()
   filt_hits <- data.table()
   
   # Build master df of all hits
-  for (i in 1:nrow(batch_file)){
+  for (i in 1:nrow(sample_info)){
     
     # Read in hit table
-    tmp_hit_table <- fread(paste0(em_out,"hits/",batch_file[i,1],".hits"), sep = "\t")
+    tmp_hit_table <- fread(paste0(dat_in,"hits/",sample_info[i,1],".hits"), sep = "\t")
     
     
     ### APPLY FILTERING 
@@ -323,8 +492,8 @@ hit.summary.se <- function(){
     
   
     # Sumarize raw data
-    tmp_raw_summary <- data.table(SAMPLE = batch_file[i,1],
-                                  GROUP = batch_file[i,2],
+    tmp_raw_summary <- data.table(SAMPLE = sample_info[i,1],
+                                  GROUP = sample_info[i,2],
                                   tmp_hit_table %>% 
                                   group_by(GENOME) %>% 
                                   summarise(READ_RAW = n(),
@@ -335,8 +504,8 @@ hit.summary.se <- function(){
                                             MLEN_RAW = mean(LEN)))
  
     # Sumarize filtered data
-    tmp_filt_summary <- data.table(SAMPLE = batch_file[i,1],
-                                   GROUP = batch_file[i,2],
+    tmp_filt_summary <- data.table(SAMPLE = sample_info[i,1],
+                                   GROUP = sample_info[i,2],
                                    tmp_filt_table %>% 
                                    group_by(GENOME) %>% 
                                    summarise(READ_FLT = n(),
@@ -361,6 +530,17 @@ hit.summary.se <- function(){
   
 }
   
+## Function 6: Summarize Coverage per genomes across samples for paired end data
+lm.summary.pe <- function(){
+  
+}
+
+## Function 7: Summarize Coverage per genomes across samples for single end data
+lm.summary.se <- function(){
+  
+}
+
+
 
 ## Function 4: Basic Plotting of genomes (genomes v sample groups)
   
@@ -376,10 +556,10 @@ read.stats <- function(){
   if (paired_end_data == TRUE){
     
     # Build master df of all hits
-    for (i in 1:nrow(batch_file)){
+    for (i in 1:nrow(sample_info)){
       
       # Read in hit table
-      tmp_hit_table <- fread(paste0(em_out,"hits/",batch_file[i,1],".hits"), sep = "\t")
+      tmp_hit_table <- fread(paste0(dat_in,"hits/",sample_info[i,1],".hits"), sep = "\t")
       
       # Remove genomes if in arguments
       if (exists("rm_gen") == TRUE){
@@ -388,8 +568,8 @@ read.stats <- function(){
       }
         
       # Sumarize raw data on reads
-      tmp_raw_summary <- data.table(SAMPLE = batch_file[i,1],
-                                    GROUP = batch_file[i,2],
+      tmp_raw_summary <- data.table(SAMPLE = sample_info[i,1],
+                                    GROUP = sample_info[i,2],
                                     tmp_hit_table %>% 
                                       summarise(READ_RAW = n(),
                                                 UNIQ_RAW = n_distinct(barcodes),
@@ -440,10 +620,10 @@ read.stats <- function(){
   if (paired_end_data == FALSE){
    
     # Build master df of all hits
-    for (i in 1:nrow(batch_file)){
+    for (i in 1:nrow(sample_info)){
       
       # Read in hit table
-      tmp_hit_table <- fread(paste0(em_out,"hits/",batch_file[i,1],".hits"), sep = "\t")
+      tmp_hit_table <- fread(paste0(dat_in,"hits/",sample_info[i,1],".hits"), sep = "\t")
       
       # Remove genomes if in arguments
       if (exists("rm_gen") == TRUE){
@@ -452,8 +632,8 @@ read.stats <- function(){
       }
       
       # Sumarize raw data
-      tmp_raw_summary <- data.table(SAMPLE = batch_file[i,1],
-                                    GROUP = batch_file[i,2],
+      tmp_raw_summary <- data.table(SAMPLE = sample_info[i,1],
+                                    GROUP = sample_info[i,2],
                                     tmp_hit_table %>% 
                                       summarise(READ_RAW = n(),
                                                 UNIQ_RAW = n_distinct(barcodes),
@@ -493,7 +673,6 @@ read.stats <- function(){
 } ## End read.stats function
 
 
-
 ## Function 6: Comparative Statistics between groups (hits or read summaries)
 
 
@@ -506,27 +685,61 @@ read.stats <- function(){
 #### BEGIN WORKFLOWS ####
 
 
+### Basic Stats Summary Workflow
 if (wf == "ss"){
   
-  # Check if data is pe or se
-  paired_end_data <- pe.test()
+  ## Create Correct Dir Structure for Workflow
+  out_dir <- paste0(out_dir,"/ss")
+  dir.create(out_dir, recursive = T)
   
-  # loop over batch file depending on data type
-  if (paired_end_data == TRUE){
-    ETstats_out <- hit.summary.pe()
+  ## Initalize program and create log file 
+  make.log.file()
+  
+  ## Determine environment and important directories
+  env_summary <- check.env()
+  
+  ## Create data.frame of input data file names 
+  input_data_names <- get.files()
+  
+  ## Check if data is pe or se for all workflows run
+  pe_test_out <- pe.test()
+  
+  
+  ### Perform and Output Statistical Summaries for jm Workflow if present
+  if(env_summary$jm == TRUE){
+    
+    if(pe_test_out$jm == TRUE){
+      ETstats_out <- jm.summary.pe()
+    }
+    
+    if (pe_test_out$jm == FALSE){
+      ETstats_out <- jm.summary.se()
+    }
+    
+    # Write Output
+    write.table(ETstats_out, file = paste0(out_dir,"ETstats_out.txt"), quote = F, row.names = F, sep = "\t")
+    
   }
   
-  if (paired_end_data == FALSE){
-    ETstats_out <- hit.summary.se()
+  if(env_summary$lm == TRUE){
+    
+    if(pe_test_out$lm == TRUE){
+      ETstats_out <- hit.summary.pe()
+    }
+    
+    if (pe_test_out$lm == FALSE){
+      ETstats_out <- hit.summary.se()
+    }
+    
   }
   
-  # Write Output
-  write.table(ETstats_out, file = out_dir, quote = F, row.names = F, sep = "\t")
+}  
+    
+ 
 
-}
 
 
-if (wf == "rs"){
+#if (wf == "rs"){
  
   # Check if data is pe or se
   paired_end_data <- pe.test()
@@ -540,7 +753,7 @@ if (wf == "rs"){
    
 }
 
-if (wf == "ip"){
+#if (wf == "ip"){
   
   cat("ip does not yet exist")
 }
