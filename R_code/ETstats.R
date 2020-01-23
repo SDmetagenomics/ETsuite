@@ -758,24 +758,24 @@ if (wf == "ss"){
 
 
 
-#if (wf == "rs"){
- 
-  # Check if data is pe or se
-  paired_end_data <- pe.test()
-  
-  # loop over batch file depending on data type
-  read_stats_out <- read.stats()
-  
-  # Write Output
-  write.table(read_stats_out, file = out_dir, quote = F, row.names = F, sep = "\t")
- 
-   
-}
+# if (wf == "rs"){
+#  
+#   # Check if data is pe or se
+#   paired_end_data <- pe.test()
+#   
+#   # loop over batch file depending on data type
+#   read_stats_out <- read.stats()
+#   
+#   # Write Output
+#   write.table(read_stats_out, file = out_dir, quote = F, row.names = F, sep = "\t")
+#  
+#    
+# }
 
-#if (wf == "ip"){
-  
-  cat("ip does not yet exist")
-}
+# if (wf == "ip"){
+#   
+#   cat("ip does not yet exist")
+# }
 
 
 
