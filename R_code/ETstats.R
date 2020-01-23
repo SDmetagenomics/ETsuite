@@ -187,8 +187,8 @@ if("-E" %in% args){
 # Load Testing Data
 # etstats_version <- c("v0.03")
 # wf <- "ss"
-# dat_in <- "test_data/ETstats/tests/ET_mapper_test2/"
-# out_dir <- "test_data/ETstats/tests/ET_stats_jm_PE"
+# dat_in <- "~/Desktop/ET_test/ET_mapper/"
+# out_dir <- "~/Desktop/ET_test/ET_stats"
 # mq_cut <- 20
 # mm_cut <- 5
 # plot_res <- FALSE
@@ -196,7 +196,8 @@ if("-E" %in% args){
 
 
 # sample_info <- read.table(si, sep = "\t", header = F)
-# pe_example <- fread("test_data/ETmapper/paired_end_test/hits/JD_ZZ_2ndcycle_1.hits")
+# jm_pe_example <- fread("test_data/ETmapper/paired_end_test/hits/JD_ZZ_2ndcycle_1.hits")
+# lm_pe_example <- fread("~/Desktop/Meta_2020_01_14_1.mghits")
 # se_example <- fread("test_data/ETmapper/single_end_test/hits/JD_ZZ_2ndcycle_1.hits")
 # 
 # tmp_hit_table <- se_example
@@ -552,6 +553,112 @@ jm.summary.se <- function(){
 ## Function 6: Summarize Coverage per genomes across samples for paired end data
 lm.summary.pe <- function(){
   
+  # Load additional required data
+  genome_stats <- fread(paste0(env_summary$lm_gd,"genome_stats.txt"), sep ="\t")
+  
+  # Make df to hold final hit table
+  all_hits <- data.table()
+  filt_hits <- data.table()
+  sample_names <- sub(".mghits","",input_data_names$lm_file_list)
+  
+  
+  # Build master df of all hits
+  for (i in 1:length(sample_names)){
+    
+    # Say what is happening
+    cat(paste0("Calculating Summary Stats for lm Sample: ",sample_names[i],"\n"))
+    
+    # Read in hit table
+    tmp_hit_table <- fread(paste0(env_summary$lm_dir,"/hits/",sample_names[i],".mghits"), sep = "\t")
+    
+    
+    ### APPLY FILTERING (each filtering step is implemented individually for now so we can add options)
+    
+    # Filter out all NA in GENOME1 column so that no reads mapping to GENOME 1 and 2 == NA get through
+    tmp_hit_table <- tmp_hit_table[!(is.na(GENOME1))] ### THIS IS A SHITTY FIX 
+    
+    # Create table to be filtered on
+    tmp_filt_table <- tmp_hit_table
+    
+    # Custom filters if wated
+    if(exists("custom_filt") == TRUE){
+      
+      # Hits to same genome ##### THIS NEEDS TO BE ADDRESSED 
+      tmp_filt_table <- subset(tmp_filt_table, eval(parse(text=custom_filt)))
+      
+      # Basic filters if no custom specified
+    } else {
+      
+      # Apply All Quality Filters
+      tmp_filt_table <- subset(tmp_filt_table,
+                               (GENOME1 == GENOME2) &
+                               (MAPQ1 >= mq_cut | MAPQ2 >= mq_cut) &
+                               (STRAND1 != STRAND2))  
+    }
+    
+    # Sumarize raw data
+    tmp_raw_summary <- data.table(SAMPLE = sample_names[i],
+                                  tmp_hit_table %>% 
+                                    group_by(GENOME1) %>% ## This may need to be fixed for pe if genomes are not equal (decide which read better for GENOME call)
+                                    summarise(READ_RAW = n(),
+                                              TOTBP_RAW = sum(TOTAL_BP,na.rm = T),
+                                              MMQ1_RAW = mean(MAPQ1,na.rm = T),
+                                              MMM1_RAW = mean(NM1,na.rm = T),
+                                              MLEN1_RAW = mean(LEN1,na.rm = T),
+                                              MQUAL1_RAW = mean(QUAL1,na.rm = T),
+                                              MQUALNM1_RAW = mean(QUALNM1,na.rm = T),
+                                              MMQ2_RAW = mean(MAPQ2,na.rm = T),
+                                              MMM2_RAW = mean(NM2,na.rm = T),
+                                              MLEN2_RAW = mean(LEN2,na.rm = T),
+                                              MQUAL2_RAW = mean(QUAL2,na.rm = T),
+                                              MQUALNM2_RAW = mean(QUALNM2,na.rm = T)))
+    
+    
+    # Sumarize filtered data
+    tmp_filt_summary <- data.table(SAMPLE = sample_names[i],
+                                   tmp_filt_table %>% 
+                                     group_by(GENOME1) %>% ## This may need to be fixed for pe if genomes are not equal (decide which read better for GENOME call)
+                                     summarise(READ_FLT = n(),
+                                               TOTBP_FLT = sum(TOTAL_BP,na.rm = T),
+                                               MMQ1_FLT = mean(MAPQ1),
+                                               MMM1_FLT = mean(NM1),
+                                               MLEN1_FLT = mean(LEN1),
+                                               MQUAL1_FLT = mean(QUAL1),
+                                               MQUALNM1_FLT = mean(QUALNM1),
+                                               MMQ2_FLT = mean(MAPQ2),
+                                               MMM2_FLT = mean(NM2),
+                                               MLEN2_FLT = mean(LEN2),
+                                               MQUAL2_FLT = mean(QUAL2),
+                                               MQUALNM2_FLT = mean(QUALNM2)))
+    
+    
+    # Merge in genome data and calculate coverage stats
+    tmp_filt_summary <- merge(tmp_filt_summary, genome_stats[,c(1,3)], by.x = "GENOME1", by.y = "Genome", all.x = T)
+    
+    tmp_filt_summary <- data.table(tmp_filt_summary,
+                                   RPK_FLT = tmp_filt_summary$READ_FLT / (tmp_filt_summary$Size / 1000),
+                                   RPK_FLT_FRAC = (tmp_filt_summary$READ_FLT / (tmp_filt_summary$Size / 1000)) / sum(tmp_filt_summary$READ_FLT / (tmp_filt_summary$Size / 1000)),
+                                   COV_FLT = tmp_filt_summary$TOTBP_FLT / tmp_filt_summary$Size,
+                                   COV_FLT_FRAC = (tmp_filt_summary$TOTBP_FLT / tmp_filt_summary$Size) / sum(tmp_filt_summary$TOTBP_FLT / tmp_filt_summary$Size))
+    
+    # Create table of all hits for all samples
+    all_hits <- rbind(all_hits, tmp_raw_summary)
+    
+    # Create table of filt hits for all samples
+    filt_hits <- rbind(filt_hits, tmp_filt_summary)
+    
+  
+  } ## End for loop for calculating each genome summary stats
+  
+  # Merge all and filtered hits and create output
+  pe_hits_out <- merge(all_hits, filt_hits, by = c("SAMPLE", "GENOME1"), all.x = T)
+  pe_hits_out_full <- pe_hits_out[order(SAMPLE, -TOTBP_FLT)]
+  pe_hits_out_summary <- pe_hits_out_full[,c(1:4,15,16,28:31)]
+  pe_hits_out_list <- list(pe_hits_out_full, pe_hits_out_summary)
+  return(pe_hits_out_list)
+
+
+  
 }
 
 ## Function 7: Summarize Coverage per genomes across samples for single end data
@@ -727,32 +834,38 @@ if (wf == "ss"){
   if(env_summary$jm == TRUE){
     
     if(pe_test_out$jm == TRUE){
-      ETstats_out <- jm.summary.pe()
+      ETstats_jm_out <- jm.summary.pe()
     }
     
     if (pe_test_out$jm == FALSE){
-      ETstats_out <- jm.summary.se()
+      ETstats_jm_out <- jm.summary.se()
     }
     
     # Write Output
-    write.table(ETstats_out[[1]], file = paste0(out_dir,"/ETstats_jm_full.txt"), quote = F, row.names = F, sep = "\t")
-    write.table(ETstats_out[[2]], file = paste0(out_dir,"/ETstats_jm_summary.txt"), quote = F, row.names = F, sep = "\t")
+    write.table(ETstats_jm_out[[1]], file = paste0(out_dir,"/ETstats_jm_full.txt"), quote = F, row.names = F, sep = "\t")
+    write.table(ETstats_jm_out[[2]], file = paste0(out_dir,"/ETstats_jm_summary.txt"), quote = F, row.names = F, sep = "\t")
     
   }
   
+  ### Perform and Output Statistical Summaries for lm Workflow if present
   if(env_summary$lm == TRUE){
     
     if(pe_test_out$lm == TRUE){
-      ETstats_out <- hit.summary.pe()
+      ETstats_lm_out <- lm.summary.pe()
     }
     
     if (pe_test_out$lm == FALSE){
-      ETstats_out <- hit.summary.se()
+      ETstats_lm_out <- lm.summary.se()
     }
+    
+    # Write Output
+    write.table(ETstats_lm_out[[1]], file = paste0(out_dir,"/ETstats_lm_full.txt"), quote = F, row.names = F, sep = "\t")
+    write.table(ETstats_lm_out[[2]], file = paste0(out_dir,"/ETstats_lm_summary.txt"), quote = F, row.names = F, sep = "\t")
     
   }
   
 }  
+  
     
  
 

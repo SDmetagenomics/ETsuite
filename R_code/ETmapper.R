@@ -626,7 +626,6 @@ if (wf == "jm"){
     ### Clean up files and create out_dir structure
     clean.up()
     
-    
     ### Build Metadata File
     jm_workflow_stats <- pull.run.stats()
     write.table(jm_workflow_stats, paste0(out_dir,"/jm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
@@ -729,7 +728,6 @@ if (wf == "jm"){
   } ### End Trimming / Mapping Steps of Junction Mapping Workflow (SINGLE END) 
   
   cat("Junction mapping workflow finished successfully :-)\n\n")
-  cat(warnings()) 
 } ### End Junction Mapping Workflow
 
 
@@ -755,6 +753,8 @@ if (wf == "lm") {
     "Program Parameters:\n",
     paste0("Workflow type is: ", wf),"\n",
     paste0("Total Samples: ",nrow(batch_file)),"\n",
+    paste0("Adapter Trim File: ", ad,"\n"),
+    paste0("Genome Database: ", gd,"\n"),
     file = paste0(out_dir,"/run_log.txt"))
   
   
@@ -836,6 +836,37 @@ if (wf == "lm") {
     ### Clean up files and create out_dir structure
     clean.up()
     
+    ### Build Metadata File
+    lm_workflow_stats <- pull.run.stats()
+    write.table(lm_workflow_stats, paste0(out_dir,"/lm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
+    
+  }
+  
+  
+  ### Begin Mapping for Lite Metagenomics Workflow (PAIRED END)
+  if(paired_end_data == FALSE){
+    
+    ### Run adapter/flanking sequence trimming AND Quality Score Filtering
+    for (i in 1:nrow(batch_file)){
+      
+      # Indicate what program is doing
+      cat(paste0("\nTrimming Adapters, Qscore Filter, Size Filter for: ",batch_file[i,1],"\n"))
+      
+      # run cutadapt command
+      system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
+                    " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
+                    " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
+                    " --pair-filter=both", # At least 1 read must be >= rl
+                    " -o ",out_dir,"/",batch_file[i,3],".trim", # fwd output
+                    " -p ",out_dir,"/",batch_file[i,4],".trim", # rev output
+                    " ",rd,batch_file[i,3], # fwd read
+                    " ",rd,batch_file[i,4], # rev read
+                    " > ",out_dir,"/",batch_file[i,1],".trim.log")) # log files
+      
+    }
+    
+    ### Clean up files and create out_dir structure
+    clean.up()
     
     ### Build Metadata File
     lm_workflow_stats <- pull.run.stats()
