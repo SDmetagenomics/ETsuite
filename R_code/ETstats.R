@@ -711,11 +711,14 @@ calc.trans.eff <- function(){
                               SIZE = tmp_comb_dat$Size,
                               RPK_FRAC = tmp_comb_dat$RPK_FLT_FRAC * 100,
                               COV_FRAC = tmp_comb_dat$COV_FLT_FRAC * 100,
+                              SIO_UNIQ = sio_uniq_flt,
+                              SIO_RPK_FRAC = sio_rpk_frac,
+                              SIO_COV_FRAC = sio_cov_frac,
                               READS = tmp_comb_dat$READ_FLT.x,
                               UNIQ = tmp_comb_dat$UNIQ_FLT,
                               BPR = tmp_comb_dat$BPR_FLT,
-                              RPK_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$RPK_FLT_FRAC) * 100)/(sio_uniq_flt/sio_rpk_frac)) * 100, 
-                              COV_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$COV_FLT_FRAC) * 100)/(sio_uniq_flt/sio_cov_frac)) * 100)
+                              RPK_EFF = ((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$RPK_FLT_FRAC) * 100)/(sio_uniq_flt/sio_rpk_frac), 
+                              COV_EFF = ((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$COV_FLT_FRAC) * 100)/(sio_uniq_flt/sio_cov_frac))
     
     # Repalce NA in data with zeros
     tmp_eff_dat[is.na(tmp_eff_dat)] <- 0 
