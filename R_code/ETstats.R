@@ -91,7 +91,8 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | length(args) == 0) {
       -q: MapQ cutoff score (Default: 20)
       -m: Maximum read mismatches allowed (Default: 5; SE only)
       -C: Custom filter function (Overrides PE filters; must be quoted)
-      -E: Turn off basic transformation efficency calculation (Default: TRUE)
+      -E: Turn on basic transformation efficency calculation (Default: OFF)
+      -S: Spike in control organism for efficency calculation (Default: Bacteroides_thetaiotaomicron_VPI_5482_GCF_000011065.1)
       -h: Bring up this help menu
   
   
@@ -175,13 +176,17 @@ if("-C" %in% args){
   custom_filt <- args[which(args == "-C") + 1]
 }
 
-# Make plots (Default: FALSE)
-calc_eff <- TRUE
+# Calculate transformation efficency (Default: FALSE)
+calc_eff <- FALSE
 if("-E" %in% args){
-  calc_eff <- FALSE
+  calc_eff <- TRUE
 }
 
-
+# Spike in control organism for efficency calculation (Default: Bacteroides_thetaiotaomicron_VPI_5482_GCF_000011065.1)
+spike_in_org <- "Bacteroides_thetaiotaomicron_VPI_5482_GCF_000011065.1"
+if("-S" %in% args){
+  spike_in_org <- args[which(args == "-S") + 1]
+}
 
 
 # Load Testing Data
@@ -395,7 +400,7 @@ pe.test <- function(){
 
 ### Analysis Functions
 
-## Function 4: Summarize hits per genomes across samples for paired end data
+## Function 5: Summarize hits per genomes across samples for paired end data
 jm.summary.pe <- function(){
   
   # Make df to hold final hit table
@@ -496,7 +501,7 @@ jm.summary.pe <- function(){
   
 }
 
-## Function 5: Summarize hits per genomes across samples for single end data
+## Function 6: Summarize hits per genomes across samples for single end data
 jm.summary.se <- function(){
   
   # Make df to hold final hit table
@@ -553,7 +558,7 @@ jm.summary.se <- function(){
   
 }
   
-## Function 6: Summarize Coverage per genomes across samples for paired end data
+## Function 7: Summarize Coverage per genomes across samples for paired end data
 lm.summary.pe <- function(){
   
   # Load additional required data
@@ -664,12 +669,63 @@ lm.summary.pe <- function(){
   
 }
 
-## Function 7: Summarize Coverage per genomes across samples for single end data
+## Function 8: Summarize Coverage per genomes across samples for single end data
 lm.summary.se <- function(){
   
 }
 
-
+## Function 9: Calculate transformation efficency from combined jm/lm output 
+## RETURN: eff_out
+calc.trans.eff <- function(){
+  
+  # Say what is happening
+  cat("\nCalculating Transformation Efficency for Samples...\n")
+  
+  # Create data frame to hold output
+  eff_out <- data.table()
+  
+  # Loop over samples and pull individual data
+  for (i in 1:nrow(sample_info)){
+    
+    # Get names for first set of corresponding samples
+    tmp_jm_name <- as.character(sample_info[i,1])
+    tmp_lm_name <- as.character(sample_info[i,2])
+    
+    # Pull data on only corresponding samples 
+    tmp_jm_dat <- subset(ETstats_jm_out[[1]], SAMPLE == tmp_jm_name)
+    tmp_lm_dat <- subset(ETstats_lm_out[[1]], SAMPLE == tmp_lm_name)
+    
+    # Merge lm data onto jm data 
+    tmp_comb_dat <- merge(tmp_jm_dat, tmp_lm_dat, by.x = "GENOME1", by.y = "GENOME1", all.x = T)
+    
+    # Get Spike in Org Data and remove from tmp_comb_dat
+    sio_tmp_dat <- subset(tmp_comb_dat, GENOME1 == spike_in_org)
+    tmp_comb_dat <- tmp_comb_dat[-which(tmp_comb_dat$GENOME1 == spike_in_org),]
+    
+    # Calculate Efficency statistics for each genome
+    tmp_eff_dat <- data.table(SAMPLE = tmp_comb_dat$SAMPLE.x,
+                              GENOME1 = tmp_comb_dat$GENOME1,
+                              SIZE = tmp_comb_dat$Size,
+                              RPK_FRAC = tmp_comb_dat$RPK_FLT_FRAC * 100,
+                              COV_FRAC = tmp_comb_dat$COV_FLT_FRAC * 100,
+                              READS = tmp_comb_dat$READ_FLT.x,
+                              UNIQ = tmp_comb_dat$UNIQ_FLT,
+                              BPR = tmp_comb_dat$BPR_FLT,
+                              RPK_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$RPK_FLT_FRAC) * 100)/(sio_tmp_dat$UNIQ_FLT/sio_tmp_dat$RPK_FLT_FRAC)) * 100, 
+                              COV_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$COV_FLT_FRAC) * 100)/(sio_tmp_dat$UNIQ_FLT/sio_tmp_dat$COV_FLT_FRAC)) * 100)
+    
+    # Repalce NA in data with zeros
+    tmp_eff_dat[is.na(tmp_eff_dat)] <- 0 
+    
+    # Add calculations to output data frame
+    eff_out <- rbind(eff_out, tmp_eff_dat)
+  
+  }
+  
+  # Return data
+  return(eff_out)
+  
+}
 
 ## Function 4: Basic Plotting of genomes (genomes v sample groups)
   
@@ -866,6 +922,15 @@ if (wf == "ss"){
     write.table(ETstats_lm_out[[2]], file = paste0(out_dir,"/ETstats_lm_summary.txt"), quote = F, row.names = F, sep = "\t")
     
   }
+  
+  ### Perform Efficency Calculation if requested and sample_info present
+  if(calc_eff == TRUE & exists("sample_info") == TRUE){
+  
+      eff_out <- calc.trans.eff()
+      write.table(eff_out, file = paste0(out_dir,"/ETstats_eff_summary.txt"), quote = F, row.names = F, sep = "\t")
+  }
+  
+  cat("\nss Workflow completed successfully :-)\n")
   
 }  
   
