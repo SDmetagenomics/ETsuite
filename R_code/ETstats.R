@@ -703,6 +703,9 @@ calc.trans.eff <- function(){
     tmp_comb_dat <- tmp_comb_dat[-which(tmp_comb_dat$GENOME1 == spike_in_org),]
     
     # Calculate Efficency statistics for each genome
+    sio_uniq_flt <- as.numeric(sio_tmp_dat$UNIQ_FLT)
+    sio_rpk_frac <- as.numeric(sio_tmp_dat$RPK_FLT_FRAC)
+    sio_cov_frac <- as.numeric(sio_tmp_dat$COV_FLT_FRAC)
     tmp_eff_dat <- data.table(SAMPLE = tmp_comb_dat$SAMPLE.x,
                               GENOME1 = tmp_comb_dat$GENOME1,
                               SIZE = tmp_comb_dat$Size,
@@ -711,8 +714,8 @@ calc.trans.eff <- function(){
                               READS = tmp_comb_dat$READ_FLT.x,
                               UNIQ = tmp_comb_dat$UNIQ_FLT,
                               BPR = tmp_comb_dat$BPR_FLT,
-                              RPK_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$RPK_FLT_FRAC) * 100)/(sio_tmp_dat$UNIQ_FLT/sio_tmp_dat$RPK_FLT_FRAC)) * 100, 
-                              COV_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$COV_FLT_FRAC) * 100)/(sio_tmp_dat$UNIQ_FLT/sio_tmp_dat$COV_FLT_FRAC)) * 100)
+                              RPK_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$RPK_FLT_FRAC) * 100)/(sio_uniq_flt/sio_rpk_frac)) * 100, 
+                              COV_EFF = (((tmp_comb_dat$UNIQ_FLT/tmp_comb_dat$COV_FLT_FRAC) * 100)/(sio_uniq_flt/sio_cov_frac)) * 100)
     
     # Repalce NA in data with zeros
     tmp_eff_dat[is.na(tmp_eff_dat)] <- 0 
