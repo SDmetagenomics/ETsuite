@@ -439,7 +439,7 @@ jm.summary.pe <- function(){
     }
 
     # Make filtered data output folder and write tables out
-    dir.create(paste0(out_dir,"/hits_filt/jm") recursive = T)
+    dir.create(paste0(out_dir,"/hits_filt/jm"), recursive = T)
     write.table(tmp_filt_table, file = paste0(out_dir,"/hits_filt/jm/",sample_names[i],".hits.filt"), quote = F, row.names = F, sep = "\t")
     
     # Sumarize raw data
