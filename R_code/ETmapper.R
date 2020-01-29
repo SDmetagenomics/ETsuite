@@ -1,18 +1,24 @@
 #!/usr/bin/env Rscript
 
 ### Load Test Data
-#batch_file <- read.table("test_data/ETmapper/test_batch.txt")
+#batch_file <- read.table("../Studies/20_1_21_BR_35_ET/et_batch_file.txt")
+#info_file <- fread("../Studies/20_1_21_BR_35_ET/ET_mapper/BR_35_ET_4.info.filt")
+#md <- "db/ETseq_newprimers_allmodels.fa"
 
-
-
-### Check and Load Libraries
+### Check Libraries
 if ("data.table" %in% installed.packages() == F){
   print("Please install R package data.table. Program quitting...")
   q(save="no")
 }
 
-library(data.table)
+if ("stringr" %in% installed.packages() == F){
+  print("Please install R package stringr. Program quitting...")
+  q(save="no")
+}
 
+### Load Libraries
+library(data.table)
+library(stringr)
 
 
 
@@ -194,6 +200,11 @@ dir.create(out_dir, recursive = T)
 # If somebody forgets to enter something then the thing +1 from the argument in the vector will
 # be another argument 
 
+
+## Variables to add
+# Tn_Primer_Error
+TnP_err <- 1
+bc_length <- 20
 
 
 #### BEGIN FUNCTION DEFINE ####
@@ -418,23 +429,34 @@ find.bc <- function(){
     # create tmp barcode storage data frame
     bc_tmp_store <- data.frame()
     
-    # loop over possible barcode flanking sequences 
+    # loop over each possible barcode flanking sequences 
     for (j in 1:length(bc_flank)){
       
-      # parse ca_info for those with exact primer match
-      bc_flank_i_matches <- ca_info[grep(bc_flank[j], ca_info$V6),c(1,6)]
+      # Store length of flank sequence j
+      flank_length <- nchar(bc_flank[j])
+      
+      # parse ca_info for those hits with aproximate flank sequence match within error range
+      bc_flank_i_matches <- ca_info[agrep(bc_flank[j], ca_info$V6, max = list(ins = 0, del = 0, sub = TnP_err)),c(1,6)]
       
       # skip iteration if no flank sequence match
       if(nrow(bc_flank_i_matches) == 0){
         next
       }
       
-      # Find upstream 20bp of target sequence and sub out target for nothing
-      matches <- regexpr(paste0(bc_flank[j],".{0,20}"), bc_flank_i_matches$V6, perl = T)
-      bc_flank_i_matches$barcodes <- sub(bc_flank[j], "", regmatches(bc_flank_i_matches$V6, matches))
+      # Use aproximate regex to identify the flank sequence and 20bp upstream (barcode) or whatever bc_length is
+      matches <- aregexec(paste0(bc_flank[j],".{0,",bc_length,"}"), bc_flank_i_matches$V6, max = list(ins = 0, del = 0, sub = TnP_err))
       
+      # Create list of sequences aprox matching flank + bc_length
+      match_seqs <- regmatches(bc_flank_i_matches$V6, matches)
+      
+      # Parse matches for barcodes and add to data frame
+      bc_flank_i_matches$barcodes <- lapply(match_seqs, function(x) str_sub(x, start = -bc_length))
+      
+      # Parse matches for flank sequence and add to data frame
+      bc_flank_i_matches$flank_seq <- lapply(match_seqs, function(x) str_sub(x, end = flank_length))
+        
       # Create final data frame w/ column for flank and match and cbind to outupt
-      bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2], flank_seq = bc_flank[j])
+      bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2])
       bc_tmp_store <- rbind(bc_tmp_store, bc_flank_i_matches)
       
     }
