@@ -72,11 +72,13 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       -am: Min length of adapter match (Default: 5)
       -qs: Min base quality (Default: 20)
 
-    Model Identification Options:
+    Model/Barcode Identification Options:
     
       -md: Junction model sequence file (Default: db/models.fa)
       -mm: Min length of model match (Default: 25)
       -et: Model match error (Default: 0.02)
+      -fe: Barcode flanking sequence match error (Default: 1)
+      -bl: Barcode length (Default: 20)
       -rl: Min final read length (Default: 40)
       
     Read Mapping Options:
@@ -138,7 +140,7 @@ if("-q" %in% args){
 }
 
 
-## Model Identification Options
+## Model/Barcode Identification Options
 
 # Model Database File
 md <- md
@@ -157,6 +159,18 @@ if("-mm" %in% args){
 et <- 0.02
 if("-et" %in% args){
   et <- as.numeric(args[which(args == "-et") + 1])
+}
+
+# Barcode flanking sequence match error (Default: 1)
+fe <- 1
+if("-fe" %in% args){
+  fe <- as.numeric(args[which(args == "-fe") + 1])
+}
+
+# Barcode length (Default: 20)
+bl <- 20
+if("-bl" %in% args){
+  bl <- as.numeric(args[which(args == "-bl") + 1])
 }
 
 # Min final read length (Default: 40)
@@ -201,10 +215,6 @@ dir.create(out_dir, recursive = T)
 # be another argument 
 
 
-## Variables to add
-# Tn_Primer_Error
-TnP_err <- 1
-bc_length <- 20
 
 
 #### BEGIN FUNCTION DEFINE ####
@@ -436,21 +446,21 @@ find.bc <- function(){
       flank_length <- nchar(bc_flank[j])
       
       # parse ca_info for those hits with aproximate flank sequence match within error range
-      bc_flank_i_matches <- ca_info[agrep(bc_flank[j], ca_info$V6, max = list(ins = 0, del = 0, sub = TnP_err)),c(1,6)]
+      bc_flank_i_matches <- ca_info[agrep(bc_flank[j], ca_info$V6, max = list(ins = 0, del = 0, sub = fe)),c(1,6)]
       
       # skip iteration if no flank sequence match
       if(nrow(bc_flank_i_matches) == 0){
         next
       }
       
-      # Use aproximate regex to identify the flank sequence and 20bp upstream (barcode) or whatever bc_length is
-      matches <- aregexec(paste0(bc_flank[j],".{0,",bc_length,"}"), bc_flank_i_matches$V6, max = list(ins = 0, del = 0, sub = TnP_err))
+      # Use aproximate regex to identify the flank sequence and 20bp upstream (barcode) or whatever bl is
+      matches <- aregexec(paste0(bc_flank[j],".{0,",bl,"}"), bc_flank_i_matches$V6, max = list(ins = 0, del = 0, sub = fe))
       
-      # Create list of sequences aprox matching flank + bc_length
+      # Create list of sequences aprox matching flank + bl
       match_seqs <- regmatches(bc_flank_i_matches$V6, matches)
       
       # Parse matches for barcodes and add to data frame
-      bc_flank_i_matches$barcodes <- lapply(match_seqs, function(x) str_sub(x, start = -bc_length))
+      bc_flank_i_matches$barcodes <- lapply(match_seqs, function(x) str_sub(x, start = -bl))
       
       # Parse matches for flank sequence and add to data frame
       bc_flank_i_matches$flank_seq <- lapply(match_seqs, function(x) str_sub(x, end = flank_length))
