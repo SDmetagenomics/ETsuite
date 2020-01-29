@@ -220,7 +220,78 @@ dir.create(out_dir, recursive = T)
 #### BEGIN FUNCTION DEFINE ####
 
 
-## Function 1: Clean up files and make output structure
+## Function 1: Identify Barcodes
+# Write: bc_out ; # Return: bc_flank
+find.bc <- function(){
+  
+  # Identify flanking region to use as barcode query
+  bc_flank <- system(paste0("grep -o \"^NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
+  bc_flank <- unique(bc_flank)
+  
+  for (i in 1:nrow(batch_file)){
+    
+    # Indicate what program is doing
+    cat(paste0("\nFinding Barcodes for: ",batch_file[i,1],"\n"))
+    
+    # Filter cutadapt info file for reads with model
+    system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file[i,1],".info > ",out_dir,"/",batch_file[i,1],".info.filt"))
+    
+    # pull filtered model hit file
+    ca_info <- fread(paste0(out_dir,"/",batch_file[i,1],".info.filt"), header = F)
+    
+    # create barcode output file
+    bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
+    
+    # create tmp barcode storage data frame
+    bc_tmp_store <- data.frame()
+    
+    # loop over each possible barcode flanking sequences 
+    for (j in 1:length(bc_flank)){
+      
+      # Store length of flank sequence j
+      flank_length <- nchar(bc_flank[j])
+      
+      # parse ca_info for those hits with aproximate flank sequence match within error range
+      bc_flank_i_matches <- ca_info[agrep(bc_flank[j], ca_info$V6, max = list(ins = 0, del = 0, sub = fe)),c(1,6)]
+      
+      # skip iteration if no flank sequence match
+      if(nrow(bc_flank_i_matches) == 0){
+        next
+      }
+      
+      # Use aproximate regex to identify the flank sequence and 20bp upstream (barcode) or whatever bl is
+      matches <- aregexec(paste0(bc_flank[j],".{0,",bl,"}"), bc_flank_i_matches$V6, max = list(ins = 0, del = 0, sub = fe))
+      
+      # Create list of sequences aprox matching flank + bl
+      match_seqs <- regmatches(bc_flank_i_matches$V6, matches)
+      
+      # Parse matches for barcodes and add to data frame
+      bc_flank_i_matches$barcodes <- lapply(match_seqs, function(x) str_sub(x, start = -bl))
+      
+      # Parse matches for flank sequence and add to data frame
+      bc_flank_i_matches$flank_seq <- lapply(match_seqs, function(x) str_sub(x, end = flank_length))
+      
+      # Create final data frame w/ column for flank and match and cbind to outupt
+      bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2])
+      bc_tmp_store <- rbind(bc_tmp_store, bc_flank_i_matches)
+      
+    }
+    
+    # merge barcodes to output file and remove sequencing barcode line
+    bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
+    bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T) # kills anything after space in read name (i.e. 1:0:AGAAC, ect)
+    
+    # write barcodes out 
+    write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
+    
+  }
+  
+  # return bc_flank
+  return(bc_flank)
+}
+
+
+## Function 2: Clean up files and make output structure
 clean.up <- function(){
 
   # Clean jm Workflow
@@ -272,7 +343,7 @@ clean.up <- function(){
 }
 
 
-## Function 2: Pull run statistics from log files
+## Function 3: Pull run statistics from log files
 pull.run.stats <- function(){
   
   # Pull stats jm workflow
@@ -415,74 +486,7 @@ pull.run.stats <- function(){
 }
 
 
-## Function 3: Identify Barcodes
-find.bc <- function(){
-  
-  # Identify flanking region to use as barcode query
-  bc_flank <- system(paste0("grep -o \"^NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
-  bc_flank <- unique(bc_flank)
-  
-  for (i in 1:nrow(batch_file)){
-    
-    # Indicate what program is doing
-    cat(paste0("\nFinding Barcodes for: ",batch_file[i,1],"\n"))
-    
-    # Filter cutadapt info file for reads with model
-    system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file[i,1],".info > ",out_dir,"/",batch_file[i,1],".info.filt"))
-    
-    # pull filtered model hit file
-    ca_info <- fread(paste0(out_dir,"/",batch_file[i,1],".info.filt"), header = F)
-    
-    # create barcode output file
-    bc_out <- data.frame(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
-    
-    # create tmp barcode storage data frame
-    bc_tmp_store <- data.frame()
-    
-    # loop over each possible barcode flanking sequences 
-    for (j in 1:length(bc_flank)){
-      
-      # Store length of flank sequence j
-      flank_length <- nchar(bc_flank[j])
-      
-      # parse ca_info for those hits with aproximate flank sequence match within error range
-      bc_flank_i_matches <- ca_info[agrep(bc_flank[j], ca_info$V6, max = list(ins = 0, del = 0, sub = fe)),c(1,6)]
-      
-      # skip iteration if no flank sequence match
-      if(nrow(bc_flank_i_matches) == 0){
-        next
-      }
-      
-      # Use aproximate regex to identify the flank sequence and 20bp upstream (barcode) or whatever bl is
-      matches <- aregexec(paste0(bc_flank[j],".{0,",bl,"}"), bc_flank_i_matches$V6, max = list(ins = 0, del = 0, sub = fe))
-      
-      # Create list of sequences aprox matching flank + bl
-      match_seqs <- regmatches(bc_flank_i_matches$V6, matches)
-      
-      # Parse matches for barcodes and add to data frame
-      bc_flank_i_matches$barcodes <- lapply(match_seqs, function(x) str_sub(x, start = -bl))
-      
-      # Parse matches for flank sequence and add to data frame
-      bc_flank_i_matches$flank_seq <- lapply(match_seqs, function(x) str_sub(x, end = flank_length))
-        
-      # Create final data frame w/ column for flank and match and cbind to outupt
-      bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2])
-      bc_tmp_store <- rbind(bc_tmp_store, bc_flank_i_matches)
-      
-    }
-    
-    # merge barcodes to output file and remove sequencing barcode line
-    bc_out <- merge(bc_out, bc_tmp_store, by.x = "Read", by.y = "V1", all.x = T)
-    bc_out$Read <- sub(pattern = " .*$", replacement = "", bc_out$Read, perl = T) # kills anything after space in read name (i.e. 1:0:AGAAC, ect)
-    
-    # write barcodes out 
-    write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
-    
-  }
-  
-  # return bc_flank
-  return(bc_flank)
-}
+
 
 ## Function X
 
