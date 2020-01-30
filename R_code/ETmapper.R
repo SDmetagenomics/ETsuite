@@ -1,9 +1,13 @@
 #!/usr/bin/env Rscript
 
 ### Load Test Data
-#batch_file <- read.table("../Studies/20_1_21_BR_35_ET/et_batch_file.txt")
-#info_file <- fread("../Studies/20_1_21_BR_35_ET/ET_mapper/BR_35_ET_4.info.filt")
-#md <- "db/ETseq_newprimers_allmodels.fa"
+# batch_file <- read.table("../Studies/20_1_21_BR_35_ET/et_batch_file.txt")
+# ca_info <- fread("../Studies/20_1_21_BR_35_ET/ET_mapper/BR_35_ET_4.info.filt")
+# md <- "db/ETseq_newprimers_allmodels_v2.fa"
+# out_dir <-"~/Desktop"
+# bl <- 20
+# fe <- 1
+
 
 ### Check Libraries
 if ("data.table" %in% installed.packages() == F){
@@ -266,10 +270,10 @@ find.bc <- function(){
       match_seqs <- regmatches(bc_flank_i_matches$V6, matches)
       
       # Parse matches for barcodes and add to data frame
-      bc_flank_i_matches$barcodes <- lapply(match_seqs, function(x) str_sub(x, start = -bl))
+      bc_flank_i_matches$barcodes <- as.character(lapply(match_seqs, function(x) str_sub(x, start = -bl)))
       
       # Parse matches for flank sequence and add to data frame
-      bc_flank_i_matches$flank_seq <- lapply(match_seqs, function(x) str_sub(x, end = flank_length))
+      bc_flank_i_matches$flank_seq <- as.character(lapply(match_seqs, function(x) str_sub(x, end = flank_length)))
       
       # Create final data frame w/ column for flank and match and cbind to outupt
       bc_flank_i_matches <- data.frame(bc_flank_i_matches[,-2])
@@ -283,7 +287,7 @@ find.bc <- function(){
     
     # write barcodes out 
     write.table(bc_out, paste0(out_dir,"/",batch_file[i,1],".bc"), row.names = F, quote = F, sep = "\t")
-    
+
   }
   
   # return bc_flank
