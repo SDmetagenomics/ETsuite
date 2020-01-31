@@ -93,6 +93,8 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | length(args) == 0) {
       -C: Custom filter function (Overrides PE filters; must be quoted)
       -E: Turn on basic transformation efficency calculation (Default: OFF)
       -S: Spike in control organism for efficency calculation (Default: Bacteroides_thetaiotaomicron_VPI_5482_GCF_000011065.1)
+      -D: Conjugal Donor organism (Default: Escherichia_coli_BW25113_GCF_000750555.1)
+      -V: Vector sequences included in mapping database (Default: 'pHLL249 pHLL250'; must be quoted)
       -h: Bring up this help menu
   
   
@@ -188,6 +190,19 @@ if("-S" %in% args){
   spike_in_org <- args[which(args == "-S") + 1]
 }
 
+# Conjugal Donor organism (Default: Escherichia_coli_BW25113_GCF_000750555.1)
+donor_org <- "Escherichia_coli_BW25113_GCF_000750555.1"
+if("-D" %in% args){
+  donor_org <- args[which(args == "-D") + 1]
+}
+
+# Vector sequences included in mapping database (Default: "pHLL249 pHLL250" )
+vector_names <- c("pHLL249", "pHLL250")
+if("-V" %in% args){
+  vector_names <- args[which(args == "-V") + 1]
+  vector_names <- unlist(strsplit(vector_names, split = " "))
+}
+
 
 # Load Testing Data
 # etstats_version <- c("v0.03")
@@ -204,7 +219,7 @@ if("-S" %in% args){
 # jm_pe_example <- fread("test_data/ETmapper/paired_end_test/hits/JD_ZZ_2ndcycle_1.hits")
 # lm_pe_example <- fread("~/Desktop/Meta_2020_01_14_1.mghits")
 # se_example <- fread("test_data/ETmapper/single_end_test/hits/JD_ZZ_2ndcycle_1.hits")
-# 
+# raw_dat <- fread("../Studies/20_1_21_BR_35_ET/ET_stats/ss/ETstats_jm_summary.txt")
 # tmp_hit_table <- se_example
 # i = 1
 
@@ -674,7 +689,67 @@ lm.summary.se <- function(){
   
 }
 
-## Function 9: Calculate transformation efficency from combined jm/lm output 
+## Function 9: Calculates summary statistics for each total sample across all hits
+## RETURN: samp_hit_smry
+hit.summary <- function(){
+  
+  # Say what is happening
+  cat("\nCalculating Overall Sample Summaries...\n")
+  
+  # Gather data and sample number
+  tot_reads <- fread(paste0(env_summary$jm_dir,"/jm_workflow_stats.txt"))[,c(1,5)]
+  raw_dat <- ETstats_jm_out[[2]]
+  samp_names <- unique(raw_dat$SAMPLE)
+  
+  # Create output data frame
+  samp_hit_summary <- data.table()
+  
+  # Loop over each sample and generate output
+  for (i in 1:length(samp_names)){
+    
+    # Make df to store tmp data
+    tmp_hit_summary <- data.table()
+    
+    # Subset all data for specific sample
+    tmp_sample_dat <- subset(raw_dat, SAMPLE == samp_names[i])
+    tmp_sample_dat[is.na(tmp_sample_dat)] <- 0
+    tmp_tot_reads <- as.numeric(tot_reads[which(tot_reads$V1 == samp_names[i]), 2])
+    
+    # Subset data for vector, donor, and sio if present
+    tmp_vec_dat <- subset(tmp_sample_dat, GENOME1 %in% vector_names)
+    tmp_donor_dat <- subset(tmp_sample_dat, GENOME1 == donor_org)
+    tmp_sio_dat <- subset(tmp_sample_dat, GENOME1 == spike_in_org)
+
+    
+    # Temporary output data frame
+    tmp_hit_summary <- data.table(Sample = samp_names[i],
+                                  Total_Reads = tmp_tot_reads,
+                                  Map = sum(tmp_sample_dat$READ_FLT),
+                                  Map_Frac = (sum(tmp_sample_dat$READ_FLT) / tmp_tot_reads)*100,
+                                  Unq_BC = sum(tmp_sample_dat$UNIQ_FLT),
+                                  Vec_Unq = sum(tmp_vec_dat$UNIQ_FLT),
+                                  Vec_Frac = (sum(tmp_vec_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT))*100,
+                                  Donor_Unq = sum(tmp_donor_dat$UNIQ_FLT),
+                                  Donor_Frac = (sum(tmp_donor_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT))*100,
+                                  SIO_Unq = sum(tmp_sio_dat$UNIQ_FLT),
+                                  SIO_Frac = (sum(tmp_sio_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT))*100)
+    
+    tmp_hit_summary$Com_Unq <- tmp_hit_summary$Unq_BC - (tmp_hit_summary$Vec_Unq + tmp_hit_summary$Donor_Unq + tmp_hit_summary$SIO_Unq)
+    tmp_hit_summary$Com_Reads <- tmp_hit_summary$Map - sum(tmp_vec_dat$READ_FLT,tmp_donor_dat$READ_FLT,tmp_sio_dat$READ_FLT)
+    tmp_hit_summary$Com_UnqvEff <- tmp_hit_summary$Com_Unq / tmp_hit_summary$Total_Reads
+    tmp_hit_summary$Com_ReadsvEff <- tmp_hit_summary$Com_Reads / tmp_hit_summary$Total_Reads
+    
+    # Bind single sample data into final df
+    samp_hit_summary <- rbind(samp_hit_summary, tmp_hit_summary)
+    
+  }
+  
+  # Return final df of all sample-level hit summaries
+  return(samp_hit_summary)
+}
+
+
+## Function 10: Calculate transformation efficency from combined jm/lm output 
 ## RETURN: eff_out
 calc.trans.eff <- function(){
   
@@ -696,7 +771,7 @@ calc.trans.eff <- function(){
     tmp_lm_dat <- subset(ETstats_lm_out[[1]], SAMPLE == tmp_lm_name)
     
     # Merge lm data onto jm data 
-    tmp_comb_dat <- merge(tmp_jm_dat, tmp_lm_dat, by.x = "GENOME1", by.y = "GENOME1", all.x = T)
+    tmp_comb_dat <- merge(tmp_jm_dat, tmp_lm_dat, by.x = "GENOME1", by.y = "GENOME1", all.x = T) # This will cause a bug with SE samples
     
     # Get Spike in Org Data and remove from tmp_comb_dat
     sio_tmp_dat <- subset(tmp_comb_dat, GENOME1 == spike_in_org)
@@ -707,7 +782,7 @@ calc.trans.eff <- function(){
     sio_rpk_frac <- as.numeric(sio_tmp_dat$RPK_FLT_FRAC)
     sio_cov_frac <- as.numeric(sio_tmp_dat$COV_FLT_FRAC)
     tmp_eff_dat <- data.table(SAMPLE = tmp_comb_dat$SAMPLE.x,
-                              GENOME1 = tmp_comb_dat$GENOME1,
+                              GENOME1 = tmp_comb_dat$GENOME1, # This will cause a bug with SE samples 
                               SIZE = tmp_comb_dat$Size,
                               RPK_FRAC = tmp_comb_dat$RPK_FLT_FRAC * 100,
                               COV_FRAC = tmp_comb_dat$COV_FLT_FRAC * 100,
@@ -906,9 +981,13 @@ if (wf == "ss"){
       ETstats_jm_out <- jm.summary.se()
     }
     
+    # Calculate Sample-level hit summaries
+    samp_hit_summary <- hit.summary()
+      
     # Write Output
     write.table(ETstats_jm_out[[1]], file = paste0(out_dir,"/ETstats_jm_full.txt"), quote = F, row.names = F, sep = "\t")
     write.table(ETstats_jm_out[[2]], file = paste0(out_dir,"/ETstats_jm_summary.txt"), quote = F, row.names = F, sep = "\t")
+    write.table(samp_hit_summary, file = paste0(out_dir,"/ETstats_jm_sample_summary.txt"), quote = F, row.names = F, sep = "\t")
     
   }
   
