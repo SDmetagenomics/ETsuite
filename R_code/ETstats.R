@@ -11,8 +11,14 @@ if ("data.table" %in% installed.packages() == FALSE){
   q(save="no")
 }
 
-# Check plyr
+# Check dplyr
 if ("dplyr" %in% installed.packages() == FALSE){
+  print("Please install R package dplyr. Program quitting...")
+  q(save="no")
+}
+
+# Check plyr
+if ("plyr" %in% installed.packages() == FALSE){
   print("Please install R package dplyr. Program quitting...")
   q(save="no")
 }
@@ -33,6 +39,7 @@ if ("ggplot2" %in% installed.packages() == FALSE){
 ### Load packages
 suppressMessages(library(data.table, quietly = T))
 suppressMessages(library(dplyr, quietly = T))
+suppressMessages(library(plyr, quietly = T))
 suppressMessages(library(ggplot2, quietly = T))
 #suppressMessages(library(ggforce, quietly = T))
 
@@ -91,6 +98,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | length(args) == 0) {
       -q: MapQ cutoff score (Default: 20)
       -m: Maximum read mismatches allowed (Default: 5; SE only)
       -C: Custom filter function (Overrides PE filters; must be quoted)
+      -R: Number of good reads to count a barcode in a genome (Default: 1)
       -E: Turn on basic transformation efficency calculation (Default: OFF)
       -S: Spike in control organism for efficency calculation (Default: Bacteroides_thetaiotaomicron_VPI_5482_GCF_000011065.1)
       -D: Conjugal Donor organism (Default: Escherichia_coli_BW25113_GCF_000750555.1)
@@ -176,6 +184,12 @@ if("-m" %in% args){
 # Custom filter function (Overrides PE filters)
 if("-C" %in% args){
   custom_filt <- args[which(args == "-C") + 1]
+}
+
+# Number of good reads to count a barcode in a genome (Default: 1)
+bc_rep <- 1
+if("-R" %in% args){
+  bc_rep <- as.numeric(args[which(args == "-R") + 1])
 }
 
 # Calculate transformation efficency (Default: FALSE)
@@ -488,6 +502,7 @@ jm.summary.pe <- function(){
                                      summarise(READ_FLT = n(),
                                                UNIQ_FLT = n_distinct(barcodes),
                                                BPR_FLT = n_distinct(barcodes) / n(),
+                                               UNIQ_nR_FLT = sum(plyr::count(barcodes)[,2] >= bc_rep),
                                                MMQ1_FLT = mean(MAPQ1),
                                                MMM1_FLT = mean(NM1),
                                                MLEN1_FLT = mean(LEN1),
@@ -509,8 +524,8 @@ jm.summary.pe <- function(){
   
   # Merge all and filtered hits and create output
   pe_hits_out <- merge(all_hits, filt_hits, by = c("SAMPLE", "GENOME1"), all.x = T)
-  pe_hits_out_full <- pe_hits_out[order(SAMPLE, -UNIQ_FLT)]
-  pe_hits_out_summary <- pe_hits_out_full[,c(1:4,16:18)]
+  pe_hits_out_full <- pe_hits_out[order(SAMPLE, -UNIQ_nR_FLT)]
+  pe_hits_out_summary <- pe_hits_out_full[,c(1:4,16:19)]
   pe_hits_out_list <- list(pe_hits_out_full, pe_hits_out_summary)
   return(pe_hits_out_list)
   
@@ -725,14 +740,14 @@ hit.summary <- function(){
     tmp_hit_summary <- data.table(Sample = samp_names[i],
                                   Total_Reads = tmp_tot_reads,
                                   Map = sum(tmp_sample_dat$READ_FLT),
-                                  Map_Frac = (sum(tmp_sample_dat$READ_FLT) / tmp_tot_reads)*100,
+                                  Map_Frac = (sum(tmp_sample_dat$READ_FLT) / tmp_tot_reads),
                                   Unq_BC = sum(tmp_sample_dat$UNIQ_FLT),
                                   Vec_Unq = sum(tmp_vec_dat$UNIQ_FLT),
-                                  Vec_Frac = (sum(tmp_vec_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT))*100,
+                                  Vec_Frac = (sum(tmp_vec_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT)),
                                   Donor_Unq = sum(tmp_donor_dat$UNIQ_FLT),
-                                  Donor_Frac = (sum(tmp_donor_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT))*100,
+                                  Donor_Frac = (sum(tmp_donor_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT)),
                                   SIO_Unq = sum(tmp_sio_dat$UNIQ_FLT),
-                                  SIO_Frac = (sum(tmp_sio_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT))*100)
+                                  SIO_Frac = (sum(tmp_sio_dat$READ_FLT) / sum(tmp_sample_dat$READ_FLT)))
     
     tmp_hit_summary$Com_Unq <- tmp_hit_summary$Unq_BC - (tmp_hit_summary$Vec_Unq + tmp_hit_summary$Donor_Unq + tmp_hit_summary$SIO_Unq)
     tmp_hit_summary$Com_Reads <- tmp_hit_summary$Map - sum(tmp_vec_dat$READ_FLT,tmp_donor_dat$READ_FLT,tmp_sio_dat$READ_FLT)
