@@ -34,7 +34,7 @@ file.arg.name <- "--file="
 script.name <- sub(file.arg.name, "", initial.options[grep(file.arg.name, initial.options)])
 script.basename <- dirname(script.name)
 
-# Set up default database paths (note: normalizePath creates a full path from relative path)
+# Set up default database paths (note: normalizePath creates a full path from relative path)    #### NEED TO SUPPRESS WARNIGNS IF THESE PATHS ARE NOT FOUND / PUT REASONABLE DEFAULTS SO THERE ARE NOT WARNINGS
 ad <- normalizePath(paste0(script.basename,"/../db/ETseq_2_4_adap.fa")) #adapter sequences
 md <- normalizePath(paste0(script.basename,"/../db/models.fa")) #model sequences
 scripts <- normalizePath(paste0(script.basename,"/../scripts")) #accesory scripts directory
@@ -133,13 +133,13 @@ if("-ad" %in% args){
 
 # MMin Length of Adapter Match (Default: 5)
 am <- 5
-if("-m" %in% args){
+if("-am" %in% args){
   am <- as.numeric(args[which(args == "-am") + 1])
 }
 
 # Min base quality score (Default: 20)
 qs <- 20
-if("-q" %in% args){
+if("-qs" %in% args){
   qs <- as.numeric(args[which(args == "-qs") + 1])
 }
 
@@ -577,7 +577,7 @@ if (wf == "jm"){
     }
   
   
-    ### Identifying and Trimming Models (ONLY 1 THREAD POSSIBLE w/ --info-file)
+    ### Identifying and Trimming Models
   
     # Run model finding for loop on fwd reads only but include reverse 
     for (i in 1:nrow(batch_file)){
