@@ -1,9 +1,10 @@
 #!/usr/bin/env Rscript
 
 ### Load Test Data
+# rd <- normalizePath("../Studies/20_1_21_BR_35_ET/et_reads/")
 # batch_file <- read.table("../Studies/20_1_21_BR_35_ET/et_batch_file.txt")
 # ca_info <- fread("../Studies/20_1_21_BR_35_ET/ET_mapper/BR_35_ET_4.info.filt")
-# md <- "db/ETseq_newprimers_allmodels_v2.fa"
+# md <- normalizePath("db/ETseq_newprimers_allmodels_v2.fa")
 # out_dir <-"~/Desktop"
 # bl <- 20
 # fe <- 1
@@ -20,10 +21,10 @@ if ("stringr" %in% installed.packages() == F){
   q(save="no")
 }
 
+
 ### Load Libraries
 library(data.table)
 library(stringr)
-
 
 
 ### Set up path variables for associated scripts and databases
@@ -86,7 +87,9 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       -rl: Min final read length (Default: 40)
       
     Read Mapping Options:
-    
+      
+      -N: Read length (Default: 150)
+      -M: Min post trim fwd read size for PE mapping (Default: 20)
       -X: Maximum insert length (Default: 500)
       
     Program Control:
@@ -185,6 +188,18 @@ if("-rl" %in% args){
 
 
 ## Read Mapping Options
+
+# Sequencing read length (Default: 150 bp)
+sq_rd_len <- 150
+if("-N" %in% args){
+  sq_rd_len <- as.numeric(args[which(args == "-N") + 1])
+}
+
+# Min post trim fwd read size for PE mapping (Default: 20)
+min_fwd_size <- 20
+if("-M" %in% args){
+  min_fwd_size <- as.numeric(args[which(args == "-M") + 1])
+}
 
 # Max insert length (Default: 500 bp)
 isl <- 500
@@ -490,9 +505,25 @@ pull.run.stats <- function(){
 }
 
 
+## Function 4: Check post model trim read length for given read length
+check.mod.short <- function(){
+  
+  ## Get max model length
+  mod_lengths <- as.numeric(system(paste0("grep -v '^>' ",
+                                          md,
+                                          " | awk '{ print length }'"), intern = T))
+  max_mod_length <- max(mod_lengths)
+  
+  ## Compare to sequencing read length
+  max_fwd_size <- sq_rd_len - max_mod_length
+  fwd_read_short <- max_fwd_size >= min_fwd_size
+  
+  # Return output
+  return(fwd_read_short)
+  
+}
 
 
-## Function X
 
 #### END FUNCTION DEFINE ####
 
@@ -630,25 +661,56 @@ if (wf == "jm"){
     # Run bowtie mapping for loop for PAIRED END mapping
     for (i in 1:nrow(batch_file)){
 
-      # Indicate what program is doing
-      cat(paste0("\nMapping: ",batch_file[i,1],"\n"))
-
-      # run bowtie mapping
-      system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
-                    " -p ",cpu," -X ",isl, # specify bowtie options
-                    " -1 ",out_dir,"/",batch_file[i,3],".clean2", # specify fwd reads
-                    " -2 ",out_dir,"/",batch_file[i,4],".clean2", # specify rev reads
-                    " -S ",out_dir,"/",batch_file[i,1],".sam", # specify sam file output
-                    " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
+      ## Perform PE or SE mapping based on if trimming model makes fwd reads too short
+      
+      # check if fwd reads will be too short for PE mapping
+      fwd_read_short <- check.mod.short()
+      
+      # IF fwd read length after model trim >= var
+      if (fwd_read_short  == FALSE){
+        
+        # Indicate what program is doing
+        cat(paste0("\nMapping PE Reads For: ",batch_file[i,1],"\n"))
+        
+        # run bowtie mapping
+        system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
+                      " -p ",cpu," -X ",isl, # specify bowtie options
+                      " -1 ",out_dir,"/",batch_file[i,3],".clean2", # specify fwd reads
+                      " -2 ",out_dir,"/",batch_file[i,4],".clean2", # specify rev reads
+                      " -S ",out_dir,"/",batch_file[i,1],".sam", # specify sam file output
+                      " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
     
+      }  
+      
+      # IF fwd read length after model trim <= var
+      if (fwd_read_short  == TRUE){
+        
+        # Indicate what program is doing
+        cat(paste0("\nMapping PE Reads For: ",batch_file[i,1],"\n"))
+        
+        system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
+                      " -p ",cpu, # specify bowtie options
+                      " -U ",out_dir,"/",batch_file[i,4],".clean2", # specify rev reads
+                      " -S ",out_dir,"/",batch_file[i,1],".sam", # specify sam file output
+                      " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
+      
+      }
+        
       # Convert SAM to BAM format with sorting and indexing
       system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
                     samtools sort ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
                     samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
                   
-      # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))
-    
+      # Run read hit stats script for pe or se mapping output 
+      
+      if (fwd_read_short  == FALSE){
+        system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))
+      }
+      
+      if (fwd_read_short  == TRUE){
+        system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))
+      }
+      
       # Integrate hit reads with barcodes into combined output and write
       hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".tmphits"), header = T, stringsAsFactors = F)
       bc_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
@@ -657,8 +719,8 @@ if (wf == "jm"){
       write.table(merge_dat, paste0(out_dir,"/",batch_file[i,1],".hits"), row.names = F, quote = F, sep = "\t")
     
       cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file[i,1],".hits")))
-      cat("\nSneak peak of unfiltered results:\n")
-      print(table(merge_dat[which(merge_dat$GENOME1 == merge_dat$GENOME2),]$GENOME1))
+      #cat("\nSneak peak of unfiltered results:\n")
+      #print(table(merge_dat[which(merge_dat$GENOME1 == merge_dat$GENOME2),]$GENOME1))
       cat("\n")
       
     }
