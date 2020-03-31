@@ -35,7 +35,7 @@ if("-h" %in% args | !("-g" %in% args) | length(args) == 0) {
     Additional Options:
     
       -o: Output directory (Default: ./ETdb)
-      -s: Produce Genome Stats (Default: FALSE)
+      -s: Don't Produce Genome Stats (Default: TRUE)
       -p: Run prodigal to predict genes (Default: FALSE)
       -cpu: Number of cores (Default: 1)
       -h: Bring up this help menu\n\n")
@@ -67,9 +67,9 @@ if("-o" %in% args){
 } else{dir.create(out_dir, recursive = T)}
 
 # Produce Genome Stats (Default: FALSE)
-stats_run <- FALSE
+stats_run <- TRUE
 if("-s" %in% args){
-  stats_run <- TRUE
+  stats_run <- FALSE
 }
 
 # Run prodigal to predict genes (Default: FALSE)
@@ -172,11 +172,14 @@ write.table(scaff2bin,
 ### Build bowtie2 index
 
 # Indicate current operation
-cat("\nBuilding bowtie2 index\n")
+cat("\nBuilding bowtie2 index...\n")
 
 # Build bowtie2 index from All_Genomes.txt
 dir.create(paste0(out_dir,"/bt2"), recursive = T)
-system(paste0("bowtie2-build ",out_dir,"/All_Genomes.fa ",out_dir,"/bt2/All_Genomes"),
+system(paste0("bowtie2-build",
+              " --threads ",cpu,
+              " ",out_dir,"/All_Genomes.fa ",
+              out_dir,"/bt2/All_Genomes"),
        ignore.stdout = T,
        ignore.stderr = T)
 
@@ -186,7 +189,7 @@ system(paste0("bowtie2-build ",out_dir,"/All_Genomes.fa ",out_dir,"/bt2/All_Geno
 
 if(prodigal_run == T){
   # Indicate current operation
-  cat("Predicting Proteins with Prodigal\n")
+  cat("Predicting Proteins with Prodigal...\n")
 
   # Predict proteins for each genome with prodigal
   dir.create(paste0(out_dir,"/Proteins"), recursive = T)
