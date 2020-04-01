@@ -4,7 +4,7 @@
 # rd <- normalizePath("../Studies/20_1_21_BR_35_ET/et_reads/")
 # batch_file <- read.table("../Studies/20_1_21_BR_35_ET/et_batch_file.txt")
 # ca_info <- fread("../Studies/20_1_21_BR_35_ET/ET_mapper/BR_35_ET_4.info.filt")
-# md <- normalizePath("db/ETseq_newprimers_allmodels_v2.fa")
+# md <- normalizePath("db/ETseq6_VcCas_mariner_v2.fa")
 # out_dir <-"~/Desktop"
 # bl <- 20
 # fe <- 1
@@ -247,6 +247,13 @@ find.bc <- function(){
   bc_flank <- system(paste0("grep -o \"^NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
   bc_flank <- unique(bc_flank)
   
+  
+  # Identify flanks that are < fe+1 distance from each other and only keep 1 of those at that similarity level
+  bc_dist <- hclust(as.dist(adist(bc_flank)))
+  bc_cut <- cutree(bc_dist, h = fe+1)
+  bc_flank <- bc_flank[!duplicated(bc_cut)]
+  
+  # Run for loop for each element in batch file
   for (i in 1:nrow(batch_file)){
     
     # Indicate what program is doing
@@ -264,14 +271,14 @@ find.bc <- function(){
     # create tmp barcode storage data frame
     bc_tmp_store <- data.frame()
     
-    # loop over each possible barcode flanking sequences 
+    # loop over each possible barcode flanking sequences
     for (j in 1:length(bc_flank)){
       
       # Store length of flank sequence j
       flank_length <- nchar(bc_flank[j])
       
       # parse ca_info for those hits with aproximate flank sequence match within error range
-      bc_flank_i_matches <- ca_info[agrep(bc_flank[j], ca_info$V6, max = list(ins = 0, del = 0, sub = fe)),c(1,6)]
+      bc_flank_i_matches <- ca_info[agrep(bc_flank[j], ca_info$V6, max = list(ins = 0, del = 0, sub = fe), ignore.case = T),c(1,6)]
       
       # skip iteration if no flank sequence match
       if(nrow(bc_flank_i_matches) == 0){
@@ -279,7 +286,7 @@ find.bc <- function(){
       }
       
       # Use aproximate regex to identify the flank sequence and 20bp upstream (barcode) or whatever bl is
-      matches <- aregexec(paste0(bc_flank[j],".{0,",bl,"}"), bc_flank_i_matches$V6, max = list(ins = 0, del = 0, sub = fe))
+      matches <- aregexec(paste0(bc_flank[j],".{0,",bl,"}"), bc_flank_i_matches$V6, max = list(ins = 0, del = 0, sub = fe), ignore.case = T)
       
       # Create list of sequences aprox matching flank + bl
       match_seqs <- regmatches(bc_flank_i_matches$V6, matches)
@@ -516,7 +523,7 @@ check.mod.short <- function(){
   
   ## Compare to sequencing read length
   max_fwd_size <- sq_rd_len - max_mod_length
-  fwd_read_short <- max_fwd_size >= min_fwd_size
+  fwd_read_short <- max_fwd_size < min_fwd_size
   
   # Return output
   return(fwd_read_short)
@@ -665,12 +672,12 @@ if (wf == "jm"){
       
       # check if fwd reads will be too short for PE mapping
       fwd_read_short <- check.mod.short()
-      
+
       # IF fwd read length after model trim >= var
-      if (fwd_read_short  == FALSE){
+      if (fwd_read_short == FALSE){
         
         # Indicate what program is doing
-        cat(paste0("\nMapping PE Reads For: ",batch_file[i,1],"\n"))
+        cat(paste0("\nMapping fwd/rev Reads For: ",batch_file[i,1],"\n"))
         
         # run bowtie mapping
         system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
@@ -683,10 +690,10 @@ if (wf == "jm"){
       }  
       
       # IF fwd read length after model trim <= var
-      if (fwd_read_short  == TRUE){
+      if (fwd_read_short == TRUE){
         
         # Indicate what program is doing
-        cat(paste0("\nMapping PE Reads For: ",batch_file[i,1],"\n"))
+        cat(paste0("\nMapping rev Reads For: ",batch_file[i,1],"\n"))
         
         system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                       " -p ",cpu, # specify bowtie options
