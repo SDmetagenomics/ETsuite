@@ -247,11 +247,12 @@ find.bc <- function(){
   bc_flank <- system(paste0("grep -o \"^NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
   bc_flank <- unique(bc_flank)
   
-  
-  # Identify flanks that are < fe+1 distance from each other and only keep 1 of those at that similarity level
-  bc_dist <- hclust(as.dist(adist(bc_flank)))
-  bc_cut <- cutree(bc_dist, h = fe+1)
-  bc_flank <- bc_flank[!duplicated(bc_cut)]
+  ## Identify flanks that are < fe+1 distance from each other and only keep 1 of those at that similarity level
+  if (length(bc_flank) >= 2){
+    bc_dist <- hclust(as.dist(adist(bc_flank)))
+    bc_cut <- cutree(bc_dist, h = fe+1)
+    bc_flank <- bc_flank[!duplicated(bc_cut)]
+  }
   
   # Run for loop for each element in batch file
   for (i in 1:nrow(batch_file)){
