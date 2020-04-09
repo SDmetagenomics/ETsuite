@@ -3,11 +3,11 @@
 ### Load Test Data
 # rd <- normalizePath("../Studies/20_1_21_BR_35_ET/et_reads/")
 # batch_file <- read.table("../Studies/20_1_21_BR_35_ET/et_batch_file.txt")
-# ca_info <- fread("../Studies/20_1_21_BR_35_ET/ET_mapper/BR_35_ET_4.info.filt")
-# md <- normalizePath("db/ETseq6_VcCas_mariner_v2.fa")
-# out_dir <-"~/Desktop"
-# bl <- 20
-# fe <- 1
+#  ca_info <- fread("../Studies/20_2_27_BR_30_ET_KlebCurve_NT/ET_mapper_dual/jm/raw/BR_30_ET_1.info.filt")
+#  md <- normalizePath("db/ETseq6_VcCas_mariner_v2.fa")
+# # out_dir <-"~/Desktop"
+# # bl <- 20
+# # fe <- 1
 
 
 ### Check Libraries
@@ -242,6 +242,14 @@ dir.create(out_dir, recursive = T)
 ## Function 1: Identify Barcodes
 # Write: bc_out ; # Return: bc_flank
 find.bc <- function(){
+  
+  ### TESTING:
+  # ca_info <- fread("../Studies/20_2_27_BR_30_ET_KlebCurve_NT/ET_mapper_dual/jm/raw/BR_30_ET_1.info.filt")
+  # md <- normalizePath("db/ETseq6_VcCas_mariner_v2.fa")
+  # # out_dir <-"~/Desktop"
+  #  bl <- 20
+  #  fe <- 1
+  
   
   # Identify flanking region to use as barcode query
   bc_flank <- system(paste0("grep -o \"^NN.*.NN\" ",md," | sed 's/N//g'"), intern = T)
@@ -574,13 +582,13 @@ if (wf == "jm"){
   if(ncol(batch_file) == 3){
     paired_end_data <- FALSE
     cat("\nInput Reads Identifed as Single End...Begining Analysis\n\n")
-    cat(" Paired End = FALSE", file = paste0(out_dir,"/run_log.txt"), append = T)
+    cat(" Paired End: FALSE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
   }
   
   if(ncol(batch_file) == 4){
     paired_end_data <- TRUE
     cat("\nInput Data Identifed as Paired End...Begining Analysis\n\n")
-    cat(" Paired End = TRUE", file = paste0(out_dir,"/run_log.txt"), append = T)
+    cat(" Paired End: TRUE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
   } 
   
   # If tests fail exit with error
@@ -666,7 +674,7 @@ if (wf == "jm"){
   
     ### Run bowtie mapping 
 
-    # Run bowtie mapping for loop for PAIRED END mapping
+    # Run bowtie mapping for loop
     for (i in 1:nrow(batch_file)){
 
       ## Perform PE or SE mapping based on if trimming model makes fwd reads too short
@@ -674,13 +682,13 @@ if (wf == "jm"){
       # check if fwd reads will be too short for PE mapping
       fwd_read_short <- check.mod.short()
 
-      # IF fwd read length after model trim >= var
+      ## IF fwd read length after model trim long enough
       if (fwd_read_short == FALSE){
         
         # Indicate what program is doing
         cat(paste0("\nMapping fwd/rev Reads For: ",batch_file[i,1],"\n"))
         
-        # run bowtie mapping
+        # run bowtie mapping using fwd and rev reads
         system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                       " -p ",cpu," -X ",isl, # specify bowtie options
                       " -1 ",out_dir,"/",batch_file[i,3],".clean2", # specify fwd reads
@@ -690,12 +698,13 @@ if (wf == "jm"){
     
       }  
       
-      # IF fwd read length after model trim <= var
+      ## IF fwd read length after model trim too short
       if (fwd_read_short == TRUE){
         
         # Indicate what program is doing
         cat(paste0("\nMapping rev Reads For: ",batch_file[i,1],"\n"))
         
+        # run bowtime mapping using rev reads only
         system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                       " -p ",cpu, # specify bowtie options
                       " -U ",out_dir,"/",batch_file[i,4],".clean2", # specify rev reads
@@ -709,17 +718,19 @@ if (wf == "jm"){
                     samtools sort ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
                     samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
                   
-      # Run read hit stats script for pe or se mapping output 
+      ## Run read hit stats script for pe or se mapping output
       
+      # If fwd read long enough and PE mapping done use bam_pe_stats.py
       if (fwd_read_short  == FALSE){
         system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))
       }
       
+      # If fwd read too short and reverse read (SE) mapping done use bam_se_stats.py
       if (fwd_read_short  == TRUE){
         system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file[i,1],".sorted.bam > ",out_dir,"/",batch_file[i,1],".tmphits"))
       }
       
-      # Integrate hit reads with barcodes into combined output and write
+      # Integrate hit reads with barcodes into combined output and write to disk
       hit_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".tmphits"), header = T, stringsAsFactors = F)
       bc_dat <- fread(paste0(out_dir,"/",batch_file[i,1],".bc"), header = T, stringsAsFactors = F)
       merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
@@ -732,7 +743,16 @@ if (wf == "jm"){
       cat("\n")
       
     }
-
+    
+    
+    ### Log Mapping Behaivor - fwd/rev or only rev due to fwd read trimming length
+    if (fwd_read_short  == FALSE){
+      cat(" Paired End Map: TRUE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
+    }
+    if (fwd_read_short  == TRUE){
+      cat(" Paired End Map: FALSE\n", file = paste0(out_dir,"/run_log.txt"), append = T)
+    }
+    
     ### Clean up files and create out_dir structure
     clean.up()
     
