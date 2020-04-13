@@ -544,6 +544,7 @@ jm.summary.pe <- function(){
                                      group_by(GENOME1,model) %>% ## This may need to be fixed for pe if genomes are not equal (decide which read better for GENOME call)
                                      summarise(RDS = n(),
                                                UBC = n_distinct(barcodes),
+                                               RDSnR = sum(plyr::count(barcodes)[which(plyr::count(barcodes)[,2] >= bc_rep),2]),
                                                UBCnR = sum(plyr::count(barcodes)[,2] >= bc_rep),
                                                BCPR = n_distinct(barcodes) / n()))
                                                
@@ -551,6 +552,7 @@ jm.summary.pe <- function(){
     tmp_filt_summary <- data.table(tmp_filt_summary,
                                    RDS_FRC = tmp_filt_summary$RDS/sum(tmp_filt_summary$RDS),
                                    UBC_FRC = tmp_filt_summary$UBC/sum(tmp_filt_summary$UBC),
+                                   RDSnR_FRC = tmp_filt_summary$RDSnR/sum(tmp_filt_summary$RDSnR),
                                    UBCnR_FRC = tmp_filt_summary$UBCnR/sum(tmp_filt_summary$UBCnR))
     
     ## Hit Summary Breakdown - Normalize to spike in org #### POSSIBLE BUG IF SIO HITS MULTIPLE MODELS...USED MAX TO SELECT MOST ABUNDANT
@@ -561,6 +563,7 @@ jm.summary.pe <- function(){
     tmp_filt_summary <- data.frame(tmp_filt_summary,
                                    RDS_NRM = tmp_filt_summary$RDS_FRC/max(tmp_sio$RDS_FRC),
                                    UBC_NRM = tmp_filt_summary$UBC_FRC/max(tmp_sio$UBC_FRC),
+                                   RDS_NRM = tmp_filt_summary$RDSnR_FRC/max(tmp_sio$RDSnR_FRC),
                                    UBCnR_NRM = tmp_filt_summary$UBCnR_FRC/max(tmp_sio$UBCnR_FRC))
     
     
@@ -588,7 +591,7 @@ jm.summary.pe <- function(){
   filt_hits <-  merge(all_cat, filt_hits, by = c("SAMPLE", "GENOME1", "model"), all.x = T)
   filt_hits <- filt_hits[order(filt_hits$SAMPLE, -filt_hits$RDS, filt_hits$GENOME1, filt_hits$model),]
   filt_hits[is.na(filt_hits)] <- 0
-  colnames(filt_hits)[c(2,3,14)] <- c("GENOME", "MODEL", "BADBCR") 
+  colnames(filt_hits)[c(2,3,17)] <- c("GENOME", "MODEL", "BADBCR") 
   
   # return output
   return(filt_hits)
