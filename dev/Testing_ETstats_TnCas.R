@@ -21,12 +21,12 @@ hits_filt <-  subset(e_coli_hits, GENOME1 == GENOME2 & MAPQ1 > 0 & MAPQ2 > 0 & N
 
 ### Parse mapping locations and account for stranded-ness 
 hits_pos_strand <- subset(hits_filt, STRAND1 == "+")
-loci_pos_strand <- count(hits_pos_strand$START1)
+loci_pos_strand <- plyr::count(hits_pos_strand$START1)
 loci_pos_strand$dir <- "+"
 
 
 hits_neg_strand <- subset(hits_filt, STRAND1 == "-")
-loci_neg_strand <- count(hits_neg_strand$END1)
+loci_neg_strand <- plyr::count(hits_neg_strand$END1)
 loci_neg_strand$dir <- "-"
 
 loci <- rbind(loci_pos_strand, loci_neg_strand)

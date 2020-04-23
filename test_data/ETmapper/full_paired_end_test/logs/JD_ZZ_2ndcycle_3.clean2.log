@@ -1,0 +1,271 @@
+This is cutadapt 2.5 with Python 3.6.4
+Command line parameters: -A file:/home/sdiamond/bin/scripts/Dev/ETsuite/db/models.fa -O 10 -j 8 -e 0.02 --minimum-length 40 --pair-filter=both -o full_paired_end_test/JD_ZZ_2ndcycle_3_S3_L001_R1_001.fastq.clean2 -p full_paired_end_test/JD_ZZ_2ndcycle_3_S3_L001_R2_001.fastq.clean2 full_paired_end_test/JD_ZZ_2ndcycle_3_S3_L001_R1_001.fastq.clean full_paired_end_test/JD_ZZ_2ndcycle_3_S3_L001_R2_001.fastq.clean
+Processing reads on 8 cores in paired-end mode ...
+Finished in 3.54 s (24 us/read; 2.53 M reads/minute).
+
+=== Summary ===
+
+Total read pairs processed:            149,243
+  Read 1 with adapter:                       0 (0.0%)
+  Read 2 with adapter:                  45,209 (30.3%)
+Pairs that were too short:               6,924 (4.6%)
+Pairs written (passing filters):       142,319 (95.4%)
+
+Total basepairs processed:    26,394,238 bp
+  Read 1:     7,538,853 bp
+  Read 2:    18,855,385 bp
+Total written (filtered):     23,817,730 bp (90.2%)
+  Read 1:     7,384,002 bp
+  Read 2:    16,433,728 bp
+
+=== Second read: Adapter model_magic_Tn5 ===
+
+Sequence: NNNNNNGATGTCCACGAGGTCTCTNNNNNNNNNNNNNNNNNNNNCGTACGCTGCAGGTCGACCAGCGGCCGGCCGGTTGAGATGTGTATAAGAGACAG; Type: regular 3'; Length: 98; Trimmed: 212 times.
+
+No. of allowed errors:
+0-49 bp: 0; 50-72 bp: 1
+
+Bases preceding removed adapters:
+  A: 7.1%
+  C: 70.8%
+  G: 20.3%
+  T: 1.9%
+  none/other: 0.0%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+10	210	0.1	0	210
+11	2	0.0	0	2
+
+
+=== Second read: Adapter model_magic_mariner ===
+
+Sequence: NNNNNNGATGTCCACGAGGTCTCTNNNNNNNNNNNNNNNNNNNNCGTACGCTGCAGGTCGACCAGCGGCCGGCCAGACCGGGGACTTATCAGCCAACCTGT; Type: regular 3'; Length: 101; Trimmed: 0 times.
+
+=== Second read: Adapter model_revcomp_mariner ===
+
+Sequence: ACAGGTTGGCTGATAAGTCCCCGGTCTGGCCGGCCGCTGGTCGACCTGCAGCGTACGNNNNNNNNNNNNNNNNNNNNAGAGACCTCGTGGACATCNNNNNN; Type: regular 3'; Length: 101; Trimmed: 1668 times.
+
+No. of allowed errors:
+0-49 bp: 0; 50-75 bp: 1
+
+Bases preceding removed adapters:
+  A: 99.0%
+  C: 0.0%
+  G: 0.0%
+  T: 0.0%
+  none/other: 1.0%
+WARNING:
+    The adapter is preceded by "A" extremely often.
+    The provided adapter sequence could be incomplete at its 3' end.
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+10	2	0.1	0	2
+12	3	0.0	0	3
+13	4	0.0	0	4
+15	9	0.0	0	9
+16	3	0.0	0	3
+17	4	0.0	0	4
+18	3	0.0	0	3
+19	8	0.0	0	8
+20	5	0.0	0	5
+21	5	0.0	0	5
+23	5	0.0	0	5
+24	9	0.0	0	9
+25	4	0.0	0	4
+26	4	0.0	0	4
+27	4	0.0	0	4
+28	1	0.0	0	1
+30	6	0.0	0	6
+31	2	0.0	0	2
+32	7	0.0	0	7
+33	9	0.0	0	9
+34	3	0.0	0	3
+35	4	0.0	0	4
+37	2	0.0	0	2
+38	4	0.0	0	4
+40	5	0.0	0	5
+42	1	0.0	0	1
+43	2	0.0	0	2
+44	1	0.0	0	1
+45	3	0.0	0	3
+46	2	0.0	0	2
+47	3	0.0	0	3
+49	10	0.0	0	10
+50	9	0.0	1	9
+51	2	0.0	1	2
+52	1	0.0	1	1
+54	4	0.0	1	4
+55	1	0.0	1	1
+56	7	0.0	1	5 2
+57	5	0.0	1	5
+59	1	0.0	1	1
+60	1	0.0	1	1
+61	5	0.0	1	4 1
+62	3	0.0	1	3
+64	18	0.0	1	17 1
+65	20	0.0	1	20
+66	38	0.0	1	38
+67	46	0.0	1	45 1
+68	31	0.0	1	31
+69	8	0.0	1	8
+70	9	0.0	1	9
+71	42	0.0	1	42
+72	40	0.0	1	39 1
+73	19	0.0	1	17 2
+74	26	0.0	1	25 1
+75	8	0.0	1	5 3
+76	37	0.0	1	34 3
+77	50	0.0	1	46 4
+78	60	0.0	1	55 5
+79	17	0.0	1	17
+80	31	0.0	1	30 1
+81	107	0.0	1	105 2
+82	32	0.0	1	31 1
+83	27	0.0	1	27
+84	26	0.0	1	25 1
+85	18	0.0	1	17 1
+86	22	0.0	1	22
+87	4	0.0	1	4
+88	10	0.0	1	10
+89	9	0.0	1	9
+90	32	0.0	1	31 1
+91	54	0.0	1	50 4
+92	19	0.0	1	16 3
+93	18	0.0	1	18
+94	45	0.0	1	44 1
+95	23	0.0	1	23
+96	23	0.0	1	23
+97	17	0.0	1	16 1
+98	38	0.0	1	36 2
+99	18	0.0	1	18
+100	24	0.0	2	15 9
+101	363	0.0	2	348 15
+102	23	0.0	2	20 3
+103	9	0.0	2	9
+104	24	0.0	2	21 3
+105	7	0.0	2	3 4
+
+
+=== Second read: Adapter model_revcomp_Tn5 ===
+
+Sequence: CTGTCTCTTATACACATCTCAACCGGCCGGCCGCTGGTCGACCTGCAGCGTACGNNNNNNNNNNNNNNNNNNNNAGAGACCTCGTGGACATCNNNNNN; Type: regular 3'; Length: 98; Trimmed: 43329 times.
+
+No. of allowed errors:
+0-49 bp: 0; 50-72 bp: 1
+
+Bases preceding removed adapters:
+  A: 99.3%
+  C: 0.1%
+  G: 0.1%
+  T: 0.0%
+  none/other: 0.4%
+WARNING:
+    The adapter is preceded by "A" extremely often.
+    The provided adapter sequence could be incomplete at its 3' end.
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+10	79	0.1	0	79
+11	538	0.0	0	538
+12	623	0.0	0	623
+13	601	0.0	0	601
+14	1176	0.0	0	1176
+15	650	0.0	0	650
+16	1277	0.0	0	1277
+17	1570	0.0	0	1570
+18	1416	0.0	0	1416
+19	121	0.0	0	121
+20	317	0.0	0	317
+21	691	0.0	0	691
+22	804	0.0	0	804
+23	358	0.0	0	358
+24	1446	0.0	0	1446
+25	439	0.0	0	439
+26	39	0.0	0	39
+27	533	0.0	0	533
+28	876	0.0	0	876
+29	416	0.0	0	416
+30	437	0.0	0	437
+31	563	0.0	0	563
+32	624	0.0	0	624
+33	292	0.0	0	292
+34	1265	0.0	0	1265
+35	551	0.0	0	551
+36	372	0.0	0	372
+37	278	0.0	0	278
+38	50	0.0	0	50
+39	439	0.0	0	439
+40	186	0.0	0	186
+41	286	0.0	0	286
+42	273	0.0	0	273
+43	1039	0.0	0	1039
+44	457	0.0	0	457
+45	361	0.0	0	361
+46	661	0.0	0	661
+47	112	0.0	0	112
+48	501	0.0	0	501
+49	646	0.0	0	646
+50	378	0.0	1	315 63
+51	745	0.0	1	698 47
+52	507	0.0	1	444 63
+53	213	0.0	1	145 68
+54	280	0.0	1	232 48
+55	401	0.0	1	367 34
+56	659	0.0	1	618 41
+57	397	0.0	1	367 30
+58	288	0.0	1	159 129
+59	149	0.0	1	80 69
+60	274	0.0	1	246 28
+61	199	0.0	1	181 18
+62	592	0.0	1	545 47
+63	417	0.0	1	408 9
+64	610	0.0	1	597 13
+65	394	0.0	1	384 10
+66	280	0.0	1	267 13
+67	1389	0.0	1	1343 46
+68	674	0.0	1	654 20
+69	282	0.0	1	262 20
+70	554	0.0	1	538 16
+71	492	0.0	1	446 46
+72	391	0.0	1	324 67
+73	266	0.0	1	242 24
+74	860	0.0	1	781 79
+75	386	0.0	1	33 353
+76	35	0.0	1	17 18
+77	177	0.0	1	128 49
+78	16	0.0	1	13 3
+79	65	0.0	1	46 19
+80	328	0.0	1	307 21
+81	215	0.0	1	190 25
+82	199	0.0	1	194 5
+83	459	0.0	1	444 15
+84	279	0.0	1	272 7
+85	146	0.0	1	143 3
+86	89	0.0	1	88 1
+87	337	0.0	1	326 11
+88	98	0.0	1	95 3
+89	278	0.0	1	260 18
+90	72	0.0	1	69 3
+91	248	0.0	1	239 9
+92	122	0.0	1	107 15
+93	81	0.0	1	76 5
+94	281	0.0	1	266 15
+95	151	0.0	1	124 27
+96	199	0.0	1	162 37
+97	203	0.0	1	135 68
+98	3270	0.0	1	3133 137
+99	148	0.0	1	143 5
+100	141	0.0	1	126 15
+101	109	0.0	1	108 1
+102	139	0.0	1	135 4
+103	1	0.0	1	1
+106	1	0.0	1	0 1
+117	1	0.0	1	0 1
+124	1	0.0	1	0 1
+
+
+WARNING:
+    One or more of your adapter sequences may be incomplete.
+    Please see the detailed output above.

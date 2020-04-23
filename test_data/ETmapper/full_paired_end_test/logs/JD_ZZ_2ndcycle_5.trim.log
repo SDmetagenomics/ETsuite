@@ -1,0 +1,443 @@
+This is cutadapt 2.5 with Python 3.6.4
+Command line parameters: -a file:/home/sdiamond/bin/scripts/Dev/ETsuite/db/ETseq_2_4_adap.fa -A file:/home/sdiamond/bin/scripts/Dev/ETsuite/db/ETseq_2_4_adap.fa -j 8 -O 5 -q 20 -o full_paired_end_test/JD_ZZ_2ndcycle_5_S5_L001_R1_001.fastq.trim -p full_paired_end_test/JD_ZZ_2ndcycle_5_S5_L001_R2_001.fastq.trim reads/JD_ZZ_2ndcycle_5_S5_L001_R1_001.fastq reads/JD_ZZ_2ndcycle_5_S5_L001_R2_001.fastq
+WARNING: You specified a linked adapter as '-a ADAPTER1...ADAPTER2'. The
+interpretation of what this means has changed in Cutadapt 2.0. (The 5'
+adapter is now no longer anchored by default.) To get results consist
+with the old behavior, you need to anchor the 5' adapter explicitly as
+in '-a ^ADAPTER1...ADAPTER2'.
+WARNING: You specified a linked adapter as '-a ADAPTER1...ADAPTER2'. The
+interpretation of what this means has changed in Cutadapt 2.0. (The 5'
+adapter is now no longer anchored by default.) To get results consist
+with the old behavior, you need to anchor the 5' adapter explicitly as
+in '-a ^ADAPTER1...ADAPTER2'.
+Processing reads on 8 cores in paired-end mode ...
+Finished in 14.00 s (58 us/read; 1.04 M reads/minute).
+
+=== Summary ===
+
+Total read pairs processed:            243,134
+  Read 1 with adapter:                  60,162 (24.7%)
+  Read 2 with adapter:                  44,238 (18.2%)
+Pairs written (passing filters):       243,134 (100.0%)
+
+Total basepairs processed:    73,426,468 bp
+  Read 1:    36,713,234 bp
+  Read 2:    36,713,234 bp
+Quality-trimmed:               1,480,070 bp (2.0%)
+  Read 1:       329,171 bp
+  Read 2:     1,150,899 bp
+Total written (filtered):     66,695,535 bp (90.8%)
+  Read 1:    33,355,860 bp
+  Read 2:    33,339,675 bp
+
+=== First read: Adapter ETseq2-Fwd-3'Flank ===
+
+Sequence: AGATCGGAAGAGCGGTTCAGCAAGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG; Type: regular 3'; Length: 86; Trimmed: 8947 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-39 bp: 3; 40-49 bp: 4; 50-59 bp: 5; 60-69 bp: 6; 70-79 bp: 7; 80 bp: 8
+
+Bases preceding removed adapters:
+  A: 9.1%
+  C: 59.4%
+  G: 8.6%
+  T: 22.9%
+  none/other: 0.0%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+5	449	237.4	0	449
+6	414	59.4	0	414
+7	2241	14.8	0	2241
+8	627	3.7	0	627
+9	1005	0.9	0	1005
+10	628	0.2	1	614 14
+11	446	0.1	1	439 7
+12	704	0.0	1	692 12
+13	1621	0.0	1	1599 22
+14	3	0.0	1	3
+15	4	0.0	1	2 2
+16	2	0.0	1	2
+17	3	0.0	1	3
+18	6	0.0	1	5 1
+19	2	0.0	1	2
+20	4	0.0	2	4
+21	2	0.0	2	2
+22	1	0.0	2	0 1
+23	4	0.0	2	0 3 1
+24	1	0.0	2	1
+25	1	0.0	2	0 1
+26	1	0.0	2	0 0 1
+27	2	0.0	2	1 0 1
+36	1	0.0	3	1
+37	1	0.0	3	1
+73	1	0.0	7	0 1
+83	2	0.0	8	0 0 0 0 0 0 0 0 2
+84	2	0.0	8	0 0 0 0 0 0 0 0 2
+85	1	0.0	8	0 0 0 0 0 0 0 0 1
+86	3	0.0	8	0 0 0 0 0 0 0 0 3
+87	3	0.0	8	0 0 0 0 0 0 0 0 3
+88	234	0.0	8	0 0 0 0 0 0 0 1 233
+89	12	0.0	8	0 0 0 0 0 0 0 0 12
+90	13	0.0	8	0 0 0 0 0 0 0 0 13
+91	19	0.0	8	0 0 0 0 0 0 0 0 19
+92	33	0.0	8	0 0 0 0 0 0 1 0 32
+93	57	0.0	8	0 0 0 0 0 0 0 0 57
+94	74	0.0	8	0 1 0 0 0 0 1 1 71
+95	43	0.0	8	0 0 0 0 0 0 2 0 41
+96	76	0.0	8	0 0 0 0 0 0 0 0 76
+97	196	0.0	8	0 0 0 0 0 0 0 2 194
+98	1	0.0	8	0 0 0 0 0 0 0 0 1
+104	1	0.0	8	0 0 0 0 0 0 0 1
+109	1	0.0	8	0 0 0 0 0 0 0 0 1
+122	1	0.0	8	0 0 0 0 0 0 0 0 1
+124	1	0.0	8	0 0 0 0 0 0 0 0 1
+
+
+=== First read: Adapter 1 ===
+
+Sequence: TGCTGAACCGCTCTTCCGATCT...AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT; Type: linked; Length: 22+58; 5' trimmed: 206 times; 3' trimmed: 10 times
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-22 bp: 2
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-39 bp: 3; 40-49 bp: 4; 50-58 bp: 5
+
+Overview of removed sequences at 5' end
+length	count	expect	max.err	error counts
+5	151	237.4	0	151
+6	27	59.4	0	27
+11	27	0.1	1	0 27
+30	1	0.0	2	0 1
+
+
+
+Overview of removed sequences at 3' end
+length	count	expect	max.err	error counts
+6	2	59.4	0	2
+7	2	14.8	0	2
+9	2	0.9	0	2
+10	2	0.2	1	2
+13	1	0.0	1	1
+15	1	0.0	1	0 1
+
+
+=== First read: Adapter ETseq4-Fwd-3'Flank ===
+
+Sequence: AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG; Type: regular 3'; Length: 64; Trimmed: 51008 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-39 bp: 3; 40-49 bp: 4; 50-58 bp: 5
+
+Bases preceding removed adapters:
+  A: 16.4%
+  C: 35.6%
+  G: 26.9%
+  T: 21.1%
+  none/other: 0.0%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+13	3	0.0	1	0 3
+14	323	0.0	1	311 12
+15	796	0.0	1	780 16
+16	633	0.0	1	616 17
+17	288	0.0	1	264 24
+18	987	0.0	1	958 29
+19	554	0.0	1	526 28
+20	634	0.0	2	602 27 5
+21	476	0.0	2	450 22 4
+22	1100	0.0	2	1019 66 15
+23	901	0.0	2	835 59 7
+24	873	0.0	2	793 75 5
+25	298	0.0	2	272 21 5
+26	993	0.0	2	944 46 3
+27	611	0.0	2	570 35 5 1
+28	525	0.0	2	470 47 8
+29	533	0.0	2	481 46 5 1
+30	525	0.0	3	467 45 9 4
+31	791	0.0	3	729 50 10 2
+32	497	0.0	3	447 42 7 1
+33	856	0.0	3	751 87 13 5
+34	1213	0.0	3	1091 102 17 3
+35	1143	0.0	3	1036 86 18 3
+36	666	0.0	3	590 67 8 1
+37	519	0.0	3	474 38 6 1
+38	299	0.0	3	270 22 4 3
+39	456	0.0	3	423 23 7 3
+40	588	0.0	4	540 34 7 7
+41	397	0.0	4	340 51 6
+42	391	0.0	4	335 48 5 3
+43	287	0.0	4	227 46 9 5
+44	198	0.0	4	136 44 13 5
+45	339	0.0	4	259 71 7 1 1
+46	326	0.0	4	238 69 12 4 3
+47	626	0.0	4	530 79 10 4 3
+48	1501	0.0	4	1130 276 72 17 6
+49	180	0.0	4	142 31 2 3 2
+50	226	0.0	5	145 54 18 5 4
+51	391	0.0	5	261 96 20 9 5
+52	304	0.0	5	214 70 12 5 3
+53	1249	0.0	5	855 301 78 9 6
+54	436	0.0	5	288 110 28 9 1
+55	790	0.0	5	586 147 40 12 5
+56	218	0.0	5	147 51 12 3 4 1
+57	585	0.0	5	453 104 20 2 4 2
+58	422	0.0	5	312 90 14 5 0 1
+59	751	0.0	5	581 136 24 4 3 3
+60	437	0.0	6	361 49 20 4 2 1
+61	505	0.0	6	383 98 12 7 4 1
+62	468	0.0	6	381 69 12 3 0 3
+63	391	0.0	6	271 82 25 7 2 4
+64	241	0.0	6	153 64 13 6 2 3
+65	414	0.0	6	315 76 14 5 3 1
+66	271	0.0	6	189 58 16 4 2 2
+67	438	0.0	6	329 82 19 4 1 3
+68	993	0.0	6	677 237 48 15 10 6
+69	326	0.0	6	150 126 41 6 2 1
+70	976	0.0	6	691 215 53 5 8 4
+71	650	0.0	6	489 128 23 8 1 1
+72	1087	0.0	6	900 165 16 4 2
+73	1222	0.0	6	1041 160 15 2 3 1
+74	1613	0.0	6	1405 186 19 1 1 1
+75	1597	0.0	6	1418 158 18 1 2
+76	1248	0.0	6	1148 86 10 2 1 1
+77	1030	0.0	6	930 82 14 0 3 1
+78	734	0.0	6	679 48 2 3 1 1
+79	535	0.0	6	499 28 5 1 1 1
+80	441	0.0	6	391 39 8 1 1 1
+81	357	0.0	6	311 30 9 6 1
+82	226	0.0	6	185 31 5 3 2
+83	176	0.0	6	155 16 3 1 1
+84	197	0.0	6	158 28 6 3 1 1
+85	251	0.0	6	210 28 8 2 3
+86	144	0.0	6	115 19 3 5 1 1
+87	180	0.0	6	145 19 11 2 2 1
+88	234	0.0	6	189 27 12 4 1 1
+89	146	0.0	6	118 21 4 2 1
+90	91	0.0	6	76 10 2 1 0 2
+91	131	0.0	6	103 22 5 1
+92	177	0.0	6	148 14 7 6 2
+93	142	0.0	6	120 13 3 1 2 3
+94	216	0.0	6	174 27 9 4 1 1
+95	237	0.0	6	208 22 3 4
+96	199	0.0	6	167 18 7 2 4 1
+97	125	0.0	6	110 10 3 1 1
+98	108	0.0	6	89 12 5 1 0 1
+99	171	0.0	6	145 18 4 3 0 1
+100	237	0.0	6	202 24 4 3 3 1
+101	186	0.0	6	154 22 9 1
+102	381	0.0	6	316 40 11 6 3 5
+103	132	0.0	6	118 8 2 1 1 2
+104	189	0.0	6	161 20 4 1 2 1
+105	104	0.0	6	94 8 1 1
+106	120	0.0	6	105 8 4 0 2 1
+107	116	0.0	6	93 19 4
+108	157	0.0	6	143 10 3 0 1
+109	177	0.0	6	147 21 4 1 2 2
+110	219	0.0	6	200 14 4 0 1
+111	189	0.0	6	169 16 2 2
+112	161	0.0	6	134 15 7 2 2 1
+113	109	0.0	6	91 9 5 2 2
+114	131	0.0	6	117 8 3 2 0 1
+115	144	0.0	6	115 19 3 5 2
+116	117	0.0	6	97 13 3 4
+117	123	0.0	6	110 8 3 1 1
+118	141	0.0	6	115 17 6 3
+119	131	0.0	6	106 13 4 3 2 3
+120	128	0.0	6	99 18 5 2 3 1
+121	120	0.0	6	102 12 4 2
+122	155	0.0	6	130 15 4 3 0 3
+123	120	0.0	6	98 17 3 1 0 1
+124	144	0.0	6	125 12 4 0 1 2
+125	114	0.0	6	90 14 6 0 2 2
+126	64	0.0	6	44 13 4 0 3
+127	48	0.0	6	41 2 3 2
+128	28	0.0	6	22 4 0 0 2
+
+
+=== First read: Adapter ETseq4-Rev-3'Flank ===
+
+Sequence: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT; Type: regular 3'; Length: 58; Trimmed: 0 times.
+
+=== Second read: Adapter ETseq2-Fwd-3'Flank ===
+
+Sequence: AGATCGGAAGAGCGGTTCAGCAAGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG; Type: regular 3'; Length: 86; Trimmed: 6654 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-39 bp: 3; 40-49 bp: 4; 50-59 bp: 5; 60-69 bp: 6; 70-79 bp: 7; 80 bp: 8
+
+Bases preceding removed adapters:
+  A: 25.1%
+  C: 32.0%
+  G: 20.1%
+  T: 22.8%
+  none/other: 0.0%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+5	344	237.4	0	344
+6	298	59.4	0	298
+7	1534	14.8	0	1534
+8	446	3.7	0	446
+9	559	0.9	0	559
+10	611	0.2	1	602 9
+11	323	0.1	1	314 9
+12	623	0.0	1	614 9
+13	1093	0.0	1	1077 16
+14	296	0.0	1	290 6
+15	527	0.0	1	1 526
+
+
+=== Second read: Adapter 3 ===
+
+Sequence: TGCTGAACCGCTCTTCCGATCT...AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT; Type: linked; Length: 22+58; 5' trimmed: 147 times; 3' trimmed: 37470 times
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-22 bp: 2
+
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-39 bp: 3; 40-49 bp: 4; 50-58 bp: 5
+
+Overview of removed sequences at 5' end
+length	count	expect	max.err	error counts
+5	13	237.4	0	13
+8	10	3.7	0	10
+10	39	0.2	1	39
+11	5	0.1	1	0 5
+13	11	0.0	1	11
+21	2	0.0	2	0 1 1
+22	67	0.0	2	39 18 10
+
+
+
+Overview of removed sequences at 3' end
+length	count	expect	max.err	error counts
+5	1	237.4	0	1
+7	1	14.8	0	1
+14	4	0.0	1	3 1
+15	11	0.0	1	2 9
+16	434	0.0	1	424 10
+17	385	0.0	1	374 11
+18	528	0.0	1	524 4
+19	462	0.0	1	449 13
+20	411	0.0	2	397 11 3
+21	340	0.0	2	333 7
+22	786	0.0	2	759 18 9
+23	692	0.0	2	665 20 7
+24	675	0.0	2	639 23 13
+25	218	0.0	2	210 5 3
+26	701	0.0	2	679 19 3
+27	389	0.0	2	374 15
+28	426	0.0	2	411 12 3
+29	298	0.0	2	290 8
+30	641	0.0	3	620 17 2 2
+31	325	0.0	3	306 16 2 1
+32	479	0.0	3	460 14 1 4
+33	464	0.0	3	441 17 2 4
+34	838	0.0	3	815 21 2
+35	808	0.0	3	784 20 3 1
+36	456	0.0	3	442 12 1 1
+37	332	0.0	3	321 6 4 1
+38	207	0.0	3	199 7 1
+39	328	0.0	3	317 5 6
+40	376	0.0	4	363 12 0 0 1
+41	270	0.0	4	258 7 3 2
+42	393	0.0	4	381 9 3
+43	152	0.0	4	144 5 2 0 1
+44	160	0.0	4	149 6 0 2 3
+45	299	0.0	4	285 6 2 3 3
+46	205	0.0	4	192 6 3 3 1
+47	456	0.0	4	438 14 2 1 1
+48	1023	0.0	4	983 30 2 3 5
+49	137	0.0	4	129 6 1 0 1
+50	167	0.0	5	158 7 1 0 1
+51	319	0.0	5	302 12 1 2 1 1
+52	218	0.0	5	196 15 2 1 1 3
+53	608	0.0	5	580 23 5
+54	349	0.0	5	333 11 1 0 3 1
+55	536	0.0	5	517 14 2 3
+56	156	0.0	5	140 11 3 2
+57	392	0.0	5	369 15 4 1 2 1
+58	351	0.0	5	319 17 8 4 2 1
+59	530	0.0	5	499 23 3 2 2 1
+60	345	0.0	5	328 14 2 1
+61	463	0.0	5	435 20 5 3
+62	346	0.0	5	325 15 3 3
+63	353	0.0	5	327 18 3 3 1 1
+64	243	0.0	5	218 15 6 2 2
+65	664	0.0	5	612 39 7 2 4
+66	1112	0.0	5	1071 37 3 0 0 1
+67	1519	0.0	5	1455 43 9 8 2 2
+68	1918	0.0	5	1861 49 0 5 1 2
+69	1852	0.0	5	1810 30 7 1 3 1
+70	1488	0.0	5	1443 34 4 4 2 1
+71	885	0.0	5	853 24 2 1 1 4
+72	561	0.0	5	533 22 4 2
+73	320	0.0	5	302 13 3 1 1
+74	275	0.0	5	253 12 4 3 3
+75	210	0.0	5	195 7 2 3 3
+76	128	0.0	5	114 9 3 0 0 2
+77	139	0.0	5	128 5 2 1 2 1
+78	118	0.0	5	104 9 2 1 1 1
+79	80	0.0	5	74 2 0 2 1 1
+80	116	0.0	5	109 3 2 0 1 1
+81	135	0.0	5	120 11 1 1 2
+82	97	0.0	5	85 8 4
+83	81	0.0	5	74 4 1 1 0 1
+84	104	0.0	5	93 8 2 1
+85	139	0.0	5	122 10 1 4 2
+86	80	0.0	5	74 4 1 1
+87	134	0.0	5	118 13 0 2 0 1
+88	148	0.0	5	128 15 3 1 0 1
+89	101	0.0	5	89 5 4 2 0 1
+90	56	0.0	5	47 8 1
+91	67	0.0	5	60 6 0 0 0 1
+92	101	0.0	5	87 9 4 1
+93	110	0.0	5	98 8 2 1 0 1
+94	157	0.0	5	140 11 2 0 3 1
+95	146	0.0	5	135 4 2 3 1 1
+96	141	0.0	5	136 4 0 0 1
+97	92	0.0	5	81 5 2 4
+98	55	0.0	5	48 4 3
+99	109	0.0	5	101 6 1 0 1
+100	181	0.0	5	173 7 1
+101	135	0.0	5	123 5 3 1 1 2
+102	260	0.0	5	241 10 6 0 2 1
+103	103	0.0	5	95 4 2 1 0 1
+104	135	0.0	5	123 7 3 2
+105	76	0.0	5	68 4 2 0 1 1
+106	70	0.0	5	67 2 1
+107	105	0.0	5	96 6 0 2 1
+108	95	0.0	5	86 6 1 0 0 2
+109	140	0.0	5	116 14 2 5 0 3
+110	182	0.0	5	158 10 3 5 2 4
+111	175	0.0	5	138 13 5 3 11 5
+112	136	0.0	5	118 14 2 2
+113	114	0.0	5	106 5 0 1 1 1
+114	120	0.0	5	104 7 5 1 1 2
+115	140	0.0	5	134 4 1 1
+116	99	0.0	5	89 3 3 2 0 2
+117	110	0.0	5	102 8
+118	118	0.0	5	107 6 5
+119	141	0.0	5	122 11 2 4 1 1
+120	119	0.0	5	107 5 6 1
+121	115	0.0	5	102 7 2 1 2 1
+122	145	0.0	5	135 9 0 0 0 1
+123	140	0.0	5	122 13 1 2 2
+124	125	0.0	5	112 6 3 2 0 2
+125	109	0.0	5	98 8 0 2 1
+126	75	0.0	5	62 9 1 2 1
+127	58	0.0	5	49 5 3 1
+128	23	0.0	5	20 0 3
+142	1	0.0	5	1
+
+
+=== Second read: Adapter ETseq4-Fwd-3'Flank ===
+
+Sequence: AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG; Type: regular 3'; Length: 64; Trimmed: 0 times.
+
+=== Second read: Adapter ETseq4-Rev-3'Flank ===
+
+Sequence: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT; Type: regular 3'; Length: 58; Trimmed: 0 times.

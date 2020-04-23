@@ -1,0 +1,201 @@
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:11253:3385 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:11253:3385 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:13108:3525 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:13108:3525 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:9613:3688 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:9613:3688 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:17214:4621 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:17214:4621 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:14813:4699 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:14813:4699 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:20226:5263 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:20226:5263 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:21120:6751 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:21120:6751 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:12645:7475 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:12645:7475 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:24018:7876 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:24018:7876 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:14401:8335 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:14401:8335 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:12809:8798 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:12809:8798 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:22522:9379 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:22522:9379 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:3020:9570 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:3020:9570 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:23183:10566 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:23183:10566 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:28685:11256 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:28685:11256 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:9495:11877 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:9495:11877 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:2292:12158 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:2292:12158 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:4215:12359 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:4215:12359 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:5044:12409 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:5044:12409 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:24532:13255 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:24532:13255 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:2578:13389 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:2578:13389 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:15954:13405 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:15954:13405 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:22149:14107 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:22149:14107 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:4002:14363 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:4002:14363 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:5444:14534 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:5444:14534 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:19046:15576 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:19046:15576 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:9132:15671 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:9132:15671 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:5002:17664 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:5002:17664 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:6682:17763 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:6682:17763 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:10511:17881 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:10511:17881 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:16595:18171 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:16595:18171 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:21556:19154 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:21556:19154 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:11851:19965 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:11851:19965 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:24700:20286 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:24700:20286 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:25291:21762 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:25291:21762 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:17960:22785 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:17960:22785 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:8931:23928 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:8931:23928 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:21246:24448 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1101:21246:24448 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:20081:24690 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:20081:24690 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:8343:25774 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:8343:25774 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:12933:26855 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1101:12933:26855 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:10826:3371 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:10826:3371 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11400:5167 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11400:5167 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:24836:6049 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:24836:6049 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20272:6392 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20272:6392 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:24073:6813 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:24073:6813 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:8773:6800 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:8773:6800 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11056:7006 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11056:7006 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:12890:7333 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:12890:7333 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:17374:7322 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:17374:7322 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20804:7403 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20804:7403 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:14223:7420 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:14223:7420 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:24517:7934 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:24517:7934 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9055:7987 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9055:7987 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9560:8309 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9560:8309 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:24795:8819 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:24795:8819 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:2785:10426 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:2785:10426 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:23389:11478 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:23389:11478 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:2413:11515 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:2413:11515 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:17128:11731 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:17128:11731 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:26268:12224 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:26268:12224 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:12000:12424 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:12000:12424 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:3908:12426 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:3908:12426 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:27384:12420 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:27384:12420 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:7642:14152 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:7642:14152 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9167:14197 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9167:14197 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9043:14871 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:9043:14871 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:18824:15489 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:18824:15489 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:5407:16100 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:5407:16100 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:3615:16614 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:3615:16614 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11345:16765 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11345:16765 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:3261:17016 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:3261:17016 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:28538:18812 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:28538:18812 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:7999:19400 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:7999:19400 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:13972:19821 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:13972:19821 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:8760:20529 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:8760:20529 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:22158:21403 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:22158:21403 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:17508:22264 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:17508:22264 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:17144:22692 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:17144:22692 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20540:22697 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20540:22697 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:24057:22720 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:24057:22720 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:25859:24233 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:25859:24233 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:14392:24398 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:14392:24398 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:23584:24625 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:23584:24625 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:24605:24776 2:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #2 of read 'M02248:66:000000000-D4FH5:1:1102:24605:24776 2:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:21191:25532 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:21191:25532 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:6665:25803 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:6665:25803 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:19877:25972 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:19877:25972 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:16470:25990 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:16470:25990 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20739:26818 1:N:0:TTAGGC' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:20739:26818 1:N:0:TTAGGC' because it was < 2 characters long
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11014:27108 1:N:0:TTAGGC' because length (1) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'M02248:66:000000000-D4FH5:1:1102:11014:27108 1:N:0:TTAGGC' because it was < 2 characters long
+142319 reads; of these:
+  142271 (99.97%) were paired; of these:
+    36220 (25.46%) aligned concordantly 0 times
+    102540 (72.07%) aligned concordantly exactly 1 time
+    3511 (2.47%) aligned concordantly >1 times
+    ----
+    36220 pairs aligned concordantly 0 times; of these:
+      20925 (57.77%) aligned discordantly 1 time
+    ----
+    15295 pairs aligned 0 times concordantly or discordantly; of these:
+      30590 mates make up the pairs; of these:
+        20881 (68.26%) aligned 0 times
+        8239 (26.93%) aligned exactly 1 time
+        1470 (4.81%) aligned >1 times
+  48 (0.03%) were unpaired; of these:
+    35 (72.92%) aligned 0 times
+    12 (25.00%) aligned exactly 1 time
+    1 (2.08%) aligned >1 times
+92.65% overall alignment rate

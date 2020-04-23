@@ -1,0 +1,69 @@
+This is cutadapt 2.5 with Python 3.6.4
+Command line parameters: -g file:/home/sdiamond/bin/scripts/Dev/ETsuite/db/models.fa -O 25 -e 0.02 --discard-untrimmed --info-file full_paired_end_test/JD_ZZ_2ndcycle_5.info -o full_paired_end_test/JD_ZZ_2ndcycle_5_S5_L001_R1_001.fastq.clean -p full_paired_end_test/JD_ZZ_2ndcycle_5_S5_L001_R2_001.fastq.clean full_paired_end_test/JD_ZZ_2ndcycle_5_S5_L001_R1_001.fastq.trim full_paired_end_test/JD_ZZ_2ndcycle_5_S5_L001_R2_001.fastq.trim
+Processing reads on 1 core in paired-end mode ...
+Finished in 78.74 s (324 us/read; 0.19 M reads/minute).
+
+=== Summary ===
+
+Total read pairs processed:            243,134
+  Read 1 with adapter:                 193,455 (79.6%)
+  Read 2 with adapter:                       0 (0.0%)
+Pairs written (passing filters):       193,455 (79.6%)
+
+Total basepairs processed:    66,695,535 bp
+  Read 1:    33,355,860 bp
+  Read 2:    33,339,675 bp
+Total written (filtered):     37,419,663 bp (56.1%)
+  Read 1:     9,275,627 bp
+  Read 2:    28,144,036 bp
+
+=== First read: Adapter model_magic_Tn5 ===
+
+Sequence: NNNNNNGATGTCCACGAGGTCTCTNNNNNNNNNNNNNNNNNNNNCGTACGCTGCAGGTCGACCAGCGGCCGGCCGGTTGAGATGTGTATAAGAGACAG; Type: regular 5'; Length: 98; Trimmed: 159455 times.
+
+No. of allowed errors:
+0-49 bp: 0; 50-72 bp: 1
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+87	20	0.0	1	20
+92	19	0.0	1	18 1
+93	105	0.0	1	103 2
+95	4	0.0	1	3 1
+96	25	0.0	1	20 5
+97	1355	0.0	1	253 1102
+98	157464	0.0	1	153724 3740
+99	456	0.0	1	168 288
+100	4	0.0	1	4
+102	2	0.0	1	2
+103	1	0.0	1	1
+
+
+=== First read: Adapter model_magic_mariner ===
+
+Sequence: NNNNNNGATGTCCACGAGGTCTCTNNNNNNNNNNNNNNNNNNNNCGTACGCTGCAGGTCGACCAGCGGCCGGCCAGACCGGGGACTTATCAGCCAACCTGT; Type: regular 5'; Length: 101; Trimmed: 34000 times.
+
+No. of allowed errors:
+0-49 bp: 0; 50-75 bp: 1
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+90	4	0.0	1	4
+95	5	0.0	1	5
+96	29	0.0	1	29
+97	1	0.0	1	0 1
+98	1	0.0	1	0 1
+99	5	0.0	1	4 1
+100	256	0.0	2	53 203
+101	33604	0.0	2	32705 899
+102	94	0.0	2	28 66
+105	1	0.0	2	1
+
+
+=== First read: Adapter model_revcomp_mariner ===
+
+Sequence: ACAGGTTGGCTGATAAGTCCCCGGTCTGGCCGGCCGCTGGTCGACCTGCAGCGTACGNNNNNNNNNNNNNNNNNNNNAGAGACCTCGTGGACATCNNNNNN; Type: regular 5'; Length: 101; Trimmed: 0 times.
+
+=== First read: Adapter model_revcomp_Tn5 ===
+
+Sequence: CTGTCTCTTATACACATCTCAACCGGCCGGCCGCTGGTCGACCTGCAGCGTACGNNNNNNNNNNNNNNNNNNNNAGAGACCTCGTGGACATCNNNNNN; Type: regular 5'; Length: 98; Trimmed: 0 times.
