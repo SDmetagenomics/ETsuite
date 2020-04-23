@@ -714,8 +714,8 @@ if (wf == "jm"){
       }
         
       # Convert SAM to BAM format with sorting and indexing
-      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
-                    samtools sort ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
+      system(paste0("samtools view -S -b --threads ",cpu," ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
+                    samtools sort --threads ",cpu," ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
                     samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
                   
       ## Run read hit stats script for pe or se mapping output
@@ -825,8 +825,8 @@ if (wf == "jm"){
                     " 2> ",out_dir,"/",batch_file[i,1],".bowtie.log")) # specify log file output
       
       # Convert SAM to BAM format with sorting and indexing
-      system(paste0("samtools view -S -b ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
-                    samtools sort ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
+      system(paste0("samtools view -S -b --threads ",cpu," ",out_dir,"/",batch_file[i,1],".sam > ",out_dir,"/",batch_file[i,1],".tmpbam; 
+                    samtools sort --threads ",cpu," ",out_dir,"/",batch_file[i,1],".tmpbam -o ",out_dir,"/",batch_file[i,1],".sorted.bam; 
                     samtools index ",out_dir,"/",batch_file[i,1],".sorted.bam"))
       
       # Run read hit stats script
