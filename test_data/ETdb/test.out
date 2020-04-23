@@ -1,0 +1,795 @@
+usearch -ublast test.fasta -db All_Genomes.fa -evalue 10 -strand both -alnout test.out 
+usearch v9.2.64_i86osx32, 4.0Gb RAM (17.2Gb total), 8 cores
+
+Query >testseq
+ Score     Evalue   %Id    QueryLo-Hi(Un)   TargetLo-Hi(Un)  +  Target
+   193      3e-98  100%          1-193(0)  2519624-2519816(3280322)  +  NZ_CP020657.1
+    72      6e-31   79%          1-189(4)  1336403-1336591(3294878)  +  NZ_CP009273.1
+    30      1e-07   76%         1-102(91)  1971246-1971347(4197724)  +  NZ_CP007637.1
+    21       0.01   93%        37-63(130)  3165869-3165895(3003176)  +  NZ_CP007637.1
+    19        0.2   95%        99-120(73)  1247154-1247175(4921896)  +  NZ_CP007637.1
+    19        0.2   95%       138-159(34)  138087-138108(1056029)  +  NZ_KK211140.1
+    18        0.6   95%        73-93(100)  80362-80382(110339)  +  NZ_FMWU01000012.1
+    18        0.6   95%        166-186(7)  3307318-3307338(2492800)  +  NZ_CP020657.1
+    18        0.6   92%       134-157(36)  4998691-4998714(801424)  +  NZ_CP020657.1
+    18        0.6   89%        17-43(150)  286591-286617(313830)  +  NZ_KB911037.1
+    17          2   95%        27-46(147)  993386-993405(200732)  +  NZ_KK211140.1
+    17          2   88%        16-41(152)  271516-271541(788562)  +  NZ_KK211142.1
+    17          2  100%       105-121(72)  1597580-1597596(4571475)  +  NZ_CP007637.1
+    17          2   86%        14-42(151)  804244-804272(549954)  +  NC_003037.1
+    17          2  100%        27-43(150)  2717008-2717024(3083114)  +  NZ_CP020657.1
+    17          2  100%       135-151(42)  5707975-5707991(92147)  +  NZ_CP020657.1
+    17          2   95%        71-90(103)  221456-221475(3432660)  +  NC_003047.1
+    17          2   95%        30-49(144)  234410-234429(93091)  +  NZ_FMWU01000003.1
+    17          2   95%        30-49(144)  68977-68996(1115)  +  NZ_FMWU01000030.1
+    17          2   95%        24-43(150)  2148030-2148049(1506086)  +  NC_003047.1
+    17          2  100%        92-108(85)  2776190-2776206(3392865)  +  NZ_CP007637.1
+    17          2  100%        61-77(116)  5231718-5231734(937337)  +  NZ_CP007637.1
+    16          8   88%        17-41(152)  93339-93363(186001)  +  NZ_JIBD01000018.1
+    16          8   95%         81-99(94)  261111-261129(66391)  +  NZ_FMWU01000003.1
+    16          8   95%       136-154(39)  52168-52186(1141951)  +  NZ_KK211140.1
+    16          8   91%        38-59(134)  17597-17618(1665715)  +  NC_003078.1
+    16          8  100%       112-127(66)  831381-831396(17659)  +  NZ_JIBD01000015.1
+    16          8   95%       142-160(33)  614583-614601(739625)  +  NC_003037.1
+    16          8  100%       138-153(40)  3384583-3384598(2784473)  +  NZ_CP007637.1
+    16          8   95%       142-160(33)  44412-44430(50243)  +  NZ_FMWU01000024.1
+    16          8   95%        28-46(147)  1815475-1815493(1838642)  +  NC_003047.1
+    16          8  100%       134-149(44)  5929299-5929314(239757)  +  NZ_CP007637.1
+    16          8   91%       134-155(38)  783187-783208(5016930)  +  NZ_CP020657.1
+    16          8   88%       136-160(33)  11412-11436(248331)  +  AMD835_scaffold_4
+    16          8   91%       135-156(37)  1263597-1263618(388216)  +  NZ_JIBE01000004.1
+    16          8   88%        19-43(150)  84235-84259(864541)  +  AMD835_scaffold_0
+    16          8  100%        27-42(151)  124109-124124(142845)  +  NZ_FMWU01000004.1
+    16          8  100%        25-40(153)  32917-32932(199696)  +  AMD835_scaffold_5
+    16          8   95%        17-35(158)  179607-179625(129719)  +  NZ_KB911042.1
+    16          8   91%        33-54(139)  4808979-4809000(991138)  +  NZ_CP020657.1
+    16          8   91%       126-147(46)  2941429-2941450(2858688)  +  NZ_CP020657.1
+    16          8   95%        21-39(154)  193559-193577(1564059)  +  NZ_JIBE01000003.1
+    16          8   91%        93-114(79)  136273-136294(571286)  +  AMD837_scaffold_1
+    16          8  100%        74-89(104)  62077-62092(105612)  +  AMD835_scaffold_9
+    16          8   91%       102-123(70)  172444-172465(72953)  +  NZ_KK211143.1
+    16          8  100%       133-148(45)  15216-15231(109798)  +  NZ_FMWU01000021.1
+    16          8   95%        31-49(144)  53599-53617(5904)  +  AMD837_scaffold_72
+    16          8   95%        167-185(8)  602579-602597(67664)  +  NZ_JIBD01000016.1
+    16          8  100%       138-153(40)  1646128-1646143(5691)  +  NZ_JIBE01000004.1
+    16          8   95%        99-117(76)  63970-63988(1587846)  +  NZ_JIBE01000004.1
+    16          8   95%       136-154(39)  1381658-1381676(3249793)  +  NZ_CP009273.1
+    16          8  100%       137-152(41)  4540155-4540170(1628901)  +  NZ_CP007637.1
+    16          8   95%       104-122(71)  1732231-1732249(4436822)  +  NZ_CP007637.1
+    16          8   95%       136-154(39)  587349-587367(4432)  +  NZ_KB911038.1
+    16          8   91%       120-141(52)  1543611-1543632(2110503)  +  NC_003047.1
+    16          8  100%         6-21(172)  62388-62403(178063)  +  NZ_JIBD01000023.1
+    16          8  100%       155-170(23)  5291181-5291196(969165)  +  NC_004663.1
+    16          8   95%        58-76(117)   1008-1026(4213)  +  AMD830_scaffold_429
+    16          8  100%       142-157(36)  60919-60934(6108137)  +  NZ_CP007637.1
+    16          8  100%       141-156(37)  235933-235948(84416)  +  AMD837_scaffold_5
+    16          8  100%        72-87(106)  3930887-3930902(1869236)  +  NZ_CP020657.1
+    16          8  100%        92-107(86)  1066736-1066751(4733387)  +  NZ_CP020657.1
+    16          8   95%        25-43(150)  376098-376116(5424022)  +  NZ_CP020657.1
+    16          8   95%        25-43(150)  616642-616660(332140)  +  AMD835_scaffold_0
+    16          8   91%       134-155(38)  1232653-1232674(4936397)  +  NZ_CP007637.1
+    16          8  100%       159-174(19)  1295393-1295408(3336061)  +  NZ_CP009273.1
+    16          8   95%        36-54(139)  27583-27601(4530)  +  AMD837_scaffold_111
+    16          8   95%        31-49(144)  1808732-1808750(4360321)  +  NZ_CP007637.1
+    16          8  100%        68-83(110)  3309708-3309723(344412)  +  NC_003047.1
+    16          8  100%       134-149(44)  137604-137619(104546)  +  NZ_JIBD01000022.1
+    16          8   91%        93-114(79)  4541918-4541939(1627132)  +  NZ_CP007637.1
+    16          8  100%        92-107(86)  3311321-3311336(342799)  +  NC_003047.1
+    16          8   95%        92-110(83)  7351-7369(205585)  +  NZ_FMWU01000008.1
+    16          8  100%        19-34(159)  219271-219286(587294)  +  NZ_KB911035.1
+    16          8   91%        16-37(156)  317222-317243(274556)  +  NZ_KB911038.1
+    16          8   95%        74-92(101)  122288-122306(5677832)  +  NZ_CP020657.1
+    16          8   95%        24-42(151)  1788013-1788031(2843438)  +  NZ_CP009273.1
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry          1 + GATATCCCGAATACCACGGCGCGTGCGGTCGCCGCTGCGGCAGAGCTGGGCGTCTGGATGGTCAACGTTCATGCCTCCGG 80
+                 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Tgt    2519624 + GATATCCCGAATACCACGGCGCGTGCGGTCGCCGCTGCGGCAGAGCTGGGCGTCTGGATGGTCAACGTTCATGCCTCCGG 2519703
+
+Qry         81 + CGGCGCGCGTATGATGACCGCCGCGCGTGAAGCCCTGCAGCCATTCGGAAAAGAGGCGCCGCTGCTGATTGCGGTCACGG 160
+                 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Tgt    2519704 + CGGCGCGCGTATGATGACCGCCGCGCGTGAAGCCCTGCAGCCATTCGGAAAAGAGGCGCCGCTGCTGATTGCGGTCACGG 2519783
+
+Qry        161 + TATTAACCAGCATGGAAGCCAGCGATCTGCAGG 193
+                 |||||||||||||||||||||||||||||||||
+Tgt    2519784 + TATTAACCAGCATGGAAGCCAGCGATCTGCAGG 2519816
+
+193 cols, 193 ids (100.0%), 0 gaps (0.0%), score 193.0 (357.5 bits), Evalue 3.1e-98
+
+ Query        193nt >testseq
+Target    4631469nt >NZ_CP009273.1
+
+Qry          1 + GATATCCCGAATACCACGGCGCGTGCGGTCGCCGCTGCGGCAGAGCTGGGCGTCTGGATGGTCAACGTTCATGCCTCCGG 80
+                 |||||||| || ||  | ||||  || ||||| ||||| || ||  | ||||| |||||||| || ||||||||||| ||
+Tgt    1336403 + GATATCCCCAACACTGCAGCGCACGCTGTCGCTGCTGCAGCTGACTTAGGCGTGTGGATGGTGAATGTTCATGCCTCTGG 1336482
+
+Qry         81 + CGGCGCGCGTATGATGACCGCCGCGCGTGAAGCCCTGCAGCCATTCGGAAAAGAGGCGCCGCTGCTGATTGCGGTCACGG 160
+                  || ||||||||||||||||| |||||||| || |||   || || || ||||| || |||||  ||||||| || || |
+Tgt    1336483 + TGGGGCGCGTATGATGACCGCAGCGCGTGAGGCACTGGTTCCGTTTGGCAAAGATGCACCGCTTTTGATTGCTGTGACAG 1336562
+
+Qry        161 + TATTAACCAGCATGGAAGCCAGCGATCTG 189
+                 | || |||||||||||||||||||| |||
+Tgt    1336563 + TGTTGACCAGCATGGAAGCCAGCGACCTG 1336591
+
+189 cols, 150 ids (79.4%), 0 gaps (0.0%), score 72.0 (134.1 bits), Evalue 5.7e-31
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry          1 + GATATCCCGAATACCACGGCGCGTGCGGTCGCCGCTGCGGCAGAGCTGGGCGTCTGGATGGTCAACGTTCATGCCTCCGG 80
+                 ||||||||||| ||||| ||    ||||||   || || || ||  ||||||| |||||||||||||| ||   ||||||
+Tgt    1971246 + GATATCCCGAACACCACCGCTATGGCGGTCAAGGCCGCCGCCGAAATGGGCGTGTGGATGGTCAACGTGCACTGCTCCGG 1971325
+
+Qry         81 + CGGCGCGCGTATGATGACCGCC 102
+                  |||  ||| ||||||| ||||
+Tgt    1971326 + TGGCCTGCGCATGATGAGCGCC 1971347
+
+102 cols, 78 ids (76.5%), 0 gaps (0.0%), score 30.0 (56.5 bits), Evalue 1.3e-07
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry         63 - GACCATCCAGACGCCCAGCTCTGCCGC 37
+                 ||||||||| |||||||||||| ||||
+Tgt    3165869 + GACCATCCACACGCCCAGCTCTACCGC 3165895
+
+27 cols, 25 ids (92.6%), 0 gaps (0.0%), score 21.0 (39.9 bits), Evalue 0.013
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        120 - CTGCAGGGCTTCACGCGCGGCG 99
+                 |||||||||||| |||||||||
+Tgt    1247154 + CTGCAGGGCTTCCCGCGCGGCG 1247175
+
+22 cols, 21 ids (95.5%), 0 gaps (0.0%), score 19.0 (36.2 bits), Evalue 0.16
+
+ Query        193nt >testseq
+Target    1194137nt >NZ_KK211140.1
+
+Qry        159 - CGTGACCGCAATCAGCAGCGGC 138
+                 |||||||| |||||||||||||
+Tgt     138087 + CGTGACCGGAATCAGCAGCGGC 138108
+
+22 cols, 21 ids (95.5%), 0 gaps (0.0%), score 19.0 (36.2 bits), Evalue 0.16
+
+ Query    193nt >testseq
+Target 190721nt >NZ_FMWU01000012.1
+
+Qry     73 + GCCTCCGGCGGCGCGCGTATG 93
+             ||||||||||||||||| |||
+Tgt  80362 + GCCTCCGGCGGCGCGCGGATG 80382
+
+21 cols, 20 ids (95.2%), 0 gaps (0.0%), score 18.0 (34.4 bits), Evalue 0.59
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry        186 - ATCGCTGGCTTCCATGCTGGT 166
+                 ||||||||||||| |||||||
+Tgt    3307318 + ATCGCTGGCTTCCCTGCTGGT 3307338
+
+21 cols, 20 ids (95.2%), 0 gaps (0.0%), score 18.0 (34.4 bits), Evalue 0.59
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry        134 + AGGCGCCGCTGCTGATTGCGGTCA 157
+                 |||||||||||  |||||||||||
+Tgt    4998691 + AGGCGCCGCTGGCGATTGCGGTCA 4998714
+
+24 cols, 22 ids (91.7%), 0 gaps (0.0%), score 18.0 (34.4 bits), Evalue 0.59
+
+ Query    193nt >testseq
+Target 600447nt >NZ_KB911037.1
+
+Qry     43 - CTGCCGCAGCGGCGACCGCACGCGCCG 17
+             ||||||||||| |||||||  ||||||
+Tgt 286591 + CTGCCGCAGCGCCGACCGCGAGCGCCG 286617
+
+27 cols, 24 ids (88.9%), 0 gaps (0.0%), score 18.0 (34.4 bits), Evalue 0.59
+
+ Query        193nt >testseq
+Target    1194137nt >NZ_KK211140.1
+
+Qry         27 + GGTCGCCGCTGCGGCAGAGC 46
+                 ||||||||||| ||||||||
+Tgt     993386 + GGTCGCCGCTGGGGCAGAGC 993405
+
+20 cols, 19 ids (95.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    1060103nt >NZ_KK211142.1
+
+Qry         16 + ACGGCGCGTGCGGTCGCCGCTGCGGC 41
+                 ||||||||||||| |||| | |||||
+Tgt     271516 + ACGGCGCGTGCGGCCGCCACGGCGGC 271541
+
+26 cols, 23 ids (88.5%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        105 + GCGTGAAGCCCTGCAGC 121
+                 |||||||||||||||||
+Tgt    1597580 + GCGTGAAGCCCTGCAGC 1597596
+
+17 cols, 17 ids (100.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    1354226nt >NC_003037.1
+
+Qry         14 + CCACGGCGCGTGCGGTCGCCGCTGCGGCA 42
+                 ||||||||||||||||  | ||||| |||
+Tgt     804244 + CCACGGCGCGTGCGGTTTCGGCTGCCGCA 804272
+
+29 cols, 25 ids (86.2%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry         27 + GGTCGCCGCTGCGGCAG 43
+                 |||||||||||||||||
+Tgt    2717008 + GGTCGCCGCTGCGGCAG 2717024
+
+17 cols, 17 ids (100.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry        135 + GGCGCCGCTGCTGATTG 151
+                 |||||||||||||||||
+Tgt    5707975 + GGCGCCGCTGCTGATTG 5707991
+
+17 cols, 17 ids (100.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    3654135nt >NC_003047.1
+
+Qry         71 + ATGCCTCCGGCGGCGCGCGT 90
+                 ||||||||| ||||||||||
+Tgt     221456 + ATGCCTCCGACGGCGCGCGT 221475
+
+20 cols, 19 ids (95.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query    193nt >testseq
+Target 327520nt >NZ_FMWU01000003.1
+
+Qry     49 - CCAGCTCTGCCGCAGCGGCG 30
+             ||||| ||||||||||||||
+Tgt 234410 + CCAGCGCTGCCGCAGCGGCG 234429
+
+20 cols, 19 ids (95.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query   193nt >testseq
+Target 70111nt >NZ_FMWU01000030.1
+
+Qry    30 + CGCCGCTGCGGCAGAGCTGG 49
+            |||||||| |||||||||||
+Tgt 68977 + CGCCGCTGAGGCAGAGCTGG 68996
+
+20 cols, 19 ids (95.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    3654135nt >NC_003047.1
+
+Qry         24 + TGCGGTCGCCGCTGCGGCAG 43
+                 ||| ||||||||||||||||
+Tgt    2148030 + TGCCGTCGCCGCTGCGGCAG 2148049
+
+20 cols, 19 ids (95.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        108 - ACGCGCGGCGGTCATCA 92
+                 |||||||||||||||||
+Tgt    2776190 + ACGCGCGGCGGTCATCA 2776206
+
+17 cols, 17 ids (100.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry         77 - GAGGCATGAACGTTGAC 61
+                 |||||||||||||||||
+Tgt    5231718 + GAGGCATGAACGTTGAC 5231734
+
+17 cols, 17 ids (100.0%), 0 gaps (0.0%), score 17.0 (32.5 bits), Evalue 2.1
+
+ Query    193nt >testseq
+Target 279364nt >NZ_JIBD01000018.1
+
+Qry     41 - GCCGCAGCGGCGACCGCACGCGCCG 17
+             |||| | || |||||||||||||||
+Tgt  93339 + GCCGGATCGTCGACCGCACGCGCCG 93363
+
+25 cols, 22 ids (88.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 327520nt >NZ_FMWU01000003.1
+
+Qry     99 - GGTCATCATACGCGCGCCG 81
+             ||||||||| |||||||||
+Tgt 261111 + GGTCATCATCCGCGCGCCG 261129
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    1194137nt >NZ_KK211140.1
+
+Qry        154 - CCGCAATCAGCAGCGGCGC 136
+                 ||||||||| |||||||||
+Tgt      52168 + CCGCAATCACCAGCGGCGC 52186
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    1683333nt >NC_003078.1
+
+Qry         59 - ATCCAGACGCCCAGCTCTGCCG 38
+                 ||||||||||| ||| ||||||
+Tgt      17597 + ATCCAGACGCCGAGCGCTGCCG 17618
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 849055nt >NZ_JIBD01000015.1
+
+Qry    127 - CGAATGGCTGCAGGGC 112
+             ||||||||||||||||
+Tgt 831381 + CGAATGGCTGCAGGGC 831396
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    1354226nt >NC_003037.1
+
+Qry        160 - CCGTGACCGCAATCAGCAG 142
+                 ||| |||||||||||||||
+Tgt     614583 + CCGCGACCGCAATCAGCAG 614601
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        153 - CGCAATCAGCAGCGGC 138
+                 ||||||||||||||||
+Tgt    3384583 + CGCAATCAGCAGCGGC 3384598
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query   193nt >testseq
+Target 94673nt >NZ_FMWU01000024.1
+
+Qry   160 - CCGTGACCGCAATCAGCAG 142
+            ||||||||||| |||||||
+Tgt 44412 + CCGTGACCGCATTCAGCAG 44430
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    3654135nt >NC_003047.1
+
+Qry         46 - GCTCTGCCGCAGCGGCGAC 28
+                 |||||||||||||| ||||
+Tgt    1815475 + GCTCTGCCGCAGCGACGAC 1815493
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        149 - ATCAGCAGCGGCGCCT 134
+                 ||||||||||||||||
+Tgt    5929299 + ATCAGCAGCGGCGCCT 5929314
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry        155 - ACCGCAATCAGCAGCGGCGCCT 134
+                 |||| || ||||||||||||||
+Tgt     783187 + ACCGTAAACAGCAGCGGCGCCT 783208
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 259767nt >AMD835_scaffold_4
+
+Qry    160 - CCGTGACCGCAATCAGCAGCGGCGC 136
+             |||| | ||| ||||||||||||||
+Tgt  11412 + CCGTCAGCGCCATCAGCAGCGGCGC 11436
+
+25 cols, 22 ids (88.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    1651834nt >NZ_JIBE01000004.1
+
+Qry        156 - GACCGCAATCAGCAGCGGCGCC 135
+                 |||||  |||||||||||||||
+Tgt    1263597 + GACCGAGATCAGCAGCGGCGCC 1263618
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 948800nt >AMD835_scaffold_0
+
+Qry     43 - CTGCCGCAGCGGCGACCGCACGCGC 19
+             |||||||||||||| | || |||||
+Tgt  84235 + CTGCCGCAGCGGCGGCGGCCCGCGC 84259
+
+25 cols, 22 ids (88.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 266969nt >NZ_FMWU01000004.1
+
+Qry     42 - TGCCGCAGCGGCGACC 27
+             ||||||||||||||||
+Tgt 124109 + TGCCGCAGCGGCGACC 124124
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 232628nt >AMD835_scaffold_5
+
+Qry     40 - CCGCAGCGGCGACCGC 25
+             ||||||||||||||||
+Tgt  32917 + CCGCAGCGGCGACCGC 32932
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 309344nt >NZ_KB911042.1
+
+Qry     35 - GCGGCGACCGCACGCGCCG 17
+             |||||||| ||||||||||
+Tgt 179607 + GCGGCGACGGCACGCGCCG 179625
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry         54 - GACGCCCAGCTCTGCCGCAGCG 33
+                 |||||||||||| ||||| |||
+Tgt    4808979 + GACGCCCAGCTCCGCCGCGGCG 4809000
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry        147 - CAGCAGCGGCGCCTCTTTTCCG 126
+                 ||||||| |||| |||||||||
+Tgt    2941429 + CAGCAGCAGCGCGTCTTTTCCG 2941450
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    1757636nt >NZ_JIBE01000003.1
+
+Qry         39 - CGCAGCGGCGACCGCACGC 21
+                 |||| ||||||||||||||
+Tgt     193559 + CGCATCGGCGACCGCACGC 193577
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 707580nt >AMD837_scaffold_1
+
+Qry    114 - GGCTTCACGCGCGGCGGTCATC 93
+             |||| ||||||| |||||||||
+Tgt 136273 + GGCTGCACGCGCCGCGGTCATC 136294
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 167704nt >AMD835_scaffold_9
+
+Qry     89 - CGCGCGCCGCCGGAGG 74
+             ||||||||||||||||
+Tgt  62077 + CGCGCGCCGCCGGAGG 62092
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 245418nt >NZ_KK211143.1
+
+Qry    123 - TGGCTGCAGGGCTTCACGCGCG 102
+             |||||| || ||||||||||||
+Tgt 172444 + TGGCTGTAGCGCTTCACGCGCG 172465
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 125029nt >NZ_FMWU01000021.1
+
+Qry    148 - TCAGCAGCGGCGCCTC 133
+             ||||||||||||||||
+Tgt  15216 + TCAGCAGCGGCGCCTC 15231
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query   193nt >testseq
+Target 59521nt >AMD837_scaffold_72
+
+Qry    31 + GCCGCTGCGGCAGAGCTGG 49
+            ||||||||||||||| |||
+Tgt 53599 + GCCGCTGCGGCAGAGATGG 53617
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 670261nt >NZ_JIBD01000016.1
+
+Qry    167 + CCAGCATGGAAGCCAGCGA 185
+             |||| ||||||||||||||
+Tgt 602579 + CCAGAATGGAAGCCAGCGA 602597
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    1651834nt >NZ_JIBE01000004.1
+
+Qry        138 + GCCGCTGCTGATTGCG 153
+                 ||||||||||||||||
+Tgt    1646128 + GCCGCTGCTGATTGCG 1646143
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    1651834nt >NZ_JIBE01000004.1
+
+Qry         99 + CGCCGCGCGTGAAGCCCTG 117
+                 |||||||| ||||||||||
+Tgt      63970 + CGCCGCGCTTGAAGCCCTG 63988
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    4631469nt >NZ_CP009273.1
+
+Qry        136 + GCGCCGCTGCTGATTGCGG 154
+                 ||||||||||||||| |||
+Tgt    1381658 + GCGCCGCTGCTGATTACGG 1381676
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        137 + CGCCGCTGCTGATTGC 152
+                 ||||||||||||||||
+Tgt    4540155 + CGCCGCTGCTGATTGC 4540170
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        104 + CGCGTGAAGCCCTGCAGCC 122
+                 ||||| |||||||||||||
+Tgt    1732231 + CGCGTAAAGCCCTGCAGCC 1732249
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 591799nt >NZ_KB911038.1
+
+Qry    136 + GCGCCGCTGCTGATTGCGG 154
+             |||| ||||||||||||||
+Tgt 587349 + GCGCTGCTGCTGATTGCGG 587367
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    3654135nt >NC_003047.1
+
+Qry        120 + GCCATTCGGAAAAGAGGCGCCG 141
+                 ||||||||||||||  ||||||
+Tgt    1543611 + GCCATTCGGAAAAGCCGCGCCG 1543632
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 240466nt >NZ_JIBD01000023.1
+
+Qry      6 + CCCGAATACCACGGCG 21
+             ||||||||||||||||
+Tgt  62388 + CCCGAATACCACGGCG 62403
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6260361nt >NC_004663.1
+
+Qry        155 + TCACGGTATTAACCAG 170
+                 ||||||||||||||||
+Tgt    5291181 + TCACGGTATTAACCAG 5291196
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query  193nt >testseq
+Target 5239nt >AMD830_scaffold_429
+
+Qry   58 + ATGGTCAACGTTCATGCCT 76
+           ||||||||| |||||||||
+Tgt 1008 + ATGGTCAACCTTCATGCCT 1026
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        142 + CTGCTGATTGCGGTCA 157
+                 ||||||||||||||||
+Tgt      60919 + CTGCTGATTGCGGTCA 60934
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 320364nt >AMD837_scaffold_5
+
+Qry    141 + GCTGCTGATTGCGGTC 156
+             ||||||||||||||||
+Tgt 235933 + GCTGCTGATTGCGGTC 235948
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry         72 + TGCCTCCGGCGGCGCG 87
+                 ||||||||||||||||
+Tgt    3930887 + TGCCTCCGGCGGCGCG 3930902
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry         92 + TGATGACCGCCGCGCG 107
+                 ||||||||||||||||
+Tgt    1066736 + TGATGACCGCCGCGCG 1066751
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry         25 + GCGGTCGCCGCTGCGGCAG 43
+                 |||||||||| ||||||||
+Tgt     376098 + GCGGTCGCCGTTGCGGCAG 376116
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 948800nt >AMD835_scaffold_0
+
+Qry     25 + GCGGTCGCCGCTGCGGCAG 43
+             |||||||||| ||||||||
+Tgt 616642 + GCGGTCGCCGATGCGGCAG 616660
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry        134 + AGGCGCCGCTGCTGATTGCGGT 155
+                 |||||||||||||||  |||||
+Tgt    1232653 + AGGCGCCGCTGCTGACGGCGGT 1232674
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    4631469nt >NZ_CP009273.1
+
+Qry        174 - CATGCTGGTTAATACC 159
+                 ||||||||||||||||
+Tgt    1295393 + CATGCTGGTTAATACC 1295408
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query   193nt >testseq
+Target 32131nt >AMD837_scaffold_111
+
+Qry    54 - GACGCCCAGCTCTGCCGCA 36
+            |||||| ||||||||||||
+Tgt 27583 + GACGCCGAGCTCTGCCGCA 27601
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry         49 - CCAGCTCTGCCGCAGCGGC 31
+                 |||||||||||||||| ||
+Tgt    1808732 + CCAGCTCTGCCGCAGCCGC 1808750
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    3654135nt >NC_003047.1
+
+Qry         83 - CCGCCGGAGGCATGAA 68
+                 ||||||||||||||||
+Tgt    3309708 + CCGCCGGAGGCATGAA 3309723
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 242165nt >NZ_JIBD01000022.1
+
+Qry    134 + AGGCGCCGCTGCTGAT 149
+             ||||||||||||||||
+Tgt 137604 + AGGCGCCGCTGCTGAT 137619
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    6169071nt >NZ_CP007637.1
+
+Qry         93 + GATGACCGCCGCGCGTGAAGCC 114
+                 ||||||||||| || |||||||
+Tgt    4541918 + GATGACCGCCGAGCTTGAAGCC 4541939
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    3654135nt >NC_003047.1
+
+Qry         92 + TGATGACCGCCGCGCG 107
+                 ||||||||||||||||
+Tgt    3311321 + TGATGACCGCCGCGCG 3311336
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 212954nt >NZ_FMWU01000008.1
+
+Qry     92 + TGATGACCGCCGCGCGTGA 110
+             ||||||||||||||| |||
+Tgt   7351 + TGATGACCGCCGCGCATGA 7369
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 806580nt >NZ_KB911035.1
+
+Qry     19 + GCGCGTGCGGTCGCCG 34
+             ||||||||||||||||
+Tgt 219271 + GCGCGTGCGGTCGCCG 219286
+
+16 cols, 16 ids (100.0%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query    193nt >testseq
+Target 591799nt >NZ_KB911038.1
+
+Qry     16 + ACGGCGCGTGCGGTCGCCGCTG 37
+             ||||||||||||| ||| ||||
+Tgt 317222 + ACGGCGCGTGCGGCCGCGGCTG 317243
+
+22 cols, 20 ids (90.9%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    5800138nt >NZ_CP020657.1
+
+Qry         74 + CCTCCGGCGGCGCGCGTAT 92
+                 |||||||||||| ||||||
+Tgt     122288 + CCTCCGGCGGCGGGCGTAT 122306
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6
+
+ Query        193nt >testseq
+Target    4631469nt >NZ_CP009273.1
+
+Qry         24 + TGCGGTCGCCGCTGCGGCA 42
+                 |||||||| ||||||||||
+Tgt    1788013 + TGCGGTCGGCGCTGCGGCA 1788031
+
+19 cols, 18 ids (94.7%), 0 gaps (0.0%), score 16.0 (30.7 bits), Evalue 7.6

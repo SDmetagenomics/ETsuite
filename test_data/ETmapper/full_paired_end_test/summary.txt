@@ -1,8 +1,0 @@
-ETmapper Summary    Created: Wed Nov 13 14:38:59 2019 
-
- Program Parameters:
- Workflow type is: jm 
- Total Samples: 5 
- Adapter Trim DB: /home/sdiamond/bin/scripts/Dev/ETsuite/db/ETseq_2_4_adap.fa
- Model DB: /home/sdiamond/bin/scripts/Dev/ETsuite/db/models.fa
- Paired End = TRUE
