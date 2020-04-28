@@ -58,7 +58,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     #####      #    # ## # #    # #    # #    # #####  #    # 
     #          #    #    # ###### #####  #####  #      #####  
     #          #    #    # #    # #      #      #      #   #  
-    #######    #    #    # #    # #      #      ###### #    #  v0.03
+    #######    #    #    # #    # #      #      ###### #    #  v0.04
       
     Usage: ETmapper.R -w [workflow] -d [read_dir] -b [batch_file] -g [genome_db] [options]
 
@@ -568,7 +568,7 @@ if (wf == "jm"){
   
   ### Create Log File - WORKING!
   cat(
-  paste0("ETmapper v0.03 Summary    Created: ", date()),"\n\n",
+  paste0("ETmapper v0.04 Summary    Created: ", date()),"\n\n",
   "Program Parameters:\n",
   paste0("Workflow type is: ", wf),"\n",
   paste0("Total Samples: ",nrow(batch_file)),"\n",
@@ -879,7 +879,7 @@ if (wf == "lm") {
   
   ### Create Log File - WORKING!
   cat(
-    paste0("ETmapper v0.03 Summary    Created: ", date()),"\n\n",
+    paste0("ETmapper v0.04 Summary    Created: ", date()),"\n\n",
     "Program Parameters:\n",
     paste0("Workflow type is: ", wf),"\n",
     paste0("Total Samples: ",nrow(batch_file)),"\n",

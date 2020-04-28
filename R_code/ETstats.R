@@ -563,7 +563,7 @@ jm.summary.pe <- function(){
     tmp_filt_summary <- data.frame(tmp_filt_summary,
                                    RDS_NRM = tmp_filt_summary$RDS_FRC/max(tmp_sio$RDS_FRC),
                                    UBC_NRM = tmp_filt_summary$UBC_FRC/max(tmp_sio$UBC_FRC),
-                                   RDS_NRM = tmp_filt_summary$RDSnR_FRC/max(tmp_sio$RDSnR_FRC),
+                                   RDSnR_NRM = tmp_filt_summary$RDSnR_FRC/max(tmp_sio$RDSnR_FRC),
                                    UBCnR_NRM = tmp_filt_summary$UBCnR_FRC/max(tmp_sio$UBCnR_FRC))
     
     
