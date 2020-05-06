@@ -1,9 +1,18 @@
+## VERSION ETdb v1.0
+
 ### Check and Load Libraries
+# Check data.table
+if ("data.table" %in% installed.packages() == FALSE){
+  print("Please install R package data.table. Program quitting...")
+  q(save="no")
+}
+# Check seqinr
 if("seqinr" %in% installed.packages() == F){
   print("Please install R package seqinr. Program quitting...")
   q(save="no")
 }
-# libraries 
+# libraries
+library(data.table)
 library(seqinr)
 library(tools)
 
@@ -30,13 +39,16 @@ if("-h" %in% args | !("-g" %in% args) | length(args) == 0) {
 
     Mandatory Arguments:
       
-      -g: Genomes in fasta format (No Default)
+      -g: Genome Directory (Files in FASTA format; No Default)
 
     Additional Options:
     
       -o: Output directory (Default: ./ETdb)
-      -s: Don't Produce Genome Stats (Default: TRUE)
-      -p: Run prodigal to predict genes (Default: FALSE)
+      -d: Don't Produce Concatenated Genome File (Default: Runs)
+      -b: Don't Produce Scaff2Bin File (Default: Runs)
+      -s: Don't Produce Genome Stats (Default: Runs)
+      -x: Don't Create Bowtie2 Index (Default: Runs)
+      -p: Don't Run Prodigal to Predict Genes (Default: Runs)
       -cpu: Number of cores (Default: 1)
       -h: Bring up this help menu\n\n")
       
@@ -66,22 +78,49 @@ if("-o" %in% args){
   dir.create(out_dir, recursive = T)
 } else{dir.create(out_dir, recursive = T)}
 
-# Produce Genome Stats (Default: FALSE)
+# Produce Concatenated Genome (Default: TRUE)
+concat_run <- TRUE
+if("-d" %in% args){
+  concat_run <- FALSE
+}
+
+# Produce Scaff2Bin File (Default: TRUE)
+s2b_run <- TRUE
+if("-b" %in% args){
+  s2b_run <- FALSE
+}
+
+# Produce Genome Stats (Default: TRUE)
 stats_run <- TRUE
 if("-s" %in% args){
   stats_run <- FALSE
 }
 
-# Run prodigal to predict genes (Default: FALSE)
-prodigal_run <- FALSE
+# Produce Bowtie2 Index (Default: TRUE)
+bt2_run <- TRUE
+if("-x" %in% args){
+  bt2_run <- FALSE
+}
+
+# Run prodigal to predict genes (Default: TRUE)
+prodigal_run <- TRUE
 if("-p" %in% args){
-  prodigal_run <- TRUE
+  prodigal_run <- FALSE
 }
 
 # Number of cores to use where applicable
 cpu <- 1
 if("-cpu" %in% args){
   cpu <- as.numeric(args[which(args == "-cpu") + 1])
+}
+
+# Set DT Threads
+setDTthreads(cpu)
+
+# Check for incompatable arguments
+if(concat_run == F & bt2_run == F){
+  cat("\nERROR: Can't Make Bowtie Index Without Concantenated Genome File, Adjust Program Options\n")
+  q()
 }
 
 
@@ -95,35 +134,59 @@ if("-cpu" %in% args){
 
 ### Concatenate Genomees to file, Build Scaff2Bin, Genome Stats
 
-# output data frames 
-scaff2bin <- data.frame()
-
+## output data frames and folders 
 if(stats_run == TRUE){
   genome_stats <- data.frame()
 }
 
+if(prodigal_run == TRUE){
+  dir.create(paste0(out_dir,"/Proteins"), recursive = T)
+}
 
-# Process each genome in for loop
+if(bt2_run == TRUE){
+  dir.create(paste0(out_dir,"/bt2"), recursive = T)
+}
+
+
+
+### Process each genome in for loop (concat, s2b, stats, prodigal)
 for (i in 1:length(genome_files)){
   
-  # Indicate current operation
+  ## Indicate current operation
   cat(paste0("Processing Genome: ",genome_names[i],"\n"))
   
-  # Read in genome
+  ## Read in genome
   tmp_genome <- read.fasta(genome_paths[i], seqtype = "DNA", forceDNAtolower = F)
   
-  # Build scaff2bin
-  tmp_s2b <- data.frame(scaff = names(tmp_genome),
+  
+  ## Create/Append genome to concatenated genome file if concat_run == T
+  if(concat_run == T){
+    
+    # Build concatenated genome scaffold file
+    write.fasta(tmp_genome,
+                names = names(tmp_genome),
+                file.out = paste0(out_dir,"/All_Genomes.fa"),
+                open = "a")
+  }
+  
+  
+  ## Create/Append scaff2bin file if s2b_run == T
+  if(s2b_run == TRUE){
+    
+    # Build scaff2bin
+    tmp_s2b <- data.frame(scaff = names(tmp_genome),
                         bin = genome_names[i])
-  scaff2bin <- rbind(scaff2bin, tmp_s2b)
+    
+    fwrite(tmp_s2b,
+           file = paste0(out_dir,"/scaff2bin.txt"),
+           sep = "\t",
+           row.names = F,
+           col.names = F,
+           append = T)
+  }
   
-  # Build concatenated genome scaffold file
-  write.fasta(tmp_genome,
-              names = names(tmp_genome),
-              file.out = paste0(out_dir,"/All_Genomes.fa"),
-              open = "a")
   
-  # Calculate genome statistics if stats_run == T
+  ## Calculate genome statistics if stats_run == T
   if (stats_run == TRUE){
     
     # get genome name, # scaffs, length, and max scaff size
@@ -154,58 +217,30 @@ for (i in 1:length(genome_files)){
     # row bind tmp_stats to output stats df 
     genome_stats <- rbind(genome_stats, tmp_stats)
     
-  } ## End stats run
+  } ## End stats run... See end of program for final output 
   
-} ## End genome processing for loop
-
-
-# Write scaff2bin output
-write.table(scaff2bin,
-            paste0(out_dir,"/scaff2bin.txt"),
-            quote = F,
-            sep = "\t",
-            row.names = F, 
-            col.names = F)
-
-
-
-### Build bowtie2 index
-
-# Indicate current operation
-cat("\nBuilding bowtie2 index...\n")
-
-# Build bowtie2 index from All_Genomes.txt
-dir.create(paste0(out_dir,"/bt2"), recursive = T)
-system(paste0("bowtie2-build",
-              " --threads ",cpu,
-              " ",out_dir,"/All_Genomes.fa ",
-              out_dir,"/bt2/All_Genomes"),
-       ignore.stdout = T,
-       ignore.stderr = T)
-
-
-
-### Predict Proteins (if desired) - This will gnerate coordinates for later plotting ect
-
-if(prodigal_run == T){
-  # Indicate current operation
-  cat("Predicting Proteins with Prodigal...\n")
-
-  # Predict proteins for each genome with prodigal
-  dir.create(paste0(out_dir,"/Proteins"), recursive = T)
-
-  for (i in 1:length(genome_files)){
+  
+  ## Predict proteins with prodigal if prodigal_run == T - This will gnerate coordinates for later plotting ect
+  if(prodigal_run == T){
+  
     cat(paste0("Predicting Proteins for: ",genome_names[i],"\n"))
-    
+      
     system(paste0("prodigal -i ",genome_paths[i],
                   " -a ",out_dir,"/Proteins/",genome_names[i],".faa",
                   " -m -p single"), ignore.stdout = T, ignore.stderr = T)
+      
+    }
+}
+
+
+
+### Add number of proteins predicted per genome if prodigal_run == T
+if(prodigal_run == T){
   
-  }
-  
-  # Count number of proteins identified per genome
+  # Create df to hold # of proteins identified per genome
   prot_num <- data.frame()
   
+  # loop across .faa files and count proteins 
   for (i in 1:length(genome_files)){
     tmp_genome <- genome_names[i]
     tmp_count <- system(paste0("grep -c '^>' ",out_dir,"/Proteins/",genome_names[i],".faa"), intern = T)  
@@ -213,17 +248,22 @@ if(prodigal_run == T){
     tmp_count_df <- data.frame(Genome = tmp_genome, Proteins = tmp_count)
     
     prot_num <- rbind(prot_num, tmp_count_df)
-  
+    
   }
-
+  
   # merge genome_stats with proteins counts
   genome_stats <- merge(genome_stats, prot_num, by = "Genome")
   
-}
-
-
-### Write stats output last so protein number can be concatenated into sheet
-if(stats_run == TRUE){
+  # write genome_stats w/ protien count output
+  write.table(genome_stats,
+              paste0(out_dir,"/genome_stats.txt"),
+              quote = F,
+              sep = "\t",
+              row.names = F, 
+              col.names = T)
+  
+}else{
+  
   write.table(genome_stats,
               paste0(out_dir,"/genome_stats.txt"),
               quote = F,
@@ -234,6 +274,24 @@ if(stats_run == TRUE){
 
 
 
+### Build bowtie2 index if bt2_run == T
+if(bt2_run == T){
+  
+  # Indicate current operation
+  cat("\nBuilding bowtie2 index...\n")
+
+  # Build bowtie2 index from All_Genomes.txt
+  system(paste0("bowtie2-build",
+                " --threads ",cpu,
+                " ",out_dir,"/All_Genomes.fa ",
+                out_dir,"/bt2/All_Genomes"),
+        ignore.stdout = T,
+        ignore.stderr = T)
+}
+
+
+### Indicate Program Completed
+cat("\nProgram Complete..:-)\n")
 
 
 
