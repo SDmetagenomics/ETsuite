@@ -118,7 +118,7 @@ if("-cpu" %in% args){
 setDTthreads(cpu)
 
 # Check for incompatable arguments
-if(concat_run == F & bt2_run == F){
+if(concat_run == F & bt2_run == T){
   cat("\nERROR: Can't Make Bowtie Index Without Concantenated Genome File, Adjust Program Options\n")
   q()
 }
