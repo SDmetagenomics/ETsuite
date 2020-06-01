@@ -789,7 +789,7 @@ if (wf == "jm"){
     # Integrate hit reads with barcodes into combined output
     hit_dat <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".tmphits"), header = T, stringsAsFactors = F)
     bc_dat <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".bc"), header = T, stringsAsFactors = F)
-    merge_dat <- merge.data.table(hit_dat, bc_dat, by = "Read", all.x = T)
+    merge_dat <- merge(hit_dat, bc_dat, by = "Read", all.x = T)
     
     
     
