@@ -690,6 +690,11 @@ if (wf == "jm"){
     
     
   ### 4) Identifying barcodes and creating barcode db file
+    
+    ## Indicate what program is doing
+    cat("Identifying Barcodes in Each Read...\n")
+    
+    ## Find barcodes function
     find.bc()
     
     
@@ -812,7 +817,7 @@ if (wf == "jm"){
       
       # Calculate Losses from Filtering
       f_loss <- nrow(merge_dat_filt) / nrow(merge_dat)
-      cat(paste0(round(f_loss * 100, digits = 2), "% Hits remaining after filtering..."))
+      cat(paste0(round(f_loss * 100, digits = 2), "% Hits remaining after filtering...\n"))
       
     }
     
@@ -831,7 +836,7 @@ if (wf == "jm"){
       
       # Calculate Losses from Filtering
       f_loss <- nrow(merge_dat_filt) / nrow(merge_dat)
-      cat(paste0(round(f_loss * 100, digits = 2), "% Hits remaining after filtering..."))
+      cat(paste0(round(f_loss * 100, digits = 2), "% Hits remaining after filtering...\n"))
       
     }
     
@@ -840,7 +845,7 @@ if (wf == "jm"){
   ### 10) Write Output Data / Clean Shit
     
     # Write hit table out
-    fwrite(merge_dat, paste0(out_dir,"/",batch_file$SAMPLE[i],".hits"), row.names = F, quote = F, sep = "\t")
+    fwrite(merge_dat_filt, paste0(out_dir,"/",batch_file$SAMPLE[i],".hits"), row.names = F, quote = F, sep = "\t")
     
   } ### END OF MAIN PROGRAM FOR LOOP
     
@@ -857,7 +862,7 @@ if (wf == "jm"){
     
 } ### END Trimming / Mapping Steps of Junction Mapping Workflow (PAIRED END)
   
-cat("Junction mapping workflow finished successfully :-)\n\n")  
+cat("\nJunction mapping workflow finished successfully :-)\n\n")  
   
                                                                                         ######**** REMOVED SINGLE END MAPPING WORKFLOW
 
