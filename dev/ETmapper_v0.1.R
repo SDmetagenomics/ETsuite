@@ -352,7 +352,7 @@ clean.up <- function(){
     system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
     system(paste0("mv ",out_dir,"/*.hits ",out_dir,"/hits/"))
     system(paste0("mv ",out_dir,"/*.sorted.bam ",out_dir,"/*.sorted.bam.bai ",out_dir,"/map/"))
-    system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.clean2 ",out_dir,"/*.bc ",out_dir,"/*info.filt ",out_dir,"/raw/"), ignore.stderr = T) 
+    system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/*.clean ",out_dir,"/*.final ",out_dir,"/*.bc ",out_dir,"/*info.filt ",out_dir,"/raw/"), ignore.stderr = T) 
 
   }
   
@@ -437,8 +437,8 @@ pull.run.stats <- function(){
         jm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,10] <- count.primer()
         jm_workflow_stats[i,12] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".clean.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        jm_workflow_stats[i,14] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        jm_workflow_stats[i,16] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".clean2.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,14] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".final.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+        jm_workflow_stats[i,16] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".final.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
         jm_workflow_stats[i,18] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file$SAMPLE[i],".hits | wc -l"), intern = T))
       }
 
@@ -576,9 +576,9 @@ if (wf == "jm"){
   cat(
   paste0("ETmapper v0.10 Summary    Created: ", date()),"\n\n",
   "Program Parameters:\n",
-  paste0("Arguments: ", args),"\n",
-  paste0("Workflow type is: ", wf),"\n",
-  paste0("Total Samples: ",nrow(batch_file)),"\n",
+  paste0("Arguments: "), args,"\n",
+  paste0("Workflow type is: ", wf,"\n"),
+  paste0("Total Samples: ",nrow(batch_file),"\n"),
   paste0("Batch File: ", bf,"\n"),                     ######**** LOG FILE NOW GIVES PATH OF BATCH FILE FOR FUTURE METADATA USE
   paste0("Adapter Trim File: ", ad,"\n"),
   paste0("Model File: ", md,"\n"),
@@ -617,8 +617,10 @@ if (wf == "jm"){
     bc_flank <- bc_flank[!duplicated(bc_cut)]
   }
   
-  # test bc flank output
-  cat(bc_flank)
+  ## Log bc_flank Sequences
+  cat(paste0("BC Flanking Sequences:\n"), bc_flank,
+      file = paste0(out_dir,"/run_log.txt"),
+      append = T)
   
   
   
@@ -710,11 +712,11 @@ if (wf == "jm"){
                   " -O 10"," -j ",cpu," -e ",et, # specify trimming params
                   " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
                   " --pair-filter=both", # At least 1 read must be >= rl
-                  " -o ",out_dir,"/",batch_file$SAMPLE[i],".R1.clean2", # fwd output
-                  " -p ",out_dir,"/",batch_file$SAMPLE[i],".R2.clean2", # rev output
+                  " -o ",out_dir,"/",batch_file$SAMPLE[i],".R1.final", # fwd output
+                  " -p ",out_dir,"/",batch_file$SAMPLE[i],".R2.final", # rev output
                   " ",out_dir,"/",batch_file$SAMPLE[i],".R1.clean", # fwd read
                   " ",out_dir,"/",batch_file$SAMPLE[i],".R2.clean", # rev read
-                  " > ",out_dir,"/",batch_file$SAMPLE[i],".clean2.log")) # log files
+                  " > ",out_dir,"/",batch_file$SAMPLE[i],".final.log")) # log files
     
   
   
@@ -733,8 +735,8 @@ if (wf == "jm"){
       # run bowtie mapping using fwd and rev reads
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                     " -p ",cpu," -X ",isl, # specify bowtie options
-                    " -1 ",out_dir,"/",batch_file$SAMPLE[i],".R1.clean2", # specify fwd reads
-                    " -2 ",out_dir,"/",batch_file$SAMPLE[i],".R2.clean2", # specify rev reads
+                    " -1 ",out_dir,"/",batch_file$SAMPLE[i],".R1.final", # specify fwd reads
+                    " -2 ",out_dir,"/",batch_file$SAMPLE[i],".R2.final", # specify rev reads
                     " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
                     " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
     
@@ -746,7 +748,7 @@ if (wf == "jm"){
       # run bowtime mapping using rev reads only
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
                     " -p ",cpu, # specify bowtie options
-                    " -U ",out_dir,"/",batch_file$SAMPLE[i],".R2.clean2", # specify rev reads
+                    " -U ",out_dir,"/",batch_file$SAMPLE[i],".R2.final", # specify rev reads
                     " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
                     " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
       
@@ -846,6 +848,7 @@ if (wf == "jm"){
     
     # Write hit table out
     fwrite(merge_dat_filt, paste0(out_dir,"/",batch_file$SAMPLE[i],".hits"), row.names = F, quote = F, sep = "\t")
+    
     
   } ### END OF MAIN PROGRAM FOR LOOP
     
