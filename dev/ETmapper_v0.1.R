@@ -417,8 +417,8 @@ pull.run.stats <- function(){
                                     R2_Model_Frac = 0,
                                     Good_Keep = 0,
                                     Good_Keep_Frac = 0,
-                                    Map = 0,
-                                    Map_Frac = 0)
+                                    Filt_Map = 0,
+                                    Filt_Map_Frac = 0)
     
     
     # Pull stats from jm trimming logs
@@ -435,7 +435,7 @@ pull.run.stats <- function(){
       jm_workflow_stats$Model_Keep[i] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".clean.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
       jm_workflow_stats$R2_Model[i] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".final.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
       jm_workflow_stats$Good_Keep[i] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".final.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-      jm_workflow_stats$Map[i] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file$SAMPLE[i],".hits | wc -l"), intern = T))
+      jm_workflow_stats$Filt_Map[i] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file$SAMPLE[i],".hits | wc -l"), intern = T))
     
     }
     
@@ -446,7 +446,7 @@ pull.run.stats <- function(){
     jm_workflow_stats$Model_Keep_Frac <- jm_workflow_stats$Model_Keep / jm_workflow_stats$Total_Reads
     jm_workflow_stats$R2_Model_Frac <- jm_workflow_stats$R2_Model / jm_workflow_stats$Model_Keep
     jm_workflow_stats$Good_Keep_Frac <- jm_workflow_stats$Good_Keep / jm_workflow_stats$Total_Reads
-    jm_workflow_stats$Raw_Map_Frac <- jm_workflow_stats$Raw_Map / jm_workflow_stats$Total_Reads
+    jm_workflow_stats$Filt_Map_Frac <- jm_workflow_stats$Filt_Map / jm_workflow_stats$Total_Reads
     
     # Output data.table
     return(jm_workflow_stats)
