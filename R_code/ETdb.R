@@ -209,6 +209,8 @@ for (i in 1:length(genome_files)){
     
     # build tmp stats df for genome
     tmp_stats <- data.frame(Genome = tmp_name,
+                            C_Name = NA,        ####*** This is where the placeholders for Genome Type and 
+                            Type = "Target",    ####*** common name are added 
                             Num_Scaf = tmp_scaf,
                             Size = tmp_size,
                             Long_Scaf = tmp_long,
