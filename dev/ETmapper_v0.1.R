@@ -3,15 +3,6 @@
 ### Set Version
 etmapper_version <- c("v0.10")                                             ######**** Added VERSION NUMBER VARIABLE
 
-### Load Test Data
-# rd <- normalizePath("../Studies/20_1_21_BR_35_ET/et_reads/")
-# batch_file <- fread("~/Desktop/test_batch_file.txt", sep = "\t", header = T)
-#  ca_info <- fread("../Studies/20_2_27_BR_30_ET_KlebCurve_NT/ET_mapper_dual/jm/raw/BR_30_ET_1.info.filt")
-#  md <- normalizePath("db/ETseq6_VcCas_mariner_v2.fa")
-# # out_dir <-"~/Desktop"
-# # bl <- 20
-# # fe <- 1
-
 
 ### Check Libraries
 if ("data.table" %in% installed.packages() == F){
