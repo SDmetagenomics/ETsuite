@@ -608,7 +608,7 @@ if (wf == "hc"){
                                              SWAP_RATE = ceiling(master_clust_assignment_filt$PRIME_GEN_RDS*(s_rate / num_samp) + 2*(sqrt(master_clust_assignment_filt$PRIME_GEN_RDS*(1-s_rate)*s_rate))))
   
   ## Merge cluster assignments and swap rate (number of expected swaps) into bc_assign *** The merge will take the intersect and preserve only barcodes from clusters that pass filter
-  bc_assign <- merge(bc_clust, master_clust_assignment_filt[,c("clstID", "PRIME_GEN","SWAP_RATE")], by = "clstID")
+  bc_assign <- merge(bc_clust, master_clust_assignment_filt[,c("clstID", "PRIME_GEN", "PRIME_MOD", "SWAP_RATE")], by = "clstID")
   
   ## Write Output Data
   fwrite(count_swap_summary, paste0(out_dir,"/all_bc_swap_summary.txt"), col.names = T, sep = "\t")
