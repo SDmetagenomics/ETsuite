@@ -477,14 +477,14 @@ if (wf == "hc"){
                                           summarise(RDS = sum(reads), # Sum of all reads assigned to BC cluster
                                                     NUM_BC = n_distinct(barcodes), # Number of Barcode variants seen in BC cluster
                                                     NUM_SAMP = n_distinct(SAMPLE), # Number of Samples seen in BC cluster
-                                                    NUM_GEN = n_distinct(GENOME1), # Number of Genomes seen in BC cluster 
+                                                    NUM_GEN = n_distinct(GENOME), # Number of Genomes seen in BC cluster 
                                                     NUM_POS = n_distinct(TNjunc), # Number of unique mapping positions seen in BC cluster
                                                     NUM_MOD = n_distinct(model), # Number of unique transposon models seen in BC cluster
                                                     PRIME_SAMP = SAMPLE[which.max(reads)], # Sample in sample/genome/barcode/junction/model combination that has the most reads
                                                     PRIME_SAMP_RDS = sum(reads[which(SAMPLE == PRIME_SAMP)]), # Sum of all reads for above genome in cluster 
                                                     PRIME_SAMP_FRC = PRIME_SAMP_RDS / RDS, # Fraction of reads going to Prime Sample for a cluster
-                                                    PRIME_GEN = GENOME1[which.max(reads)], # Genome in sample/genome/barcode/junction/model combination that has the most reads
-                                                    PRIME_GEN_RDS = sum(reads[which(GENOME1 == PRIME_GEN)]), # Sum of all reads for Prime Genome in cluster
+                                                    PRIME_GEN = GENOME[which.max(reads)], # Genome in sample/genome/barcode/junction/model combination that has the most reads
+                                                    PRIME_GEN_RDS = sum(reads[which(GENOME == PRIME_GEN)]), # Sum of all reads for Prime Genome in cluster
                                                     PRIME_GEN_FRC = PRIME_GEN_RDS / RDS, # Fraction of reads in a cluster coming from Prime Genome
                                                     PRIME_POS = TNjunc[which.max(reads)], # Position in sample/genome/barcode/junction/model combination that has the most reads
                                                     PRIME_POS_RDS = sum(reads[which(TNjunc == PRIME_POS)]), # Sum of all reads for the Prime Position in cluster
@@ -494,9 +494,9 @@ if (wf == "hc"){
                                                     PRIME_MOD = model[which.max(reads)],
                                                     PRIME_MOD_RDS = sum(reads[which(model == PRIME_MOD)]),
                                                     PRIME_MOD_FRC = PRIME_MOD_RDS / RDS,
-                                                    PRIME_GS_RDS = sum(reads[which(GENOME1 == PRIME_GEN & SAMPLE == PRIME_SAMP)]), ## Number of reads in cluster where genome is prime genome and sample is prime sample
+                                                    PRIME_GS_RDS = sum(reads[which(GENOME == PRIME_GEN & SAMPLE == PRIME_SAMP)]), ## Number of reads in cluster where genome is prime genome and sample is prime sample
                                                     PRIME_GS_FRC = PRIME_GS_RDS / RDS,
-                                                    PRIME_GNS_RDS = sum(reads[which(GENOME1 == PRIME_GEN & SAMPLE != PRIME_SAMP)]))) ## Number of reads in cluster where genome is prime genome and sample is NOT prime sample
+                                                    PRIME_GNS_RDS = sum(reads[which(GENOME == PRIME_GEN & SAMPLE != PRIME_SAMP)]))) ## Number of reads in cluster where genome is prime genome and sample is NOT prime sample
   
   ## Generate and output summary statistics on overall purity of barcode clusters
   master_clust_summary <- data.table(master_clust_assignment %>%
@@ -661,7 +661,7 @@ if (wf == "hc"){
     # Now calculate all base summary statistics that include counts of reads and unique barcode clusters
     tmp_hit_summary <- data.table(SAMPLE = sample,
                                   tmp_hit_summary %>% 
-                                  group_by(GENOME1,model) %>%
+                                  group_by(GENOME,model) %>%
                                   summarise(RDS = sum(counts),
                                             UBC = n_distinct(clstID),
                                             RDSnR = sum(counts[counts >= bc_rep]),
@@ -696,13 +696,13 @@ if (wf == "hc"){
   sample_metadat <- batch_file[,c("SAMPLE", "DESC", "TF_TYPE", "EXP")]
 
   ## Merge Filtered Hits into Expanded Grid
-  filt_hits <- merge(all_cat, filt_hits, by = c("SAMPLE", "GENOME1", "model"), all.x = T)
+  filt_hits <- merge(all_cat, filt_hits, by = c("SAMPLE", "GENOME", "model"), all.x = T)
   
   ## Merge Metadata into Expanded Grid
   filt_hits <- merge(filt_hits, sample_metadat, by = "SAMPLE", all.x = T)
   
   ## Order Output and add Zeros for NAs
-  filt_hits <- filt_hits[order(filt_hits$SAMPLE, -filt_hits$RDS, filt_hits$GENOME1, filt_hits$model),]
+  filt_hits <- filt_hits[order(filt_hits$SAMPLE, -filt_hits$RDS, filt_hits$GENOME, filt_hits$model),]
   filt_hits[is.na(filt_hits)] <- 0
   
   ## write output
