@@ -316,7 +316,7 @@ if (wf == "hc"){
   genome_stats <- fread(paste0(env_summary$jm_gd,"/genome_stats.txt"), header = T, stringsAsFactors = F)
   
   ## Identify Hit File Names
-  hit_tables <- list.files(env_summary$jm_dir,"/hits/")
+  hit_tables <- list.files(paste0(env_summary$jm_dir,"/hits/"))
   
   
   
