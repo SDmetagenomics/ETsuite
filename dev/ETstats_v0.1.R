@@ -706,7 +706,7 @@ if (wf == "hc"){
   filt_hits[is.na(filt_hits)] <- 0
   
   ## write output
-  fwrite(filt_hits, paste0("ETstats_hc_output_",bc_filt_level,".txt"), col.names = T, sep = "\t")
+  fwrite(filt_hits, paste0(out_dir,"/ETstats_hc_output_",bc_filt_level,".txt"), col.names = T, sep = "\t")
   
 }
   
