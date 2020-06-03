@@ -204,7 +204,7 @@ check.env <- function(){
                               stringsAsFactors = F)
   
     # 1 check ETmapper out for jm folder, store location, and output to log
-    jm_exist <- dir.exists(paste0(et_dir,"jm"))
+    jm_exist <- dir.exists(paste0(et_dir,"/jm"))
     
     # IF it can find the jm folder then do this stuff:
     if (jm_exist == TRUE){
