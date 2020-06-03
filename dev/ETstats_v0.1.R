@@ -458,15 +458,15 @@ if (wf == "hc"){
   
   ## Output Summary Data
   fwrite(bc_general_stats, paste0(out_dir,"/all_bc_cluster_stats.txt"), col.names = T, sep = "\t")
-  fwrite(bc_clust_summary, paste0(out_dir,"/all_bc_cluster_summary.txt"), colnames = T, sep = "\t")
+  fwrite(bc_clust_summary, paste0(out_dir,"/all_bc_cluster_summary.txt"), col.names = T, sep = "\t")
 
   
   
   
-  ### Assignment of clusters to barcodes in all sample BC master list 
+  ### Assignment of clusters to barcodes in all sample BC master list + Calculation of Barcode Cluster Purity
   
   ## Say what is happening
-  cat("\nMerging Barcodes Clusters with Samples...\n")
+  cat("\nMerging BC Clusters with Samples and Calculating Purity...\n")
   
   ## Assign Clusters to all_sample_bc by merging in bc_clust based on barcode cluster *** THIS DATA SHOULD BE OUTPUT
   all_sample_bc_clust <- merge(all_sample_bc, bc_clust[,c("barcodes","clstID")], by = "barcodes", all.x = T)
@@ -706,7 +706,7 @@ if (wf == "hc"){
   filt_hits[is.na(filt_hits)] <- 0
   
   ## write output
-  fwrite(filt_hits, paste0("ETstats_hc_output_",filter_type,".txt"), sep = "\t")
+  fwrite(filt_hits, paste0("ETstats_hc_output_",filter_type,".txt"), col.names = T, sep = "\t")
   
 }
   
