@@ -330,8 +330,9 @@ if (wf == "hc"){
   ## Log Number of Samples For Processing
   num_samp <- length(hit_tables)
   
-  cat(paste0("Number of Samples: ",num_samp),
-      file = paste0(out_dir,"/run_log.txt"))
+  cat(paste0("Number of Samples: ",num_samp,"\n"),
+      file = paste0(out_dir,"/run_log.txt"),
+      append = T)
 
   
   ## Loop Over Each Hit Table, Collect Barcodes, and Summarize Hits
@@ -344,7 +345,7 @@ if (wf == "hc"){
     cat(paste0("Aggregating Barcodes for Sample: ",sample,"\n"))
     
     # Read in hit table
-    tmp_hit_table <- fread(paste0(env_summary$jm_dir,"/hits/",raw_files[i]), header = T, sep = "\t")
+    tmp_hit_table <- fread(paste0(env_summary$jm_dir,"/hits/",hit_tables[i]), header = T, sep = "\t")
     
     # Summarize hits by unique barcode, genome, junction, model combo
     bc2genome <- data.table(SAMPLE = sample,
@@ -356,7 +357,7 @@ if (wf == "hc"){
     all_sample_bc <- rbind(all_sample_bc, bc2genome)
     
     # Save all barcodes from sample to disk for clustering
-    barcode_save <- data.table(tmp_filt_table$barcodes)
+    barcode_save <- data.table(tmp_hit_table$barcodes)
     fwrite(barcode_save, paste0(out_dir,"/",sample,".bc"), sep = ",", col.names = F)
     
   } 
