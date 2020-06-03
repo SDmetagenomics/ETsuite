@@ -184,8 +184,8 @@ make.log.file <- function(){
 
   cat(paste0("ETstats ",etstats_version," Summary    Created: ", date(),"\n\n"),
       paste0("Program Parameters:\n"),
-      paste0("Arguments: "), args,"/n", 
-      paste0("Workflow type is: ", wf),"\n",
+      paste0("Arguments: "), args, 
+      paste0("\nWorkflow type is: ", wf,"\n"),
       file = paste0(out_dir,"/run_log.txt"))
 }
 
