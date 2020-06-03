@@ -75,6 +75,8 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | length(args) == 0) {
       Hit Count Summary Options:
       
       -H: Hamming distance used by bartender for clustering (Default: 3)
+      -F: Barcode cluster filtering level (Default: high)
+      -S: Emperically determined read swap rate (Default: Auto)
       -R: Multiread threshold for unique barcode detection (Default: 2)
       
       Targeted Insertion Summary Options:
@@ -120,6 +122,18 @@ et_dir <- normalizePath(et_dir)
 h_dist <- 3
 if("-H" %in% args){
   h_dist <- as.numeric(args[which(args == "-H") + 1])
+}
+
+# Barcode cluster filtering level (Default: high)
+bc_filt_level <- "high"
+if("-F" %in% args){
+  bc_filt_level <- as.character(args[which(args == "-F") + 1])
+}
+
+# Swap rate calculation (Default: Auto)
+swap_rate_method <- "Auto"
+if("-S" %in% args){
+  swap_rate_method <- as.numeric(args[which(args == "-S") + 1])
 }
 
 # Number of good reads to count a barcode in a genome (Default: 2)
@@ -388,10 +402,10 @@ if (wf == "hc"){
   
   ## Run Bartender Clustering Command
   
-  # Say what is happening
+  ## Say what is happening
   cat("\nClustering Barcodes...\n")
 
-  # Run Bartender
+  ## Run Bartender
   system(paste0("bartender_single_com",
                " -f ",out_dir,"/all_bc_BTinput.txt",
                " -o ",out_dir,"/all_bc",
@@ -401,8 +415,13 @@ if (wf == "hc"){
                " -d ",h_dist,
                " > ",out_dir,"/all_bc_bartender.log"))
   
-  # Say what is happening
+  ## Say what is happening
   cat("\nBarcode Clustering Complete...\n")
+  
+  ## Log Stuff About Bartender Options
+  cat(paste0("Bartender Dist: ",h_dist,"\n"),
+      file = paste0(out_dir,"/run_log.txt"),
+      append = T)
   
   
   
@@ -412,13 +431,11 @@ if (wf == "hc"){
   ## Say what is happening
   cat("\nCreating Barcode Cluster Summaries...\n")
   
-  ## Import bartender clustering data         ############################# THIS IS WHERE I STOPPED
+  ## Import bartender clustering data
   bc_clust <- fread(paste0(out_dir,"/all_bc_barcode.csv"))
   colnames(bc_clust) <- c("barcodes", "reads","clstID")
   
-  
   ## Perform some summary statistics + plots on bc_clustering
-  
   bc_clust_summary <- data.table(bc_clust %>%
                                    group_by(clstID) %>%
                                    summarise(SIZE = n(),
@@ -440,16 +457,259 @@ if (wf == "hc"){
                                  Frac_Reads_5RDS = sum(subset(bc_clust_summary, RDS >= 5)$RDS) / sum(bc_clust_summary$RDS))
   
   ## Output Summary Data
-  fwrite(bc_general_stats, paste0(out_dir,"/all_bc_cluster_stats.txt", col.names = T, sep = "\t"))
+  fwrite(bc_general_stats, paste0(out_dir,"/all_bc_cluster_stats.txt"), col.names = T, sep = "\t")
+  fwrite(bc_clust_summary, paste0(out_dir,"/all_bc_cluster_summary.txt"), colnames = T, sep = "\t")
+
   
-  cat("\nDONE FOR NOW...\n")
   
+  
+  ### Assignment of clusters to barcodes in all sample BC master list 
+  
+  ## Say what is happening
+  cat("\nMerging Barcodes Clusters with Samples...\n")
+  
+  ## Assign Clusters to all_sample_bc by merging in bc_clust based on barcode cluster *** THIS DATA SHOULD BE OUTPUT
+  all_sample_bc_clust <- merge(all_sample_bc, bc_clust[,c("barcodes","clstID")], by = "barcodes", all.x = T)
+  
+  ## Summarize prevelance of genomes and mapping position by barcode cluster *** THIS DATA SHOULD BE OUTPUT 
+  master_clust_assignment <- data.table(all_sample_bc_clust %>%
+                                          group_by(clstID) %>%
+                                          summarise(RDS = sum(reads), # Sum of all reads assigned to BC cluster
+                                                    NUM_BC = n_distinct(barcodes), # Number of Barcode variants seen in BC cluster
+                                                    NUM_SAMP = n_distinct(SAMPLE), # Number of Samples seen in BC cluster
+                                                    NUM_GEN = n_distinct(GENOME1), # Number of Genomes seen in BC cluster 
+                                                    NUM_POS = n_distinct(TNjunc), # Number of unique mapping positions seen in BC cluster
+                                                    NUM_MOD = n_distinct(model), # Number of unique transposon models seen in BC cluster
+                                                    PRIME_SAMP = SAMPLE[which.max(reads)], # Sample in sample/genome/barcode/junction/model combination that has the most reads
+                                                    PRIME_SAMP_RDS = sum(reads[which(SAMPLE == PRIME_SAMP)]), # Sum of all reads for above genome in cluster 
+                                                    PRIME_SAMP_FRC = PRIME_SAMP_RDS / RDS, # Fraction of reads going to Prime Sample for a cluster
+                                                    PRIME_GEN = GENOME1[which.max(reads)], # Genome in sample/genome/barcode/junction/model combination that has the most reads
+                                                    PRIME_GEN_RDS = sum(reads[which(GENOME1 == PRIME_GEN)]), # Sum of all reads for Prime Genome in cluster
+                                                    PRIME_GEN_FRC = PRIME_GEN_RDS / RDS, # Fraction of reads in a cluster coming from Prime Genome
+                                                    PRIME_POS = TNjunc[which.max(reads)], # Position in sample/genome/barcode/junction/model combination that has the most reads
+                                                    PRIME_POS_RDS = sum(reads[which(TNjunc == PRIME_POS)]), # Sum of all reads for the Prime Position in cluster
+                                                    PRIME_POS_FRC = PRIME_POS_RDS / RDS, # Fraction of reads in a clsuter coming from Prime Position
+                                                    PRIME_POS3_RDS = sum(reads[which(TNjunc %in% (PRIME_POS-3):(PRIME_POS+3))]), # Sum of all reads within 3bp of Prime Position
+                                                    PRIME_POS3_FRC = PRIME_POS3_RDS / RDS, # Fraction of reads in a clsuter coming from within 3bp of Prime Position
+                                                    PRIME_MOD = model[which.max(reads)],
+                                                    PRIME_MOD_RDS = sum(reads[which(model == PRIME_MOD)]),
+                                                    PRIME_MOD_FRC = PRIME_MOD_RDS / RDS,
+                                                    PRIME_GS_RDS = sum(reads[which(GENOME1 == PRIME_GEN & SAMPLE == PRIME_SAMP)]), ## Number of reads in cluster where genome is prime genome and sample is prime sample
+                                                    PRIME_GS_FRC = PRIME_GS_RDS / RDS,
+                                                    PRIME_GNS_RDS = sum(reads[which(GENOME1 == PRIME_GEN & SAMPLE != PRIME_SAMP)]))) ## Number of reads in cluster where genome is prime genome and sample is NOT prime sample
+  
+  ## Generate and output summary statistics on overall purity of barcode clusters
+  master_clust_summary <- data.table(master_clust_assignment %>%
+                                       summarise(Total_Clusters = n(),
+                                                 SAMP_n2PLUS = sum(NUM_SAMP >= 2),
+                                                 SAMP_n2PLUS_FRC = SAMP_n2PLUS / Total_Clusters,
+                                                 GEN_n2PLUS = sum(NUM_GEN >= 2),
+                                                 GEN_n2PLUS_FRC = GEN_n2PLUS / Total_Clusters,
+                                                 POS_n2PLUS = sum(NUM_POS >= 2),
+                                                 POS_n2PLUS_FRC = POS_n2PLUS / Total_Clusters,
+                                                 MOD_n2PLUS = sum(NUM_MOD >= 2),
+                                                 MOD_n2PLUS_FRC = MOD_n2PLUS / Total_Clusters,
+                                                 FRC_SAMP_PURE = sum(PRIME_SAMP_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_GEN_PURE = sum(PRIME_GEN_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_POS_PURE = sum(PRIME_POS_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_POS3_PURE = sum(PRIME_POS3_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_MOD_PURE = sum(PRIME_MOD_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_GS_PURE = sum(PRIME_GS_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_METRIC1 = sum(PRIME_GEN_RDS >= 5 & PRIME_GEN_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_METRIC2 = sum(PRIME_GEN_RDS >= 5 & PRIME_GEN_FRC >= 0.75 & PRIME_POS3_FRC >= 0.75) / Total_Clusters))
+  
+  ## Output Summary Data
+  fwrite(master_clust_summary, paste0(out_dir,"/all_bc_cluster_purity_stats.txt"), col.names = T, sep = "\t")
+  fwrite(master_clust_assignment, paste0(out_dir,"/all_bc_cluster_master_assignment.txt"), col.names = T, sep = "\t")
+  
+  
+  
+  
+  
+  ### Filter Master Cluster Assignment and Calculate Barcode Swap Rate
+  
+  ## Say what is happening
+  cat("\nFiltering Barcode Clusters...\n")
+  
+  ## Apply Cluster Filter 
+  if(bc_filt_level == "high"){
+    master_clust_assignment_filt <- subset(master_clust_assignment, PRIME_GEN_FRC >= 0.75 & PRIME_GEN_RDS >= 5 & PRIME_MOD_FRC >= 0.75)
+  }
+  
+  if(bc_filt_level == "medium"){
+    master_clust_assignment_filt <- subset(master_clust_assignment, PRIME_GEN_FRC >= 0.75 & PRIME_GEN_RDS >= 5)
+  }
+  
+  ## Caculate Filter Losses
+  bc_filt_loss <- round((nrow(master_clust_assignment_filt) / nrow(master_clust_assignment)) * 100, digits = 2)
+  cat(paste0(bc_filt_loss, "% of BC clusters remaining after filtering\n"))
+  
+  ## Log FIlter Used
+  cat(paste0("Barcode Cluster Filter: ",bc_filt_level,"\n"),
+      file = paste0(out_dir,"/run_log.txt"),
+      append = T)
+  
+  
+  
+  
+  
+  ### Calculate barcode cluster swap rates
+  # *** NOTE: Because a barcode cluster can only be assigned to one genome we calcualte the swap rate based on the counts of prime vs not-prime sample reads only for reads going to the primary genome.
+  
+  ## Say what is happening
+  cat("\nCalculating and Applying BC Swap Rates...\n")
+  
+  ## Summary Table of Counts and Swap Rates for Each Org
+  count_swap_summary <- data.table(master_clust_assignment_filt %>%
+                                     group_by(PRIME_GEN) %>%
+                                     summarise(ALL_RDS = sum(RDS),
+                                               PRIME_GEN_READS = sum(PRIME_GEN_RDS),
+                                               PRIME_SAMP_READS = sum(PRIME_SAMP_RDS),
+                                               OUT_SAMP_READS = ALL_RDS - PRIME_SAMP_READS,
+                                               PRIME_GS_READS = sum(PRIME_GS_RDS),
+                                               PRIME_GNS_READS = sum(PRIME_GNS_RDS),
+                                               S_RATE_ALL = OUT_SAMP_READS/ALL_RDS, # Swap rate based on all reads for a BC in prime sample vs out of prime sample
+                                               S_RATE_PrimeOnly = PRIME_GNS_READS / PRIME_GEN_READS)) # Swap rate based on only PRIME GENOME reads for a BC PRIME GENOME in PRIME SAMPLE vs PRIME GENOME out PRIME SAMPLE *** This is the one we use
+  
+  ## Determine How to Caluclate Swap Rate
+  
+  # IF swap reate Auto calculate from data
+  if(swap_rate_method == "Auto"){
+    
+    # Identify genomes that are targets
+    targ_gen <- genome_stats$Genome[which(genome_stats$Type == "Target")]
+    
+    # Subset only target organisms to calculate swap rate table
+    count_swap_filt <- subset(count_swap_summary, PRIME_GEN %in% targ_gen)
+    
+    # Calculate mean and sd
+    swap_mean <- mean(count_swap_filt$S_RATE_PrimeOnly)
+    swap_sd <- sd(count_swap_filt$S_RATE_PrimeOnly)
+    
+    # Add sd to mean to get high end swap rate
+    s_rate <- swap_mean + swap_sd
+    
+  }
+  
+  # IF number passed for swap rate use the number
+  if(is.numeric(swap_rate_method) == T){
+    s_rate <- swap_rate_method
+  }
+  
+  
+  ## Log swap rate
+  cat(paste0("Swap Rate Used: ",s_rate,"\n"),
+      file = paste0(out_dir,"/run_log.txt"),
+      append = T)
+  
+  ## Append number of reads per BC cluster expected to swap based on s_rate
+  # Calculates the lower bound of the number of reads that could swap into any one sample based on calculated swap rate + 2 SD
+  master_clust_assignment_filt <- data.table(master_clust_assignment_filt,
+                                             SWAP_RATE = ceiling(master_clust_assignment_filt$PRIME_GEN_RDS*(s_rate / num_samp) + 2*(sqrt(master_clust_assignment_filt$PRIME_GEN_RDS*(1-s_rate)*s_rate))))
+  
+  ## Merge cluster assignments and swap rate (number of expected swaps) into bc_assign *** The merge will take the intersect and preserve only barcodes from clusters that pass filter
+  bc_assign <- merge(bc_clust, master_clust_assignment_filt[,c("clstID", "PRIME_GEN","SWAP_RATE")], by = "clstID")
+  
+  ## Write Output Data
+  fwrite(count_swap_summary, paste0(out_dir,"/all_bc_swap_summary.txt"), col.names = T, sep = "\t")
+  fwrite(master_clust_assignment_filt, paste0(out_dir,"/all_bc_cluster_master_assignment_filt.txt"), col.names = T, sep = "\t")
+  fwrite(bc_assign, paste0(out_dir,"/all_bc_BC_ASSIGN.txt"), col.names = T, sep = "\t")
+  
+  
+  
+
+  ### Run For Loop to Analyze Each Individual Hit Table, Assign Clusters, and Count
+  
+  ## Say what is happening
+  cat("\nCalculating Summary Counts for Each Sample...\n")
+  
+  ## Make df to hold final hit table + Gather All Sample Names
+  filt_hits <- data.table()
+  
+  ## Loop Over Each Hit Table, Collect Barcodes, and Summarize Hits
+  for (i in 1:length(hit_tables)){
+    
+    # Get sample name
+    sample <- sub(".hits","", hit_tables[i])
+    
+    # Say what is happening
+    cat(paste0("Processing Sample: ",sample,"\n"))
+    
+    # Read in hit table
+    tmp_hit_table <- fread(paste0(env_summary$jm_dir,"/hits/",hit_tables[i]), header = T, sep = "\t")
+    
+    # Merge by bc string *** This should result in NAs for BCs that were removed
+    tmp_hit_table <- merge(tmp_hit_table, bc_assign[,c("clstID","barcodes","PRIME_GEN","PRIME_MOD","SWAP_RATE")], by = "barcodes", all.x = T)
+    
+    # Remove reads where BC cluster did not pass filters or was not assigned
+    tmp_hit_table <- subset(tmp_hit_table, is.na(clstID) == FALSE)
+    
+    # Remove reads that do not match BC PRIME_GEN & | PRIME_MOD depending on BC Cluster filter 
+    if(bc_filt_level == "high"){
+      tmp_hit_table <- subset(tmp_hit_table, GENOME == PRIME_GEN & model == PRIME_MOD)
+    }
+    if(bc_filt_level == "medium"){
+      tmp_hit_table <- subset(tmp_hit_table, GENOME == PRIME_GEN)
+    }
+
+    # First aggregate number of reads by genome/model/BCcluster + include swap rate
+    tmp_hit_summary <- data.table(SAMPLE = sample,
+                                  tmp_hit_table %>% 
+                                  group_by(GENOME,model,clstID,SWAP_RATE) %>%
+                                  summarise(counts = n()))
+
+    # Now calculate all base summary statistics that include counts of reads and unique barcode clusters
+    tmp_hit_summary <- data.table(SAMPLE = sample,
+                                  tmp_hit_summary %>% 
+                                  group_by(GENOME1,model) %>%
+                                  summarise(RDS = sum(counts),
+                                            UBC = n_distinct(clstID),
+                                            RDSnR = sum(counts[counts >= bc_rep]),
+                                            UBCnR = n_distinct(clstID[counts >= bc_rep]),
+                                            RDSdC = sum(counts[counts >= 2 & counts > SWAP_RATE]),
+                                            UBCdC = n_distinct(clstID[counts >= 2 & counts > SWAP_RATE]),
+                                            BCPR = UBC / RDS,
+                                            BCPRdC = UBCdC / RDSdC))
+    
+    # Create table of filt hits for all samples
+    filt_hits <- rbind(filt_hits, tmp_hit_summary)
+    
+  } 
+  
+  
+  
+  
+  ### Create ordered output with correct columns, complete observations, and zeros
+  
+  ## Say what is happening
+  cat("\nProducing Output...\n")
+  
+  ## Create Expanded Grid
+  genomes <- unique(filt_hits$GENOME)
+  models <- unique(filt_hits$model)
+  sample_names <- unique(filt_hits$SAMPLE)
+  all_cat <- expand.grid(SAMPLE = sample_names, GENOME = genomes, model = models,
+                         KEEP.OUT.ATTRS = F,
+                         stringsAsFactors = F)
+  
+  ## Grab all metadata from batch file
+  sample_metadat <- batch_file[,c("SAMPLE", "DESC", "TF_TYPE", "EXP")]
+
+  ## Merge Filtered Hits into Expanded Grid
+  filt_hits <- merge(all_cat, filt_hits, by = c("SAMPLE", "GENOME1", "model"), all.x = T)
+  
+  ## Merge Metadata into Expanded Grid
+  filt_hits <- merge(filt_hits, sample_metadat, by = "SAMPLE", all.x = T)
+  
+  ## Order Output and add Zeros for NAs
+  filt_hits <- filt_hits[order(filt_hits$SAMPLE, -filt_hits$RDS, filt_hits$GENOME1, filt_hits$model),]
+  filt_hits[is.na(filt_hits)] <- 0
+  
+  ## write output
+  fwrite(filt_hits, paste0("ETstats_hc_output_",filter_type,".txt"), sep = "\t")
   
 }
-
-
-
-
+  
 
 
 
