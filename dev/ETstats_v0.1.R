@@ -214,9 +214,9 @@ check.env <- function(){
       
       # find all the directories of the files we need in the log file 
       env_summary$jm_dir <- normalizePath(paste0(et_dir,"/jm"))
-      env_summary$jm_gd <- system(paste0("grep 'Genome Database' ",et_dir,"jm/run_log.txt | awk '{print $3}'"), intern = T)
-      env_summary$jm_map_mode <- system(paste0("grep 'Mapping Mode:' ",et_dir,"jm/run_log.txt | awk '{print $3}'"), intern = T)
-      env_summary$batch_file <- system(paste0("grep 'Batch File:' ",et_dir,"jm/run_log.txt | awk '{print $3}'"), intern = T)
+      env_summary$jm_gd <- system(paste0("grep 'Genome Database' ",et_dir,"/jm/run_log.txt | awk '{print $3}'"), intern = T)
+      env_summary$jm_map_mode <- system(paste0("grep 'Mapping Mode:' ",et_dir,"/jm/run_log.txt | awk '{print $3}'"), intern = T)
+      env_summary$batch_file <- system(paste0("grep 'Batch File:' ",et_dir,"/jm/run_log.txt | awk '{print $3}'"), intern = T)
       
       # Log these locations in the run_log file
       cat(paste0("Found ETmapper jm Output: TRUE\n"),
