@@ -55,7 +55,8 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     #######    #    #    # #    # #      #      ###### #    #  v0.10
       
     Usage: ETmapper.R -w [workflow] -d [read_dir] -b [batch_file] -g [genome_db] [options]
-
+    By: Spencer Diamond (sdiamond@berkeley.edu)
+    
     Mandatory Arguments:
     
       -w: Workflow type (No Default)

@@ -685,7 +685,7 @@ if (wf == "hc"){
   cat("\nProducing Output...\n")
   
   ## Create Expanded Grid
-  genomes <- unique(filt_hits$GENOME)
+  genomes <- unique(genome_stats$Genome)
   models <- unique(filt_hits$model)
   sample_names <- unique(filt_hits$SAMPLE)
   all_cat <- expand.grid(SAMPLE = sample_names, GENOME = genomes, model = models,
