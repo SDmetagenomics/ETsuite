@@ -75,9 +75,10 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | length(args) == 0) {
       Hit Count Summary Options:
       
       -H: Hamming distance used by bartender for clustering (Default: 3)
+      -C: Number of reads to confirm a BC cluster (Default: 5)
       -F: Barcode cluster filtering level (Default: high)
       -S: Emperically determined read swap rate (Default: Auto)
-      -R: Multiread threshold for unique barcode detection (Default: 2)
+      -R: Min reads in sample to count barcode (Default: 2)
       
       Targeted Insertion Summary Options:
       
@@ -118,10 +119,16 @@ et_dir <- normalizePath(et_dir)
 
 ## Hit Count Summary Options
 
-# Number of good reads to count a barcode in a genome (Default: 2)
+# Hamming distance used by bartender for clustering (Default: 3)
 h_dist <- 3
 if("-H" %in% args){
   h_dist <- as.numeric(args[which(args == "-H") + 1])
+}
+
+# Number of reads to count a BC cluster (Default: 5)
+bc_r_count <- 5
+if("-C" %in% args){
+  bc_r_count <- as.numeric(args[which(args == "-C") + 1])
 }
 
 # Barcode cluster filtering level (Default: high)
@@ -136,7 +143,7 @@ if("-S" %in% args){
   swap_rate_method <- as.numeric(args[which(args == "-S") + 1])
 }
 
-# Number of good reads to count a barcode in a genome (Default: 2)
+# Min reads in sample to count barcode (Default: 2)
 bc_rep <- 2
 if("-R" %in% args){
   bc_rep <- as.numeric(args[which(args == "-R") + 1])
@@ -515,8 +522,9 @@ if (wf == "hc"){
                                                  FRC_POS3_PURE = sum(PRIME_POS3_FRC >= 0.75) / Total_Clusters,
                                                  FRC_MOD_PURE = sum(PRIME_MOD_FRC >= 0.75) / Total_Clusters,
                                                  FRC_GS_PURE = sum(PRIME_GS_FRC >= 0.75) / Total_Clusters,
-                                                 FRC_METRIC1 = sum(PRIME_GEN_RDS >= 5 & PRIME_GEN_FRC >= 0.75) / Total_Clusters,
-                                                 FRC_METRIC2 = sum(PRIME_GEN_RDS >= 5 & PRIME_GEN_FRC >= 0.75 & PRIME_POS3_FRC >= 0.75) / Total_Clusters))
+                                                 FRC_METRIC1 = sum(PRIME_GEN_RDS >= bc_r_count & PRIME_GEN_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_METRIC2 = sum(PRIME_GEN_RDS >= bc_r_count & PRIME_GEN_FRC >= 0.75 & PRIME_MOD_FRC >= 0.75) / Total_Clusters,
+                                                 FRC_METRIC3 = sum(PRIME_GEN_RDS >= bc_r_count & PRIME_GEN_FRC >= 0.75 & PRIME_POS3_FRC >= 0.75) / Total_Clusters))
   
   ## Output Summary Data
   fwrite(master_clust_summary, paste0(out_dir,"/all_bc_cluster_purity_stats.txt"), col.names = T, sep = "\t")
@@ -533,11 +541,11 @@ if (wf == "hc"){
   
   ## Apply Cluster Filter 
   if(bc_filt_level == "high"){
-    master_clust_assignment_filt <- subset(master_clust_assignment, PRIME_GEN_FRC >= 0.75 & PRIME_GEN_RDS >= 5 & PRIME_MOD_FRC >= 0.75)
+    master_clust_assignment_filt <- subset(master_clust_assignment, PRIME_GEN_FRC >= 0.75 & PRIME_GEN_RDS >= bc_r_count & PRIME_MOD_FRC >= 0.75)
   }
   
   if(bc_filt_level == "medium"){
-    master_clust_assignment_filt <- subset(master_clust_assignment, PRIME_GEN_FRC >= 0.75 & PRIME_GEN_RDS >= 5)
+    master_clust_assignment_filt <- subset(master_clust_assignment, PRIME_GEN_FRC >= 0.75 & PRIME_GEN_RDS >= bc_r_count)
   }
   
   ## Caculate Filter Losses
@@ -546,6 +554,7 @@ if (wf == "hc"){
   
   ## Log FIlter Used
   cat(paste0("Barcode Cluster Filter: ",bc_filt_level,"\n"),
+      paste0(bc_filt_loss, "% of BC clusters remaining after filtering\n"),
       file = paste0(out_dir,"/run_log.txt"),
       append = T)
   
