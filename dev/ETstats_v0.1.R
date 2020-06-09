@@ -580,23 +580,25 @@ if (wf == "hc"){
                                                S_RATE_ALL = OUT_SAMP_READS/ALL_RDS, # Swap rate based on all reads for a BC in prime sample vs out of prime sample
                                                S_RATE_PrimeOnly = PRIME_GNS_READS / PRIME_GEN_READS)) # Swap rate based on only PRIME GENOME reads for a BC PRIME GENOME in PRIME SAMPLE vs PRIME GENOME out PRIME SAMPLE *** This is the one we use
   
+  ## Create data.frame of Genome Types (Target/Vector/Ect) Merge to count_swap_summary
+  genome_type <- genome_stats[,c("Genome", "Type")]
+  count_swap_summary <- merge(count_swap_summary, genome_type, by.x = "PRIME_GEN", by.y = "Genome", all.x = T)
+  
+  
   ## Determine How to Caluclate Swap Rate
   
   # IF swap reate Auto calculate from data
   if(swap_rate_method == "Auto"){
     
-    # Identify genomes that are targets
-    targ_gen <- genome_stats$Genome[which(genome_stats$Type == "Target")]
-    
     # Subset only target organisms to calculate swap rate table
-    count_swap_filt <- subset(count_swap_summary, PRIME_GEN %in% targ_gen)
+    count_swap_filt <- subset(count_swap_summary, Type == "Target")
     
-    # Calculate mean and sd
-    swap_mean <- mean(count_swap_filt$S_RATE_PrimeOnly)
-    swap_sd <- sd(count_swap_filt$S_RATE_PrimeOnly)
+    # Calculate in and out sample counts for things expected in only one sample 
+    in_counts <- sum(count_swap_filt$PRIME_GS_READS)
+    out_counts <- sum(count_swap_filt$PRIME_GNS_READS)
     
     # Add sd to mean to get high end swap rate
-    s_rate <- swap_mean + swap_sd
+    s_rate <- out_counts / (in_counts + out_counts)
     
   }
   
@@ -714,8 +716,15 @@ if (wf == "hc"){
   filt_hits <- filt_hits[order(filt_hits$SAMPLE, -filt_hits$RDS, filt_hits$GENOME, filt_hits$model),]
   filt_hits[is.na(filt_hits)] <- 0
   
-  ## write output
-  fwrite(filt_hits, paste0(out_dir,"/ETstats_hc_output_",bc_filt_level,".txt"), col.names = T, sep = "\t")
+  ## Identify Genomes that have all zero hits and remove to make a small version of filt_hits
+  genome_sums <- aggregate(UBCdC ~ GENOME, filt_hits, sum)
+  all_zero_genomes <- genome_sums$GENOME[which(genome_sums$UBCdC == 0)]
+  filt_hits_small <- subset(filt_hits, GENOME %notin% all_zero_genomes)
+  
+  ## write outputs
+  fwrite(filt_hits, paste0(out_dir,"/ETstats_hc_output.txt"), col.names = T, sep = "\t")
+  fwrite(filt_hits_small, paste0(out_dir,"/ETstats_hc_output_small.txt"), col.names = T, sep = "\t")
+  
   
 }
   
