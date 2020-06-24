@@ -456,56 +456,44 @@ pull.run.stats <- function(){
   
   
   # Pull stats lm workflow
-  if (wf == "lm"){
-    
-    # Create dataframe to hold output
-    lm_workflow_stats <- data.table(batch_file,
-                                    Total_Reads = 0,
-                                    R1_adap = 0,
-                                    R1_adap_frac = 0,
-                                    R2_adap = 0,
-                                    R2_adap_frac = 0,
-                                    Good_Keep = 0,
-                                    Good_Keep_Frac = 0,
-                                    Raw_Map = 0,
-                                    Raw_Map_Frac = 0)
-    
-    # Pull stats from trimming logs
-    for (i in 1:nrow(batch_file)){
-      
-      # Say what is happening
-      cat(paste0("\nAggregating ETmapper stats for: ",batch_file$SAMPLE[i],"\n"))
-      
-      # Pull stats from logs
-      if(paired_end_data == TRUE){
-        lm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        lm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        lm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        lm_workflow_stats[i,10] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
-        lm_workflow_stats[i,12] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file$SAMPLE[i],".mghits | wc -l"), intern = T))
-      }
-      
-      ### STILL UNTESTED
-      if(paired_end_data == FALSE){
-        lm_workflow_stats[i,4] <- system(paste0("grep 'Total reads processed:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
-        lm_workflow_stats[i,5] <- system(paste0("grep 'Reads with adapters:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $4}' | sed 's/,//g'"), intern = T)
-        lm_workflow_stats[i,7] <- NA
-        lm_workflow_stats[i,9] <- system(paste0("grep 'Reads written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T)
-        lm_workflow_stats[i,11] <- system(paste0("sed 1d ",out_dir,"/hits/",batch_file$SAMPLE[i],".mghits | wc -l"), intern = T)
-      }
-    
-    }
-    
-    # Calculate fraction columns
-    lm_workflow_stats$R1_adap_frac <- lm_workflow_stats$R1_adap / lm_workflow_stats$Total_Reads
-    lm_workflow_stats$R2_adap_frac <- lm_workflow_stats$R2_adap / lm_workflow_stats$Total_Reads
-    lm_workflow_stats$Good_Keep_Frac <- lm_workflow_stats$Good_Keep / lm_workflow_stats$Total_Reads
-    lm_workflow_stats$Raw_Map_Frac <- lm_workflow_stats$Raw_Map / lm_workflow_stats$Total_Reads
-    
-    # Output data.table
-    return(lm_workflow_stats)
-    
-  } # END LM BRANCH
+  # if (wf == "lm"){
+  #   
+  #   # Create dataframe to hold output
+  #   lm_workflow_stats <- data.table(batch_file,
+  #                                   Total_Reads = 0,
+  #                                   R1_adap = 0,
+  #                                   R1_adap_frac = 0,
+  #                                   R2_adap = 0,
+  #                                   R2_adap_frac = 0,
+  #                                   Good_Keep = 0,
+  #                                   Good_Keep_Frac = 0,
+  #                                   Raw_Map = 0,
+  #                                   Raw_Map_Frac = 0)
+  #   
+  #   # Pull stats from trimming logs
+  #   for (i in 1:nrow(batch_file)){
+  #     
+  #   # Say what is happening
+  #   cat(paste0("\nAggregating ETmapper stats for: ",batch_file$SAMPLE[i],"\n"))
+  #     
+  # 
+  #   lm_workflow_stats[i,5] <- as.numeric(system(paste0("grep 'Total read pairs processed:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+  #   lm_workflow_stats[i,6] <- as.numeric(system(paste0("grep 'Read 1 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+  #   lm_workflow_stats[i,8] <- as.numeric(system(paste0("grep 'Read 2 with adapter:' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+  #   lm_workflow_stats[i,10] <- as.numeric(system(paste0("grep 'Pairs written' ",out_dir,"/logs/",batch_file$SAMPLE[i],".trim.log ","| awk '{print $5}' | sed 's/,//g'"), intern = T))
+  #   lm_workflow_stats[i,12] <- as.numeric(system(paste0("sed 1d ",out_dir,"/hits/",batch_file$SAMPLE[i],".mghits | wc -l"), intern = T))
+  # 
+  #   # Calculate fraction columns
+  #   lm_workflow_stats$R1_adap_frac <- lm_workflow_stats$R1_adap / lm_workflow_stats$Total_Reads
+  #   lm_workflow_stats$R2_adap_frac <- lm_workflow_stats$R2_adap / lm_workflow_stats$Total_Reads
+  #   lm_workflow_stats$Good_Keep_Frac <- lm_workflow_stats$Good_Keep / lm_workflow_stats$Total_Reads
+  #   lm_workflow_stats$Raw_Map_Frac <- lm_workflow_stats$Raw_Map / lm_workflow_stats$Total_Reads
+  #   
+  #   }
+  #   # Output data.table
+  #   return(lm_workflow_stats)
+  #   
+  # } # END LM BRANCH
     
 }
 
@@ -1030,8 +1018,8 @@ if (wf == "lm") {
     
     # Add in sample name and relative abundance 
     tmp_sum <- data.table(SAMPLE = batch_file$SAMPLE[i],
-                           tmp_sum,
-                           COM_FRAC = tmp_sum$MEAN_COV / sum(tmp_sum$MEAN_COV, na.rm = T))
+                          tmp_sum,
+                          COM_FRAC = tmp_sum$MEAN_COV / sum(tmp_sum$MEAN_COV, na.rm = T))
     
     # Remove NA Again
     tmp_sum[is.na(tmp_sum)] <- 0
@@ -1055,8 +1043,8 @@ if (wf == "lm") {
   
     
   ### Build Metadata File
-  lm_workflow_stats <- pull.run.stats()
-  write.table(lm_workflow_stats, paste0(out_dir,"/lm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
+  #lm_workflow_stats <- pull.run.stats()
+  #write.table(lm_workflow_stats, paste0(out_dir,"/lm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
    
     
     
