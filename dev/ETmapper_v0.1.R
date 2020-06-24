@@ -1031,7 +1031,7 @@ if (wf == "lm") {
     # Add in sample name and relative abundance 
     tmp_sum <- data.table(SAMPLE = batch_file$SAMPLE[i],
                            tmp_sum,
-                           COM_FRAC = tmp_sum$MEAN_COV / sum(tmp_sumt$MEAN_COV, na.rm = T))
+                           COM_FRAC = tmp_sum$MEAN_COV / sum(tmp_sum$MEAN_COV, na.rm = T))
     
     # Remove NA Again
     tmp_sum[is.na(tmp_sum)] <- 0
