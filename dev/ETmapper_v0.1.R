@@ -1016,7 +1016,7 @@ if (wf == "lm") {
   for (i in 1:nrow(batch_file)){
   
     # Read hits back in for cov filtering
-    cov_dat <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".cov"), stringsAsFactors = F)
+    cov_dat <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".cov"), stringsAsFactors = F, fill = T)
     
     # Add column names to table and remove NA
     colnames(cov_dat) <- c("SCAFFOLD", "GENOME", "COVERAGE", "READS")
