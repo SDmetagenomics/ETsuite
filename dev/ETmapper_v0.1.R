@@ -15,10 +15,18 @@ if ("stringr" %in% installed.packages() == F){
   q(save="no")
 }
 
+if ("dplyr" %in% installed.packages() == FALSE){
+  print("Please install R package dplyr. Program quitting...")
+  q(save="no")
+}
+
 
 ### Load Libraries
-library(data.table)
-library(stringr)
+suppressMessages(library(data.table, quietly = T))
+suppressMessages(library(dplyr, quietly = T))
+suppressMessages(library(stringr, quietly = T))
+
+
 
 
 ### Set up path variables for associated scripts and databases
@@ -88,6 +96,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       -X: Maximum insert length (Default: 500)
       -Q: Min MapQ Score (Default: 20) 
       -E: Max number of mismatches (Default: 5; SE only)
+      -I: Min read match ID for Cov Calculations (Default: 0.95)
       
     Program Control:
     
@@ -218,6 +227,12 @@ if("-E" %in% args){
   mm_cut <- as.numeric(args[which(args == "-E") + 1])
 }
 
+# Max number of mismatches (Default: 5; SE only)
+min_id <- 0.95
+if("-I" %in% args){
+  mm_cut <- as.numeric(args[which(args == "-I") + 1])
+}
+
 
 ## Program Control Options
 
@@ -345,12 +360,6 @@ clean.up <- function(){
   # Clean lm Workflow
   if (wf == "lm"){
     
-    # say waht is happening
-    cat("\n\nCleaning Up...\n")
-    
-    # remove un-needed files
-    system(paste0("rm ",out_dir,"/*.tmpbam ",out_dir,"/*.sam "))
-    
     # create subdirectories
     dir.create(paste0(out_dir,"/logs"), recursive = T)
     dir.create(paste0(out_dir,"/hits"), recursive = T)
@@ -359,7 +368,7 @@ clean.up <- function(){
     
     # move files to right places
     system(paste0("mv ",out_dir,"/*.log ",out_dir,"/logs/"))
-    system(paste0("mv ",out_dir,"/*.mghits ",out_dir,"/hits/"))
+    system(paste0("mv ",out_dir,"/*.hits ",out_dir,"/hits/"))
     system(paste0("mv ",out_dir,"/*.sorted.bam ",out_dir,"/*.sorted.bam.bai ",out_dir,"/map/"))
     system(paste0("mv ",out_dir,"/*.trim ",out_dir,"/raw/"), ignore.stderr = T) 
     
@@ -644,9 +653,9 @@ if (wf == "jm"){
                   " ",rd,batch_file$R1[i], # fwd read
                   " ",rd,batch_file$R2[i], # rev read
                   " > ",out_dir,"/",batch_file$SAMPLE[i],".trim.log")) # log files
-
+    
   
-  
+    
     
   ### 3) Identifying and Trimming Transposon Models in Fwd Reads only
     
@@ -881,157 +890,182 @@ if (wf == "jm"){
 
 
   
-  
-  
-### End Junction Mapping Workflow
-
-
-
-
-
 ###############
 ############### LITE META-G WORKFLOW
 ###############
 
 
 if (wf == "lm") {
-
-  ### Create Correct Dir Structure
   
+  ### Create Correct Dir Structure
   out_dir <- paste0(out_dir,"/lm")
   dir.create(out_dir, recursive = T)
   
   
-  ### Create Log File - WORKING!
+  
+  
+  ### Create Log File
   cat(
-    paste0("ETmapper v0.04 Summary    Created: ", date()),"\n\n",
+    paste0("ETmapper v0.10 Summary    Created: ", date()),"\n\n",
     "Program Parameters:\n",
-    paste0("Workflow type is: ", wf),"\n",
-    paste0("Total Samples: ",nrow(batch_file)),"\n",
+    paste0("Arguments: "), args,"\n",
+    paste0("Workflow type is: ", wf,"\n"),
+    paste0("Total Samples: ",nrow(batch_file),"\n"),
+    paste0("Batch File: ", bf,"\n"),                     ######**** LOG FILE NOW GIVES PATH OF BATCH FILE FOR FUTURE METADATA USE
     paste0("Adapter Trim File: ", ad,"\n"),
     paste0("Genome Database: ", gd,"\n"),
-    file = paste0(out_dir,"/run_log.txt"))
+    file = paste0(out_dir,"/run_log.txt"))         ######**** REMOVED MENTION OF PAIRED END INPUT DATA IN LOGS 
   
   
-  ### Determine if reads provided are se or pr end and initalize program
-  if(ncol(batch_file) == 3){
-    paired_end_data <- FALSE
-    cat("\nInput Reads Identifed as Single End...Begining Analysis\n\n")
-    cat(" Paired End = FALSE", file = paste0(out_dir,"/run_log.txt"), append = T)
-  }
   
-  if(ncol(batch_file) == 4){
-    paired_end_data <- TRUE
-    cat("\nInput Data Identifed as Paired End...Begining Analysis\n\n")
-    cat(" Paired End = TRUE", file = paste0(out_dir,"/run_log.txt"), append = T)
+  
+  ### Check batch file and start program
+  
+  ## If same number of read files for R1 and R2 start
+  if((length(batch_file$R1) == length(batch_file$R2)) == T){
+    cat("\nInput Data Correctly Identifed...Begining Analysis\n\n")
   } 
   
-  # If tests fail exit with error
-  if (exists("paired_end_data") == FALSE){
+  ## If not same number indicate problem and quit
+  if((length(batch_file$R1) == length(batch_file$R2)) == F){
     cat("ERROR: Batch file not formatted correctly")
     q(save="no")
-  }
+  } 
+
   
   
-  
-  
-  #### PAIRED END BRANCH ####
-  
-  
-  ### Begin Mapping for Lite Metagenomics Workflow (PAIRED END)
-  if(paired_end_data == TRUE){
     
-    ### Run adapter/flanking sequence trimming AND Quality Score Filtering
-    for (i in 1:nrow(batch_file)){
+  ### Run adapter/flanking sequence trimming AND Quality Score Filtering
+  for (i in 1:nrow(batch_file)){
       
-      # Indicate what program is doing
-      cat(paste0("\nTrimming Adapters, Qscore Filter, Size Filter for: ",batch_file$SAMPLE[i],"\n"))
+    # Indicate what program is doing
+    cat(paste0("\nTrimming Adapters, Qscore Filter, Size Filter for: ",batch_file$SAMPLE[i],"\n"))
       
-      # run cutadapt command
-      system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
-                    " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
-                    " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
-                    " --pair-filter=both", # At least 1 read must be >= rl
-                    " -o ",out_dir,"/",batch_file[i,3],".trim", # fwd output
-                    " -p ",out_dir,"/",batch_file[i,4],".trim", # rev output
-                    " ",rd,batch_file[i,3], # fwd read
-                    " ",rd,batch_file[i,4], # rev read
-                    " > ",out_dir,"/",batch_file$SAMPLE[i],".trim.log")) # log files
-    
-    }
-    
-    
-    # Run bowtie mapping for loop for PAIRED END mapping
-    for (i in 1:nrow(batch_file)){
-      
-      # Indicate what program is doing
-      cat(paste0("\nMapping: ",batch_file$SAMPLE[i],"\n"))
-      
-      # run bowtie mapping
-      system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
-                    " -p ",cpu," -X ",isl, # specify bowtie options
-                    " -1 ",out_dir,"/",batch_file[i,3],".trim", # specify fwd reads
-                    " -2 ",out_dir,"/",batch_file[i,4],".trim", # specify rev reads
-                    " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
-                    " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
-      
-      # Convert SAM to BAM format with sorting and indexing
-      system(paste0("samtools view -S -b ",out_dir,"/",batch_file$SAMPLE[i],".sam > ",out_dir,"/",batch_file$SAMPLE[i],".tmpbam; 
-                    samtools sort ",out_dir,"/",batch_file$SAMPLE[i],".tmpbam -o ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam; 
-                    samtools index ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam"))
-      
-      # Run read hit stats script
-      system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam > ",out_dir,"/",batch_file$SAMPLE[i],".mghits"))
-      
-      # Write completed task
-      cat(paste0("Finished reading a BAM, wrote output to ", paste0(batch_file$SAMPLE[i],".mghits")))
-      
-    }
-    
-    ### Clean up files and create out_dir structure
-    clean.up()
-    
-    ### Build Metadata File
-    lm_workflow_stats <- pull.run.stats()
-    write.table(lm_workflow_stats, paste0(out_dir,"/lm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
+    # run cutadapt command
+    system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
+                  " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
+                  " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
+                  " --pair-filter=both", # At least 1 read must be >= rl
+                  " -o ",out_dir,"/",batch_file$SAMPLE[i],".R1.trim", # fwd output
+                  " -p ",out_dir,"/",batch_file$SAMPLE[i],".R2.trim", # rev output
+                  " ",rd,batch_file$R1[i], # fwd read
+                  " ",rd,batch_file$R2[i], # rev read
+                  " > ",out_dir,"/",batch_file$SAMPLE[i],".trim.log")) # log files
     
   }
+    
   
   
-  ### Begin Mapping for Lite Metagenomics Workflow (PAIRED END)
-  if(paired_end_data == FALSE){
     
-    ### Run adapter/flanking sequence trimming AND Quality Score Filtering
-    for (i in 1:nrow(batch_file)){
-      
-      # Indicate what program is doing
-      cat(paste0("\nTrimming Adapters, Qscore Filter, Size Filter for: ",batch_file$SAMPLE[i],"\n"))
-      
-      # run cutadapt command
-      system(paste0("cutadapt -a file:",ad," -A file:",ad, # specify adapter types and file
-                    " -j ",cpu," -O ",am," -q ",qs, # specify trimming params
-                    " --minimum-length ",rl, # discard read pairs if both reads are < rl bp
-                    " --pair-filter=both", # At least 1 read must be >= rl
-                    " -o ",out_dir,"/",batch_file[i,3],".trim", # fwd output
-                    " -p ",out_dir,"/",batch_file[i,4],".trim", # rev output
-                    " ",rd,batch_file[i,3], # fwd read
-                    " ",rd,batch_file[i,4], # rev read
-                    " > ",out_dir,"/",batch_file$SAMPLE[i],".trim.log")) # log files
-      
-    }
+  ### Run bowtie mapping for loop for PAIRED END mapping
+  for (i in 1:nrow(batch_file)){
     
-    ### Clean up files and create out_dir structure
-    clean.up()
+      
+    ## A: Indicate what program is doing - READ TRIMMING
+    cat(paste0("\nMapping: ",batch_file$SAMPLE[i],"\n"))
+      
+    ## run bowtie mapping
+    system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
+                  " -p ",cpu," -X ",isl, # specify bowtie options
+                  " -1 ",out_dir,"/",batch_file$SAMPLE[i],".R1.trim", # specify fwd reads
+                  " -2 ",out_dir,"/",batch_file$SAMPLE[i],".R2.trim", # specify rev reads
+                  " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
+                  " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
     
-    ### Build Metadata File
-    lm_workflow_stats <- pull.run.stats()
-    write.table(lm_workflow_stats, paste0(out_dir,"/lm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
+    
+    ## B: Indicate what program is doing - MAPPING
+    cat("Converting SAM 2 BAM...\n")
+    
+    ## Convert SAM to BAM format with sorting and indexing
+    system(paste0("samtools view -S -b --threads ",cpu," ",out_dir,"/",batch_file$SAMPLE[i],".sam > ",out_dir,"/",batch_file$SAMPLE[i],".tmpbam; 
+                  samtools sort --threads ",cpu," ",out_dir,"/",batch_file$SAMPLE[i],".tmpbam -o ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam; 
+                  samtools index ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam"))
+    
+    
+    ## C: Indicate what program is doing - HIT TABLE GENERATION
+    cat("Generating Cov Table...\n")
+    
+    ## Run read hit stats script
+    system(paste0("python3 ",scripts,"/calc_cov.py",
+                  " --min_ani ",min_id, # min percent identity of read matches
+                  " --min_mapq ",mq_cut, # min mapQ of read matches (either read in pair)
+                  " ",gd,"/scaff2bin.txt", # scaf2bin file
+                  " ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam", # sorted indexed bam file
+                  " ",gd,"/All_Genomes.fa", # all genomes contig file
+                  " > ",out_dir,"/",batch_file$SAMPLE[i],".cov"))
+    
+    
+    ## D: Remove Temporary Files (.sam, .tmpbam)
+    system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".sam"))
+    system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".tmpbam"))
+    
+  }  
+    
+    
+    
+    
+  ### Build Final Coverage Table
+  
+  ## Indicate what program is doing
+  cat("\nBuilding Final Output...\n")
+  
+  ## Create outbut data.table
+  cov_final <- data.table()
+  
+  ## Loop over .cov files
+  for (i in 1:nrow(batch_file)){
+  
+    # Read hits back in for cov filtering
+    cov_dat <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".cov"), stringsAsFactors = F)
+    
+    # Add column names to table and remove NA
+    colnames(cov_dat) <- c("SCAFFOLD", "GENOME", "COVERAGE", "READS")
+    cov_dat[is.na(cov_dat)] <- 0
+    
+    # Generate summarized coverage per genome and counts 
+    tmp_sum <- data.table(cov_dat %>%
+                          group_by(GENOME) %>%
+                          summarise(MEAN_COV = weighted.mean(COVERAGE, READS),
+                                    TOT_RDS = sum(READS, na.rm = T)))
+    
+    # Add in sample name and relative abundance 
+    tmp_sum <- data.table(SAMPLE = batch_file$SAMPLE[i],
+                           tmp_sum,
+                           COM_FRAC = tmp_sum$MEAN_COV / sum(tmp_sumt$MEAN_COV, na.rm = T))
+    
+    # Remove NA Again
+    tmp_sum[is.na(tmp_sum)] <- 0
+    
+    
+    # Bind tmp summary to cov_final
+    cov_final <- rbind(cov_final, tmp_sum)
     
   }
   
-  cat("Lite metagenomics workflow finished successfully :-)\n\n")
+  ## Write Output 
+  fwrite(cov_final, paste0(out_dir,"/genome_coverage.txt"), row.names = F, quote = F, sep = "\t")
   
+  
+  
+  
+  ### Clean up files and create out_dir structure
+  clean.up()
+  
+  
+  
+    
+  ### Build Metadata File
+  lm_workflow_stats <- pull.run.stats()
+  write.table(lm_workflow_stats, paste0(out_dir,"/lm_workflow_stats.txt"), row.names = F, quote = F, sep = "\t")
+   
+    
+    
+    
+  ### PROGRAM COMPLETE
+  cat("\nLite metagenomics workflow finished successfully :-)\n\n")
+     
 }
+
 
 
 
