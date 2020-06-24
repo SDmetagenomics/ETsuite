@@ -604,6 +604,11 @@ if (wf == "hc"){
   
   # IF number passed for swap rate use the number
   if(is.numeric(swap_rate_method) == T){
+    
+    # Say what is happening
+    cat(paste0("\nProvided swap rate (",swap_rate_method,") applied...\n"))
+    
+    # Apply provided swap rate
     s_rate <- swap_rate_method
   }
   
