@@ -13,7 +13,7 @@ def read_bam(scaf2bin, bam, fasta, min_ani, min_mapq):
 		scaf2bin[line.split()[0]] = line.split()[1]
 	coverage = {}
 	samfile = pysam.AlignmentFile(bam)
-	print("Scaffold\tGenome\tCoverage\Counts")
+	print("SCAFFOLD\tGENOME\tCOVERAGE\tREADS")
 	for contig in scaf2bin:
 		read_lengths = []
 		count = 0
