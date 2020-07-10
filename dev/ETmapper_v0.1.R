@@ -997,6 +997,10 @@ if (wf == "lm") {
   ## Indicate what program is doing
   cat("\nBuilding Final Output...\n")
   
+  ## Load Genome Info Table from ETdb
+  genome_info <- fread(paste0(gd,"/genome_stats.txt"), stringsAsFactors = F, header = T)
+  genome_info <- genome_info[,c(1,5)]
+  
   ## Create outbut data.table
   cov_final <- data.table()
   
@@ -1007,14 +1011,21 @@ if (wf == "lm") {
     cov_dat <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".cov"), stringsAsFactors = F, fill = T)
     
     # Add column names to table and remove NA
-    colnames(cov_dat) <- c("SCAFFOLD", "GENOME", "COVERAGE", "READS")
+    colnames(cov_dat) <- c("SCAFFOLD", "GENOME", "COVERAGE", "READS", "BASES")
     cov_dat[is.na(cov_dat)] <- 0
     
     # Generate summarized coverage per genome and counts 
     tmp_sum <- data.table(cov_dat %>%
                           group_by(GENOME) %>%
-                          summarise(MEAN_COV = weighted.mean(COVERAGE, READS),
-                                    TOT_RDS = sum(READS, na.rm = T)))
+                          summarise(TOT_RDS = sum(READS, na.rm = T),
+                                    TOT_BP = sum(BASES, na.rm = T)))
+    
+    # Merge in genome sizes
+    tmp_sum <- merge(tmp_sum, genome_info, by.x = "GENOME", by.y = "Genome")
+    
+    # Calculate coverage
+    tmp_sum <- data.table(tmp_sum,
+                          MEAN_COV = tmp_sum$TOT_BP/tmp_sum$Size)
     
     # Add in sample name and relative abundance 
     tmp_sum <- data.table(SAMPLE = batch_file$SAMPLE[i],
@@ -1023,7 +1034,6 @@ if (wf == "lm") {
     
     # Remove NA Again
     tmp_sum[is.na(tmp_sum)] <- 0
-    
     
     # Bind tmp summary to cov_final
     cov_final <- rbind(cov_final, tmp_sum)
