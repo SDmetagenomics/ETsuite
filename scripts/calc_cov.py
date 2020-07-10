@@ -13,25 +13,25 @@ def read_bam(scaf2bin, bam, fasta, min_ani, min_mapq):
 		scaf2bin[line.split()[0]] = line.split()[1]
 	coverage = {}
 	samfile = pysam.AlignmentFile(bam)
-	print("SCAFFOLD\tGENOME\tCOVERAGE\tREADS")
+	print("SCAFFOLD\tGENOME\tCOVERAGE\tREADS\tBASES")
 	for contig in scaf2bin:
 		read_lengths = []
 		count = 0
 		for read in samfile.fetch(contig):
 			if read.get_reference_positions() != []:
-				ani = 1-float(read.get_tag("NM")) / float(len(read.get_reference_positions())) 
+				ani = 1-float(read.get_tag("NM")) / float(len(read.get_reference_positions()))
 				if read.mapping_quality >= min_mapq and ani >= min_ani:
 					count +=1
 					read_lengths.append(len(read.get_reference_positions()))
 		if len(read_lengths) > 0:
-			print(contig + "\t" + scaf2bin[contig] + "\t" + str(float(count)*sum(read_lengths) / len(read_lengths) / lengths[contig]) + "\t" + str(count))
+			print(contig + "\t" + scaf2bin[contig] + "\t" + str(float(count)*sum(read_lengths) / len(read_lengths) / lengths[contig]) + "\t" + str(count) + "\t" + str(sum(read_lengths)))
 		else:
-			print(contig + "\t" + scaf2bin[contig] + "\t" + "0")
+			print(contig + "\t" + scaf2bin[contig] + "\t" + "0" + "\t" + "0" + "\t" + "0")
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Calculate filtered coverages for scaffolds",
              formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # Required positional arguments
-    parser.add_argument("scaf2bin", help="scaffold to bin file, tab separated.")    
+    parser.add_argument("scaf2bin", help="scaffold to bin file, tab separated.")
     parser.add_argument("bam", help="Sorted, indexed .bam file.")
     parser.add_argument("fasta", help="FASTA file.")
     parser.add_argument("-c", "--min_ani", action="store", default=0.95, type=float, \
