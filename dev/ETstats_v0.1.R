@@ -690,6 +690,10 @@ if (wf == "hc"){
     # Create table of filt hits for all samples
     filt_hits <- rbind(filt_hits, tmp_hit_summary)
     
+    # Write Sample Hits Out 
+    fwrite(tmp_hit_table, paste0(out_dir,"/",sample,".hits"), col.names = T, sep = "\t")
+    
+    
   } 
   
   
@@ -734,5 +738,12 @@ if (wf == "hc"){
 }
   
 
+
+
+if (wf == "ts"){
+  
+  
+  
+}
 
 
