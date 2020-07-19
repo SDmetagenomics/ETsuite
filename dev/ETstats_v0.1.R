@@ -682,8 +682,8 @@ if (wf == "hc"){
                                             UBC = n_distinct(clstID),
                                             RDSnR = sum(counts[counts >= bc_rep]),
                                             UBCnR = n_distinct(clstID[counts >= bc_rep]),
-                                            RDSdC = sum(counts[counts >= 2 & counts > SWAP_RATE]),
-                                            UBCdC = n_distinct(clstID[counts >= 2 & counts > SWAP_RATE]),
+                                            RDSdC = sum(counts[counts >= 2 & counts >= SWAP_RATE]),
+                                            UBCdC = n_distinct(clstID[counts >= 2 & counts >= SWAP_RATE]),
                                             BCPR = UBC / RDS,
                                             BCPRdC = UBCdC / RDSdC))
     
