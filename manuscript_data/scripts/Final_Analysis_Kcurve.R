@@ -16,6 +16,9 @@ dat <- dat[,-c(4:7)]
 ## Metagenomics Data - load
 mg_dat <- fread("~/Dropbox/Banfield_Lab_Files/Projects/mCAFE/mCAFE_Project/Studies/20_4_6_Kleb_Std_Curve_Final/Kcurve_FINAL_ANALYSIS/MG_INPUT_ETMAPPER.txt")
 
+## Save Data for github upload
+#fwrite(dat, "~/Dropbox/Banfield_Lab_Files/Projects/mCAFE/mCAFE_Project/ETsuite/manuscript_data/data/Kcurve_et.txt", sep = "\t", quote = F)
+#fwrite(mg_dat, "~/Dropbox/Banfield_Lab_Files/Projects/mCAFE/mCAFE_Project/ETsuite/manuscript_data/data/Kcurve_mg.txt", sep = "\t", quote = F)
 
 
 
