@@ -285,7 +285,7 @@ find.bc <- function(){
   system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file$SAMPLE[i],".info > ",out_dir,"/",batch_file$SAMPLE[i],".info.filt"))
     
   # pull filtered model hit file
-  ca_info <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".info.filt"), header = F)
+  ca_info <<- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".info.filt"), header = F)
     
   # create barcode output file
   bc_out <- data.table(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
