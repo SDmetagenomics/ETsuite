@@ -616,11 +616,11 @@ if (wf == "jm"){
   ## Build Selection Vectors and Subset models + names into model_df 
   name_coord <- seq(from = 1, to = length(models) - 1, by = 2)
   model_coord <-  seq(from = 2, to = length(models), by = 2)   
-  model_df <- data.table(model_name = models[name_coord],
+  model_df <- data.table(model = models[name_coord],
                          model_seq = models[model_coord])
   
   ## Add 5 Terminal Bases of Each Model to df 
-  model_df$junc_seq <- substrRight(model_df$model_seq, 5)
+  model_df$mod_known_term <- substrRight(model_df$model_seq, 5)
   
   
   
@@ -799,16 +799,36 @@ if (wf == "jm"){
     merge_dat <- merge.data.table(hit_dat, bc_dat, by = "Read", all.x = T)
     merge_dat$barcodes <- ifelse(merge_dat$barcodes == "", NA, merge_dat$barcodes)
     
+    ## Assess if trimmed model has exact 5bp terminal sequence as expected model and integrate data
+    
+    # clean up merge_dat
+    merge_dat[,-c("model","mod_len","flank_seq")]
+    
+    # gather model trimming info for all reads
+    mod_trim_info <- data.table(Read = sub(" .*","", x = ca_info$V1,  perl = T),
+                                model = ca_info$V8,
+                                mod_len = nchar(ca_info$V6),
+                                R1_len = nchar(ca_info$V7), # Capture the actual length of the R1 read following trimming here 
+                                mod_n5_term = substrRight(ca_info$V6, 5))
+    
+    # bring in known terminal 5 bp for each model
+    mod_trim_info <- merge(mod_trim_info, model_df[,c(1,3)], by = "model", all.x = T)
+    
+    # evaluate if trimmed model has exact terminal bp as actual model
+    mod_trim_info$mod_term_exact <- mod_trim_info$mod_n5_term == mod_trim_info$mod_known_term
+    
+    # merge tmphits (merge_dat) with mod_trim_info
+    merge_dat <- merge(merge_dat, mod_trim_info, by = "Read", all.x = T)
+    
+    
     ## Remove Temporary Files (.tmphits, .bc, )
     rm(hit_dat, bc_dat)
     system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".tmphits"))
     system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".bc"))
     system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info"))
-    #system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info.filt"))
+    system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info.filt"))
     
-    ### Doing some testing
-    fwrite(merge_dat, paste0(out_dir,"/",batch_file$SAMPLE[i],".prefilt.hits"), row.names = F, quote = F, sep = "\t")
-    fwrite(head(ca_info), paste0(out_dir,"/",batch_file$SAMPLE[i],".ca_info"), row.names = F, quote = F, sep = "\t")
+    
     
     
   ### 9) Filter Output Hits
