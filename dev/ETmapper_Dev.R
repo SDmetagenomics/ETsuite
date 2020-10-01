@@ -553,7 +553,7 @@ if (wf == "jm"){
   
   ### Create Log File
   cat(
-  paste0("ETmapper v0.10 Summary    Created: ", date()),"\n\n",
+  paste0("ETmapper ",etmapper_version," Summary    Created: ", date()),"\n\n",
   "Program Parameters:\n",
   paste0("Arguments: "), args,"\n",
   paste0("Workflow type is: ", wf,"\n"),
