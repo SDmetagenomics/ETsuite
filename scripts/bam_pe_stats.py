@@ -35,19 +35,27 @@ def read_bam(scaf2bin, bam):
                                     refseq = read.get_reference_sequence()
                                     good_pos = 0
                                     true_nm = 0
+                                    first_three = 0
                                     clipped = 'False'
                                     if len(qseq) == len(refseq):
-                                        for pos in range(0,len(read.query_alignment_qualities)):
+                                        read_len_qual = len(read.query_alignment_qualities)
+                                        for pos in range(0,read_len_qual):
                                             if read.query_alignment_qualities[pos] > 20:
                                                 good_pos += 1
                                                 if qseq[pos] != refseq[pos]:
                                                     true_nm += 1
+                                            if strand == '+' and pos <= 2:
+                                                if qseq[pos] != refseq[pos]:
+                                                    first_three += 1
+                                            elif strand == '-' and pos >= read_len_qual-3:
+                                                if qseq[pos] != refseq[pos]:
+                                                    first_three += 1
                                     else:
                                         clipped = 'True'
 
                                     read_info[read.query_name] = {"scaf": scaf, 'is_read1': read.is_read1, 'strand': strand, "mapq": read.mapping_quality, "NM": read.get_tag("NM"), 
                                     "len": len(read.get_reference_positions()), "end": read.get_reference_positions()[-1], "start": read.get_reference_positions()[0],
-                                    'good_pos':good_pos, 'true_nm': true_nm, 'clipped': clipped, 'ref_positions': read.get_reference_positions()}
+                                    'good_pos':good_pos, 'true_nm': true_nm, 'clipped': clipped, 'ref_positions': read.get_reference_positions(), 'start_nm': first_three}
                             else:
                                     if scaf == read_info[read.query_name]['scaf']:
                                         read_total_cov = len(set(read.get_reference_positions() + read_info[read.query_name]['ref_positions']))
@@ -59,13 +67,21 @@ def read_bam(scaf2bin, bam):
                                             refseq = read.get_reference_sequence()
                                             good_pos = 0
                                             true_nm = 0
+                                            first_three = 0
                                             clipped = 'False'
                                             if len(qseq) == len(refseq):
-                                                for pos in range(0,len(read.query_alignment_qualities)):
+                                                read_len_qual = len(read.query_alignment_qualities)
+                                                for pos in range(0,read_len_qual):
                                                     if read.query_alignment_qualities[pos] > 20:
                                                         good_pos += 1
                                                         if qseq[pos] != refseq[pos]:
                                                             true_nm += 1
+                                                    if strand == '+' and pos <= 2:
+                                                        if qseq[pos] != refseq[pos]:
+                                                            first_three += 1
+                                                    elif strand == '-' and pos >= read_len_qual-3:
+                                                        if qseq[pos] != refseq[pos]:
+                                                            first_three += 1
                                             else:
                                                 clipped = 'True'
 
@@ -81,6 +97,7 @@ def read_bam(scaf2bin, bam):
                                             reads['QUAL1'].append(good_pos)
                                             reads['QUALNM1'].append(true_nm)
                                             reads['CLIPPED1'].append(clipped)
+                                            reads['R1_START_NM'].append(first_three)
 
                                             reads['SCAF2'].append(read_info[read.query_name]['scaf'])
                                             reads['GENOME2'].append(scaf2bin[read_info[read.query_name]['scaf']])
@@ -136,7 +153,7 @@ def read_bam(scaf2bin, bam):
                                             reads['QUALNM1'].append(read_info[read.query_name]['true_nm'])
                                             reads['CLIPPED1'].append(read_info[read.query_name]['clipped'])
                                             reads['TOTAL_BP'].append(read_total_cov)
-
+                                            reads['R1_START_NM'].append(read_info[read.query_name]['start_nm'])
 
     for read in read_info:
         if read not in found_both:
@@ -154,6 +171,7 @@ def read_bam(scaf2bin, bam):
                 reads['QUAL1'].append(read_info[read]['good_pos'])
                 reads['QUALNM1'].append(read_info[read]['true_nm'])
                 reads['CLIPPED1'].append(read_info[read]['clipped'])
+                reads['R1_START_NM'].append(read_info[read]['start_nm'])
 
                 reads['SCAF2'].append('NA')
                 reads['GENOME2'].append('NA')
@@ -182,6 +200,7 @@ def read_bam(scaf2bin, bam):
                 reads['QUALNM2'].append(read_info[read]['true_nm'])
                 reads['CLIPPED2'].append(read_info[read]['clipped'])
 
+                reads['R1_START_NM'].append('NA')
                 reads['SCAF1'].append('NA')
                 reads['GENOME1'].append('NA')
                 reads['MAPQ1'].append('NA')
