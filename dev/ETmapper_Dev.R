@@ -806,7 +806,9 @@ if (wf == "jm"){
     system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info"))
     #system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info.filt"))
     
-    
+    ### Doing some testing
+    fwrite(merge_dat, paste0(out_dir,"/",batch_file$SAMPLE[i],".prefilt.hits"), row.names = F, quote = F, sep = "\t")
+    fwrite(head(ca_info), paste0(out_dir,"/",batch_file$SAMPLE[i],".ca_info"), row.names = F, quote = F, sep = "\t")
     
     
   ### 9) Filter Output Hits
