@@ -63,6 +63,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     #######    #    #    # #    # #      #      ###### #    #  ",etmapper_version,"
       
     Usage: ETmapper.R -w [workflow] -d [read_dir] -b [batch_file] -g [genome_db] [options]
+    
     By: Spencer Diamond (sdiamond@berkeley.edu), Alex Crits-Christoph (crits-christoph@berkeley.edu)
     
     Mandatory Arguments:
@@ -802,8 +803,8 @@ if (wf == "jm"){
     rm(hit_dat, bc_dat)
     system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".tmphits"))
     system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".bc"))
-    #system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info"))
-    system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info.filt"))
+    system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info"))
+    #system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".info.filt"))
     
     
     
