@@ -799,10 +799,10 @@ if (wf == "jm"){
     merge_dat <- merge.data.table(hit_dat, bc_dat, by = "Read", all.x = T)
     merge_dat$barcodes <- ifelse(merge_dat$barcodes == "", NA, merge_dat$barcodes)
     
-    ## Assess if trimmed model has exact 5bp terminal sequence as expected model and integrate data
+    ## Assess if trimmed model has exact 5bp terminal sequence as expected model and integrate data   ################ COULD CONSIDER MAKING TERMINAL MODEL BP MATCH A VARIABLE 
     
     # clean up merge_dat
-    merge_dat[,-c("model","mod_len","flank_seq")]
+    merge_dat <- merge_dat[,-c("model","mod_len","flank_seq")]
     
     # gather model trimming info for all reads
     mod_trim_info <- data.table(Read = sub(" .*","", x = ca_info$V1,  perl = T),
@@ -845,8 +845,17 @@ if (wf == "jm"){
       # Filter out NA barcodes
       merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
       
-      # Add Tn Junction Postion
+      # Filter out reads where model sequence did not contain exact last 5bp 
+      merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
+      
+      # Filter out reads where R1 has mismatches in first 3 bp following Tn Junction
+      merge_dat_filt <- subset(merge_dat_filt, R1_START_NM == 0)
+      
+      # Add Tn junction postion
       merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND1 == "+", merge_dat_filt$START1, merge_dat_filt$END1)
+      
+      # Add info if reads overlap 
+      #merge_dat_filt$R_overlap <- apply(hits, MARGIN = 1, function (x) c(x[18], x[19]) %overlaps% c(x[7], x[8]))
       
       # Remove GENOME2 Column and Change GNEOME1 to GENOME
       merge_dat_filt[,GENOME2:=NULL]
@@ -883,6 +892,7 @@ if (wf == "jm"){
   ### 10) Write Filtered Hit Table for Sample [i]
     
     # Write hit table out
+    fwrite(merge_dat, paste0(out_dir,"/",batch_file$SAMPLE[i],".hitsraw.final"), row.names = F, quote = F, sep = "\t")
     fwrite(merge_dat_filt, paste0(out_dir,"/",batch_file$SAMPLE[i],".hits"), row.names = F, quote = F, sep = "\t")
     rm(merge_dat_filt)
     
