@@ -738,7 +738,7 @@ if (wf == "jm"){
         
       # run bowtie mapping using fwd and rev reads
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
-                    " -p ",cpu," -X ",isl, # specify bowtie options
+                    " -p ",cpu," -X ",isl," --rdg 60,3"," --rfg 60,3", # specify bowtie options
                     " -1 ",out_dir,"/",batch_file$SAMPLE[i],".R1.final", # specify fwd reads
                     " -2 ",out_dir,"/",batch_file$SAMPLE[i],".R2.final", # specify rev reads
                     " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
