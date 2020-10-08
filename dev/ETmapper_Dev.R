@@ -846,10 +846,10 @@ if (wf == "jm"){
       merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
       
       # Filter out reads where model sequence did not contain exact last 5bp 
-      #merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
+      merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
       
       # Filter out reads where R1 has mismatches in first 3 bp following Tn Junction
-      #merge_dat_filt <- subset(merge_dat_filt, R1_START_NM == 0)
+      merge_dat_filt <- subset(merge_dat_filt, R1_START_NM == 0)
       
       # Add Tn junction postion
       merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND1 == "+", merge_dat_filt$START1, merge_dat_filt$END1)
