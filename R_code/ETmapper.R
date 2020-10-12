@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 ### Set Version
-etmapper_version <- c("v0.10")                                             ######**** Added VERSION NUMBER VARIABLE
+etmapper_version <- c("v0.10.1")                                             ######**** Added VERSION NUMBER VARIABLE
 
 
 ### Check Libraries
@@ -52,7 +52,7 @@ args <- commandArgs(trailingOnly = T)
 
 # Display help if no args or -h
 if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | !("-g" %in% args) | length(args) == 0) {
-  cat("
+  cat(paste0("
   
     ####### #######                                           
     #          #    #    #   ##   #####  #####  ###### #####  
@@ -60,10 +60,11 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     #####      #    # ## # #    # #    # #    # #####  #    # 
     #          #    #    # ###### #####  #####  #      #####  
     #          #    #    # #    # #      #      #      #   #  
-    #######    #    #    # #    # #      #      ###### #    #  v0.10
+    #######    #    #    # #    # #      #      ###### #    #  ",etmapper_version,"
       
     Usage: ETmapper.R -w [workflow] -d [read_dir] -b [batch_file] -g [genome_db] [options]
-    By: Spencer Diamond (sdiamond@berkeley.edu)
+    
+    By: Spencer Diamond (sdiamond@berkeley.edu), Alex Crits-Christoph (crits-christoph@berkeley.edu)
     
     Mandatory Arguments:
     
@@ -94,7 +95,8 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       -N: Read length (Default: 150)
       -M: Min post trim fwd read size for PE mapping (Default: 20)
       -X: Maximum insert length (Default: 500)
-      -Q: Min MapQ Score (Default: 20) 
+      -Q: Min MapQ Score (Default: 20)
+      -C: Turn off chimeric read filter (Default: ON)
       -E: Max number of mismatches (Default: 5; SE only)
       -I: Min read match ID for Cov Calculations (Default: 0.95)
       
@@ -102,7 +104,7 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     
       -o: Output directory (Default: ET_Seq)
       -cpu: Number of cores (Default: 1)
-      -h: Bring up this help menu\n\n")
+      -h: Bring up this help menu\n\n"))
   
   
   q(save="no")
@@ -221,6 +223,12 @@ if("-Q" %in% args){
   mq_cut <- as.numeric(args[which(args == "-Q") + 1])                                            ######**** ADDED HIT FILTERING TO ETmapper SCRIPT 
 }
 
+# Turn off Chimeric Read Filter (Default: ON)
+chimeric_filterng <- TRUE
+if("-C" %in% args){
+  chimeric_filterng <- FALSE
+}
+
 # Max number of mismatches (Default: 5; SE only)
 mm_cut <- 5
 if("-E" %in% args){
@@ -284,7 +292,7 @@ find.bc <- function(){
   system(paste0("awk '{if ($3!=-1) print}' ",out_dir,"/",batch_file$SAMPLE[i],".info > ",out_dir,"/",batch_file$SAMPLE[i],".info.filt"))
     
   # pull filtered model hit file
-  ca_info <- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".info.filt"), header = F)
+  ca_info <<- fread(paste0(out_dir,"/",batch_file$SAMPLE[i],".info.filt"), header = F)
     
   # create barcode output file
   bc_out <- data.table(Read = ca_info$V1, model = ca_info$V8, mod_len = ca_info$V4)
@@ -517,6 +525,11 @@ check.mod.short <- function(){
 }
 
 
+## Function 5: Grab n sized substring from right end of character vector
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+
 
 #### END FUNCTION DEFINE ####
 
@@ -547,7 +560,7 @@ if (wf == "jm"){
   
   ### Create Log File
   cat(
-  paste0("ETmapper v0.10 Summary    Created: ", date()),"\n\n",
+  paste0("ETmapper ",etmapper_version," Summary    Created: ", date()),"\n\n",
   "Program Parameters:\n",
   paste0("Arguments: "), args,"\n",
   paste0("Workflow type is: ", wf,"\n"),
@@ -594,6 +607,27 @@ if (wf == "jm"){
   cat(paste0("BC Flanking Sequences:\n"), bc_flank,
       file = paste0(out_dir,"/run_log.txt"),
       append = T)
+  
+  
+  
+  
+  ### Identify 5 Terminal Bases of Each Model for Later Comparison to Trimmed Sequence
+  
+  ## Recover model sequences 
+  models <- system(paste0("grep -B 1 \"^NN.*\" ",md," | sed 's/>//'"), intern = T)
+  
+  ## Drop grep applied divider characters 
+  drop_char <- "--"
+  models <- models[models %notin% drop_char]
+  
+  ## Build Selection Vectors and Subset models + names into model_df 
+  name_coord <- seq(from = 1, to = length(models) - 1, by = 2)
+  model_coord <-  seq(from = 2, to = length(models), by = 2)   
+  model_df <- data.table(model = models[name_coord],
+                         model_seq = models[model_coord])
+  
+  ## Add 5 Terminal Bases of Each Model to df 
+  model_df$mod_known_term <- substrRight(model_df$model_seq, 5)
   
   
   
@@ -711,7 +745,7 @@ if (wf == "jm"){
         
       # run bowtie mapping using fwd and rev reads
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
-                    " -p ",cpu," -X ",isl, # specify bowtie options
+                    " -p ",cpu," -X ",isl," --rdg 60,3"," --rfg 60,3", # specify bowtie options
                     " -1 ",out_dir,"/",batch_file$SAMPLE[i],".R1.final", # specify fwd reads
                     " -2 ",out_dir,"/",batch_file$SAMPLE[i],".R2.final", # specify rev reads
                     " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
@@ -772,6 +806,28 @@ if (wf == "jm"){
     merge_dat <- merge.data.table(hit_dat, bc_dat, by = "Read", all.x = T)
     merge_dat$barcodes <- ifelse(merge_dat$barcodes == "", NA, merge_dat$barcodes)
     
+    ## Assess if trimmed model has exact 5bp terminal sequence as expected model and integrate data   ################ COULD CONSIDER MAKING TERMINAL MODEL BP MATCH A VARIABLE 
+    
+    # clean up merge_dat
+    merge_dat <- merge_dat[,-c("model","mod_len","flank_seq")]
+    
+    # gather model trimming info for all reads
+    mod_trim_info <- data.table(Read = sub(" .*","", x = ca_info$V1,  perl = T),
+                                model = ca_info$V8,
+                                mod_len = nchar(ca_info$V6),
+                                R1_len = nchar(ca_info$V7), # Capture the actual length of the R1 read following trimming here 
+                                mod_n5_term = substrRight(ca_info$V6, 5))
+    
+    # bring in known terminal 5 bp for each model
+    mod_trim_info <- merge(mod_trim_info, model_df[,c(1,3)], by = "model", all.x = T)
+    
+    # evaluate if trimmed model has exact terminal bp as actual model
+    mod_trim_info$mod_term_exact <- mod_trim_info$mod_n5_term == mod_trim_info$mod_known_term
+    
+    # merge tmphits (merge_dat) with mod_trim_info
+    merge_dat <- merge(merge_dat, mod_trim_info, by = "Read", all.x = T)
+    
+    
     ## Remove Temporary Files (.tmphits, .bc, )
     rm(hit_dat, bc_dat)
     system(paste0("rm ",out_dir,"/",batch_file$SAMPLE[i],".tmphits"))
@@ -796,8 +852,21 @@ if (wf == "jm"){
       # Filter out NA barcodes
       merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
       
-      # Add Tn Junction Postion
+      if (chimeric_filterng == TRUE){ # This will implememnt chimera filtering but is kept optional now because some reads are still too short
+        
+        # Filter out reads where model sequence did not contain exact last 5bp 
+        merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
+      
+        # Filter out reads where R1 has mismatches in first 3 bp following Tn Junction
+        merge_dat_filt <- subset(merge_dat_filt, R1_START_NM == 0)
+        
+      }
+      
+      # Add Tn junction postion
       merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND1 == "+", merge_dat_filt$START1, merge_dat_filt$END1)
+      
+      # Add info if reads overlap 
+      #merge_dat_filt$R_overlap <- apply(hits, MARGIN = 1, function (x) c(x[18], x[19]) %overlaps% c(x[7], x[8]))
       
       # Remove GENOME2 Column and Change GNEOME1 to GENOME
       merge_dat_filt[,GENOME2:=NULL]
@@ -834,6 +903,7 @@ if (wf == "jm"){
   ### 10) Write Filtered Hit Table for Sample [i]
     
     # Write hit table out
+    fwrite(merge_dat, paste0(out_dir,"/",batch_file$SAMPLE[i],".hitsraw.final"), row.names = F, quote = F, sep = "\t")
     fwrite(merge_dat_filt, paste0(out_dir,"/",batch_file$SAMPLE[i],".hits"), row.names = F, quote = F, sep = "\t")
     rm(merge_dat_filt)
     
