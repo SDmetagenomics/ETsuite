@@ -95,7 +95,8 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
       -N: Read length (Default: 150)
       -M: Min post trim fwd read size for PE mapping (Default: 20)
       -X: Maximum insert length (Default: 500)
-      -Q: Min MapQ Score (Default: 20) 
+      -Q: Min MapQ Score (Default: 20)
+      -C: Turn off chimeric read filter (Default: ON)
       -E: Max number of mismatches (Default: 5; SE only)
       -I: Min read match ID for Cov Calculations (Default: 0.95)
       
@@ -220,6 +221,12 @@ if("-X" %in% args){
 mq_cut <- 20
 if("-Q" %in% args){
   mq_cut <- as.numeric(args[which(args == "-Q") + 1])                                            ######**** ADDED HIT FILTERING TO ETmapper SCRIPT 
+}
+
+# Turn off Chimeric Read Filter (Default: ON)
+chimeric_filterng <- TRUE
+if("-C" %in% args){
+  chimeric_filterng <- FALSE
 }
 
 # Max number of mismatches (Default: 5; SE only)
@@ -845,11 +852,15 @@ if (wf == "jm"){
       # Filter out NA barcodes
       merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
       
-      # Filter out reads where model sequence did not contain exact last 5bp 
-      merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
+      if (chimeric_filterng == TRUE){ # This will implememnt chimera filtering but is kept optional now because some reads are still too short
+        
+        # Filter out reads where model sequence did not contain exact last 5bp 
+        merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
       
-      # Filter out reads where R1 has mismatches in first 3 bp following Tn Junction
-      merge_dat_filt <- subset(merge_dat_filt, R1_START_NM == 0)
+        # Filter out reads where R1 has mismatches in first 3 bp following Tn Junction
+        merge_dat_filt <- subset(merge_dat_filt, R1_START_NM == 0)
+        
+      }
       
       # Add Tn junction postion
       merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND1 == "+", merge_dat_filt$START1, merge_dat_filt$END1)
