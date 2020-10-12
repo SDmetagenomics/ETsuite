@@ -1,0 +1,21 @@
+## v0.10.1 ##
+- updated bam_pe_stats.py to return mismatches at start of forward read
+
+- updated ETmapper.R to identify presence of terminal 5 bases of known model sequence in
+  trimmed models
+	> added function substrRight()
+
+- Updated filtering of reads to incorporate fwd read Tn-Junction mismatches and terminal
+  model base identity filtering to combat chimeric reads 
+
+- Updated bowtie mapping gap penalties to disallow gap formation during read mapping "--rdg 60,3 --rfg 60,3". Thus the CLIPPED output column should now always be 0
+
+- Added option to toggle on and off the chimeric read filtering "-C" for use with datasets where fwd read is too short to capture junction. 	
+
+- Updated contributors
+
+- Created ETmapper Dev version for future feature testing...may remove and use branches
+
+
+## v0.10 ##
+- This is the first semi stable release of the program
