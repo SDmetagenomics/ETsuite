@@ -93,11 +93,12 @@ if("-h" %in% args | !("-w" %in% args) | !("-d" %in% args) | !("-b" %in% args) | 
     Read Mapping / Filtering Options:
       
       -N: Read length (Default: 150)
+      -F: Force mapping of forward reads only (Only use if you know what you are doing) 
       -M: Min post trim fwd read size for PE mapping (Default: 20)
       -X: Maximum insert length (Default: 500)
       -Q: Min MapQ Score (Default: 20)
       -C: Turn off chimeric read filter (Default: ON)
-      -E: Max number of mismatches (Default: 5; SE only)
+      -E: Max number of mismatches (Default: 5; SE mappings only)
       -I: Min read match ID for Cov Calculations (Default: 0.95)
       
     Program Control:
@@ -205,6 +206,12 @@ if("-N" %in% args){
   sq_rd_len <- as.numeric(args[which(args == "-N") + 1])
 }
 
+# Force mapping of forward reads only (Default: FALSE)
+force_forward <- FALSE
+if("-F" %in% args){
+  force_forward <- TRUE
+}
+
 # Min post trim fwd read size for PE mapping (Default: 20)
 min_fwd_size <- 20
 if("-M" %in% args){
@@ -220,7 +227,7 @@ if("-X" %in% args){
 # Min MapQ Score (Default: 20)
 mq_cut <- 20
 if("-Q" %in% args){
-  mq_cut <- as.numeric(args[which(args == "-Q") + 1])                                            ######**** ADDED HIT FILTERING TO ETmapper SCRIPT 
+  mq_cut <- as.numeric(args[which(args == "-Q") + 1])       
 }
 
 # Turn off Chimeric Read Filter (Default: ON)
@@ -741,20 +748,32 @@ if (wf == "jm"){
     ## Perform PE or SE mapping based on if trimming model makes fwd reads too short
 
     ## IF fwd read length after model trim long enough
-    if (fwd_read_short == FALSE){
+    if (fwd_read_short == FALSE & force_forward == FALSE){
         
       # run bowtie mapping using fwd and rev reads
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
-                    " -p ",cpu," -X ",isl," --rdg 60,3"," --rfg 60,3", # specify bowtie options
+                    " -p ",cpu," -X ",isl," --rdg 60,3"," --rfg 60,3", # specify bowtie options ; The rgd and rfg options make sure no gaps appear in mappings
                     " -1 ",out_dir,"/",batch_file$SAMPLE[i],".R1.final", # specify fwd reads
                     " -2 ",out_dir,"/",batch_file$SAMPLE[i],".R2.final", # specify rev reads
                     " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
                     " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
     
     }  
+    
+    ## IF fwd read length after model trim long enough but you only want to map and analyze the forward reads 
+    if (fwd_read_short == FALSE & force_forward == TRUE){
       
-    ## IF fwd read length after model trim too short
-    if (fwd_read_short == TRUE){
+      # run bowtie mapping using fwd reads only
+      system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
+                    " -p ",cpu," -X ",isl," --rdg 60,3"," --rfg 60,3", # specify bowtie options ; The rgd and rfg options make sure no gaps appear in mappings
+                    " -U ",out_dir,"/",batch_file$SAMPLE[i],".R1.final", # specify fwd reads
+                    " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
+                    " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
+      
+    }
+    
+    ## IF fwd read length after model trim too short (only reverse reads are mapped and analyzed)
+    if (fwd_read_short == TRUE & force_forward == FALSE){
         
       # run bowtime mapping using rev reads only
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
@@ -764,7 +783,7 @@ if (wf == "jm"){
                     " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
       
     }
-      
+    
       
     
     
@@ -791,12 +810,17 @@ if (wf == "jm"){
     cat("Generating Hit Table...\n")
     
     ## If fwd read long enough and PE mapping done use bam_pe_stats.py
-    if (fwd_read_short == FALSE){
+    if (fwd_read_short == FALSE & force_forward == FALSE){
       system(paste0("python3 ",scripts,"/bam_pe_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam > ",out_dir,"/",batch_file$SAMPLE[i],".tmphits"))
+    }
+    
+    ## If fwd read long enough but forced forward read mapping only use bam_se_stats.py
+    if (fwd_read_short == FALSE & force_forward == TRUE){
+      system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam > ",out_dir,"/",batch_file$SAMPLE[i],".tmphits"))
     }
       
     ## If fwd read too short and reverse read (SE) mapping done use bam_se_stats.py
-    if (fwd_read_short == TRUE){
+    if (fwd_read_short == TRUE & force_forward == FALSE){
       system(paste0("python3 ",scripts,"/bam_se_stats.py ",gd,"/scaff2bin.txt ",out_dir,"/",batch_file$SAMPLE[i],".sorted.bam > ",out_dir,"/",batch_file$SAMPLE[i],".tmphits"))
     }
       
@@ -843,8 +867,9 @@ if (wf == "jm"){
     ## Indicate what program is doing
     cat("Filtering Hit Table...\n")
     
+    
     ## Filtering if PE mapping was done
-    if (fwd_read_short == FALSE){
+    if (fwd_read_short == FALSE & force_forward == FALSE){
       
       # Filter mappings based on genome and mapQ score
       merge_dat_filt <- subset(merge_dat, GENOME1 == GENOME2 & (MAPQ1 >= mq_cut | MAPQ2 >= mq_cut))
@@ -852,7 +877,7 @@ if (wf == "jm"){
       # Filter out NA barcodes
       merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
       
-      if (chimeric_filterng == TRUE){ # This will implememnt chimera filtering but is kept optional now because some reads are still too short
+      if (chimeric_filterng == TRUE){ # This will implement chimera filtering but is kept optional now because some reads are still too short
         
         # Filter out reads where model sequence did not contain exact last 5bp 
         merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
@@ -877,10 +902,42 @@ if (wf == "jm"){
       cat(paste0(round(f_loss * 100, digits = 2), "% Hits remaining after filtering...\n"))
       
     }
+ 
+     
+    ## Filtering if Forward Read Mapping ONLY on PE sample
+    if (fwd_read_short == FALSE & force_forward == TRUE){
+      
+      # Filter mappings based on genome and mapQ score
+      merge_dat_filt <- subset(merge_dat, MAPQ >= mq_cut & NM <= mm_cut)
+      
+      # Filter out NA barcodes
+      merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
+      
+      if (chimeric_filterng == TRUE){ # This will implement chimera filtering but is kept optional now because some reads are still too short
+        
+        # Filter out reads where model sequence did not contain exact last 5bp 
+        merge_dat_filt <- subset(merge_dat_filt, mod_term_exact == TRUE)
+        
+        # Filter out reads where R1 has mismatches in first 3 bp following Tn Junction
+        merge_dat_filt <- subset(merge_dat_filt, R1_START_NM == 0)
+        
+      }
+      
+      # Add Tn junction postion
+      merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND1 == "+", merge_dat_filt$START1, merge_dat_filt$END1)
+      
+      # Change GNEOME1 to GENOME
+      setnames(merge_dat_filt, "GENOME1", "GENOME")
+      
+      # Calculate Losses from Filtering
+      f_loss <- nrow(merge_dat_filt) / nrow(merge_dat)
+      cat(paste0(round(f_loss * 100, digits = 2), "% Hits remaining after filtering...\n"))
+      
+    }
     
     
-    ## Filtering if SE mapping was done
-    if (fwd_read_short == TRUE){
+    ## Filtering if SE mapping was done where reverse reads only were used because forward too short after trim
+    if (fwd_read_short == TRUE & force_forward == FALSE){
       
       # Filter mappings based on genome and mapQ score
       merge_dat_filt <- subset(merge_dat, MAPQ >= mq_cut & NM <= mm_cut)
@@ -890,6 +947,9 @@ if (wf == "jm"){
       
       # Add Tn Junction Postion
       merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND == "+", merge_dat_filt$START, merge_dat_filt$END)
+      
+      # Change GNEOME1 to GENOME
+      setnames(merge_dat_filt, "GENOME1", "GENOME")
       
       # Calculate Losses from Filtering
       f_loss <- nrow(merge_dat_filt) / nrow(merge_dat)
