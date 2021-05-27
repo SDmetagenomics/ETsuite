@@ -765,7 +765,7 @@ if (wf == "jm"){
       
       # run bowtie mapping using fwd reads only
       system(paste0("bowtie2 -x ",gd,"/bt2/All_Genomes", # specify genome database
-                    " -p ",cpu," -X ",isl," --rdg 60,3"," --rfg 60,3", # specify bowtie options ; The rgd and rfg options make sure no gaps appear in mappings
+                    " -p ",cpu," --rdg 60,3"," --rfg 60,3", # specify bowtie options ; The rgd and rfg options make sure no gaps appear in mappings
                     " -U ",out_dir,"/",batch_file$SAMPLE[i],".R1.final", # specify fwd reads
                     " -S ",out_dir,"/",batch_file$SAMPLE[i],".sam", # specify sam file output
                     " 2> ",out_dir,"/",batch_file$SAMPLE[i],".bowtie.log")) # specify log file output
@@ -908,7 +908,7 @@ if (wf == "jm"){
     if (fwd_read_short == FALSE & force_forward == TRUE){
       
       # Filter mappings based on genome and mapQ score
-      merge_dat_filt <- subset(merge_dat, MAPQ >= mq_cut & NM <= mm_cut)
+      merge_dat_filt <- subset(merge_dat, MAPQ1 >= mq_cut & NM1 <= mm_cut)
       
       # Filter out NA barcodes
       merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
