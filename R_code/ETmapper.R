@@ -654,12 +654,19 @@ if (wf == "jm"){
         append = T)
   }
   
+  ### Check if fwd reads will be too short and user passed -F flag
+  
+  if (fwd_read_short == T & force_forward == T){
+    cat("Forward reads too short and forced mapping to forward reads (-F) specified\nTry not using -F option...Program Quitting")
+    q(save="no")
+  }
+  
   
   
   
   #### BEGIN MAIN PROGRAM LOOP
   
-  for (i in 1:nrow(batch_file)){                  ######**** CHANGED PROGRAM SO NOW EACH FILE IS PROCESSED SEQUENTALLY 
+  for (i in 1:nrow(batch_file)){          
     
     
   ### 1) Indicate Sample program is working on
@@ -936,17 +943,19 @@ if (wf == "jm"){
     }
     
     
+    
+    ## ****THIS SECTION NEEDS TO BE RE TESTED WITH NEW PYTHON SCRIPT SINCE IT IS PROCESSING REVERSE READS ONLY ****
     ## Filtering if SE mapping was done where reverse reads only were used because forward too short after trim
     if (fwd_read_short == TRUE & force_forward == FALSE){
       
       # Filter mappings based on genome and mapQ score
-      merge_dat_filt <- subset(merge_dat, MAPQ >= mq_cut & NM <= mm_cut)
+      merge_dat_filt <- subset(merge_dat, MAPQ1 >= mq_cut & NM1 <= mm_cut)
       
       # Filter out NA barcodes
       merge_dat_filt <- subset(merge_dat_filt, is.na(barcodes) == FALSE)
       
       # Add Tn Junction Postion
-      merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND == "+", merge_dat_filt$START, merge_dat_filt$END)
+      merge_dat_filt$TNjunc <- ifelse(merge_dat_filt$STRAND1 == "+", merge_dat_filt$START1, merge_dat_filt$END1) ## Need to check this is ok
       
       # Change GNEOME1 to GENOME
       setnames(merge_dat_filt, "GENOME1", "GENOME")
