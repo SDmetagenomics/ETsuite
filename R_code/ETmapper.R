@@ -245,7 +245,7 @@ if("-E" %in% args){
 # Max number of mismatches (Default: 5; SE only)
 min_id <- 0.95
 if("-I" %in% args){
-  mm_cut <- as.numeric(args[which(args == "-I") + 1])
+  min_id <- as.numeric(args[which(args == "-I") + 1])
 }
 
 
